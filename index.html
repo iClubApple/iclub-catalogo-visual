@@ -1,0 +1,2989 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>iClub Catalogo Visual</title>
+  <link rel="stylesheet" href="plan-canje.css">
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --ink: #111318;
+      --muted: #717783;
+      --line: #e6e8ee;
+      --surface: #ffffff;
+      --surface-soft: #f8f9fb;
+      --black: #0d0f14;
+      --blue: #0071e3;
+      --green: #14945f;
+      --orange: #c26713;
+      --red: #b42318;
+      --shadow: 0 12px 30px rgba(17, 24, 39, .06);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button, input, select { font: inherit; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(230, 232, 238, .9);
+      background: rgba(255, 255, 255, .94);
+      backdrop-filter: blur(18px);
+    }
+
+    .topbar-inner {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 10px 22px;
+      display: grid;
+      grid-template-columns: minmax(230px, 310px) minmax(260px, 1fr) auto;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .brand {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .brand-wordmark {
+      color: var(--ink);
+      font-size: 34px;
+      font-weight: 900;
+      line-height: .9;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .brand-wordmark sup {
+      font-size: 12px;
+      line-height: 1;
+      margin-left: 2px;
+      vertical-align: super;
+    }
+
+    .brand-meta {
+      display: grid;
+      gap: 3px;
+      margin-left: 20px;
+      min-width: 0;
+    }
+
+    .brand-meta span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .search-wrap {
+      position: relative;
+      min-width: 0;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid #e3e7ee;
+      border-radius: 999px;
+      outline: none;
+      padding: 0 44px 0 16px;
+      background: #f8f9fb;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .search-wrap input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, .12);
+      background: white;
+    }
+
+    .search-wrap svg {
+      position: absolute;
+      right: 13px;
+      top: 50%;
+      width: 18px;
+      height: 18px;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .button, .icon-button {
+      min-height: 38px;
+      border: 1px solid #e3e7ee;
+      border-radius: 999px;
+      background: white;
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .button {
+      padding: 0 14px;
+      font-weight: 750;
+      font-size: 13px;
+    }
+
+    .icon-button {
+      width: 38px;
+      padding: 0;
+    }
+
+    .button svg, .icon-button svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2;
+    }
+
+    .button.active {
+      color: #075db8;
+      background: #e8f2ff;
+      border-color: #a5ceff;
+    }
+
+    .contact-button {
+      color: var(--ink);
+      background: #f8f9fb;
+    }
+
+    .promo-strip {
+      border-top: 1px solid rgba(230, 232, 238, .65);
+      border-bottom: 1px solid rgba(230, 232, 238, .65);
+      background: linear-gradient(90deg, rgba(13,15,20,.96), rgba(31,37,48,.96));
+      color: white;
+    }
+
+    .promo-inner {
+      max-width: 1480px;
+      min-height: 34px;
+      margin: 0 auto;
+      padding: 6px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    .promo-inner span {
+      color: #f5f7fb;
+    }
+
+    .filters {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 10px 22px 12px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(135px, 1fr));
+      gap: 8px;
+    }
+
+    main > .filters {
+      width: 100%;
+      padding: 0;
+      margin-top: -2px;
+      margin-bottom: -4px;
+    }
+
+    body.internal-mode .filters {
+      grid-template-columns: repeat(6, minmax(135px, 1fr));
+    }
+
+    body:not(.internal-mode) #sourceFilter,
+    body:not(.internal-mode) #modelFilter,
+    body:not(.internal-mode) #stockFilter {
+      display: none;
+    }
+
+    .filters select {
+      width: 100%;
+      min-height: 36px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 999px;
+      padding: 0 38px;
+      outline: none;
+      background:
+        linear-gradient(45deg, transparent 50%, #ffffff 50%) calc(100% - 18px) 50% / 6px 6px no-repeat,
+        linear-gradient(90deg, rgba(13,15,20,.96), rgba(31,37,48,.96));
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      appearance: none;
+      box-shadow: 0 8px 20px rgba(17, 24, 39, .08);
+      text-align: center;
+      text-align-last: center;
+    }
+
+    .filters select:hover {
+      border-color: rgba(255, 255, 255, .14);
+      background:
+        linear-gradient(45deg, transparent 50%, #ffffff 50%) calc(100% - 18px) 50% / 6px 6px no-repeat,
+        linear-gradient(90deg, rgba(13,15,20,.96), rgba(31,37,48,.96));
+    }
+
+    .filters select:focus {
+      border-color: rgba(255, 255, 255, .22);
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, .12), 0 8px 20px rgba(17, 24, 39, .08);
+    }
+
+    body.internal-mode .filters select {
+      border: 1px solid #e3e7ee;
+      background: white;
+      color: var(--ink);
+      appearance: auto;
+      box-shadow: none;
+      text-align: start;
+      text-align-last: auto;
+    }
+
+    body.internal-mode .filters select:hover {
+      border-color: #cfd6e2;
+      background: #fbfcfd;
+    }
+
+    body.internal-mode .filters select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, .10);
+    }
+
+    main {
+      width: 100%;
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 16px 22px 22px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .mode-tabs {
+      display: none;
+      gap: 6px;
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      width: fit-content;
+      box-shadow: var(--shadow);
+    }
+
+    .tab-button {
+      min-height: 36px;
+      border: 0;
+      border-radius: 6px;
+      padding: 0 14px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .tab-button.active {
+      color: white;
+      background: var(--black);
+    }
+
+    .status, .empty {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: white;
+      color: var(--muted);
+      display: none;
+    }
+
+    .status.show, .empty.show { display: block; }
+    .status strong { color: var(--ink); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .catalog {
+      display: grid;
+      gap: 22px;
+    }
+
+    .catalog-section {
+      display: grid;
+      gap: 14px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 14px;
+      padding-top: 4px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: clamp(26px, 4vw, 46px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .section-title span {
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .feature-card {
+      min-height: 430px;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.08);
+      background:
+        radial-gradient(circle at 80% 12%, rgba(70, 145, 255, .32), transparent 36%),
+        linear-gradient(135deg, #090b11, #151c2c 58%, #0a0d14);
+      color: white;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: minmax(220px, .85fr) minmax(230px, 1fr);
+      position: relative;
+    }
+
+    .feature-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg, rgba(255,255,255,.08), transparent 38%),
+        radial-gradient(circle at 20% 85%, rgba(255,255,255,.10), transparent 34%);
+      pointer-events: none;
+    }
+
+    .feature-copy {
+      position: relative;
+      z-index: 1;
+      padding: 28px;
+      display: grid;
+      gap: 15px;
+      align-content: center;
+    }
+
+    .feature-copy small {
+      color: #9ed0ff;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .feature-copy h3 {
+      margin: 0;
+      font-size: clamp(30px, 4.5vw, 58px);
+      line-height: .95;
+      letter-spacing: 0;
+    }
+
+    .feature-meta {
+      display: grid;
+      gap: 8px;
+    }
+
+    .variant-row {
+      display: grid;
+      grid-template-columns: minmax(72px, auto) 1fr auto;
+      gap: 10px;
+      align-items: baseline;
+      font-weight: 900;
+      font-size: 18px;
+    }
+
+    .variant-row span {
+      color: #d4dae5;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .color-dots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.9);
+      background: var(--dot-color, #cbd5e1);
+      box-shadow: 0 2px 8px rgba(0,0,0,.22);
+    }
+
+    .feature-visual {
+      position: relative;
+      z-index: 1;
+      min-height: 360px;
+      display: grid;
+      place-items: center;
+      padding: 26px;
+      overflow: hidden;
+    }
+
+    .phone-cluster {
+      width: min(330px, 86%);
+      height: 310px;
+      position: relative;
+    }
+
+    .phone-unit {
+      position: absolute;
+      bottom: 0;
+      width: 132px;
+      height: 250px;
+      border: 9px solid #1d2430;
+      border-radius: 34px;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(255,255,255,.45), transparent 8%),
+        linear-gradient(180deg, var(--phone-color, #d8dee9), #7d8ba2);
+      box-shadow: 0 28px 54px rgba(0,0,0,.38);
+    }
+
+    .phone-unit::before {
+      content: "";
+      position: absolute;
+      left: 18px;
+      top: 18px;
+      width: 48px;
+      height: 74px;
+      border-radius: 18px;
+      background: rgba(18,24,32,.78);
+    }
+
+    .phone-unit::after {
+      content: "";
+      position: absolute;
+      left: 30px;
+      top: 30px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #05070a;
+      box-shadow: 0 31px 0 #05070a;
+    }
+
+    .phone-unit:nth-child(1) { left: 0; transform: rotate(-8deg); --phone-color: #f2f3f5; }
+    .phone-unit:nth-child(2) { left: 86px; bottom: 20px; z-index: 2; --phone-color: #f47c34; }
+    .phone-unit:nth-child(3) { right: 0; transform: rotate(8deg); --phone-color: #273142; }
+
+    .feature-card.light {
+      background:
+        radial-gradient(circle at 74% 20%, rgba(130, 178, 255, .32), transparent 38%),
+        linear-gradient(135deg, #ffffff, #edf4ff);
+      color: var(--ink);
+      border-color: var(--line);
+    }
+
+    .feature-card.light::before {
+      background: linear-gradient(120deg, rgba(0,113,227,.08), transparent 45%);
+    }
+
+    .feature-card.light .feature-copy small,
+    .feature-card.light .variant-row span {
+      color: var(--muted);
+    }
+
+    .feature-card.compact {
+      min-height: 330px;
+    }
+
+    .feature-card.compact .feature-copy h3 {
+      font-size: clamp(26px, 3.5vw, 42px);
+    }
+
+    .grid.hidden, .catalog.hidden {
+      display: none;
+    }
+
+    .grid.list {
+      grid-template-columns: 1fr;
+    }
+
+    .card {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid rgba(230, 232, 238, .9);
+      border-radius: 8px;
+      background: white;
+      box-shadow: 0 8px 24px rgba(17, 24, 39, .045);
+      display: grid;
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0, 113, 227, .18);
+      box-shadow: 0 18px 44px rgba(17, 24, 39, .08);
+    }
+
+    .list .card {
+      grid-template-columns: 220px 1fr;
+    }
+
+    .photo {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: linear-gradient(145deg, #fbfcfd, #f1f4f8);
+    }
+
+    .list .photo {
+      border-bottom: 0;
+    }
+
+    .source-pill {
+      display: none;
+    }
+
+    .photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 18px;
+    }
+
+    .gallery-trigger {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      border: 1px solid rgba(216, 222, 232, .82);
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: rgba(255,255,255,.9);
+      color: #273142;
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(17, 24, 39, .12);
+    }
+
+    .placeholder {
+      width: 58%;
+      max-width: 180px;
+      aspect-ratio: 1 / 1.22;
+      border: 9px solid #20242d;
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 50% 16%, rgba(255,255,255,.9), transparent 12%),
+        linear-gradient(180deg, #fbfdff, #cfd8e6);
+      display: grid;
+      place-items: center;
+      color: #273142;
+      text-align: center;
+      font-weight: 900;
+      line-height: 1.05;
+      padding: 16px;
+      box-shadow: 0 14px 28px rgba(17, 24, 39, .10);
+    }
+
+    .contact-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: none;
+      place-items: center;
+      padding: 22px;
+      background: rgba(17, 24, 39, .46);
+      backdrop-filter: blur(8px);
+    }
+
+    .contact-modal.show {
+      display: grid;
+    }
+
+    .contact-panel {
+      width: min(390px, 100%);
+      border-radius: 8px;
+      background: white;
+      box-shadow: 0 22px 60px rgba(0, 0, 0, .18);
+      padding: 22px;
+      display: grid;
+      gap: 16px;
+      position: relative;
+    }
+
+    .contact-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 32px;
+      height: 32px;
+      border: 0;
+      border-radius: 50%;
+      background: #f4f6f9;
+      color: #273142;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .contact-title {
+      display: grid;
+      gap: 4px;
+      padding-right: 34px;
+    }
+
+    .contact-title strong {
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1.15;
+    }
+
+    .contact-title span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .contact-link {
+      min-height: 50px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      text-decoration: none;
+      font-weight: 850;
+      transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+    }
+
+    .contact-link:hover {
+      border-color: rgba(0, 113, 227, .24);
+      box-shadow: 0 10px 24px rgba(17, 24, 39, .06);
+      transform: translateY(-1px);
+    }
+
+    .contact-link[aria-disabled="true"] {
+      color: #98a2b3;
+      background: #f8f9fb;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .contact-link svg {
+      width: 22px;
+      height: 22px;
+      flex: 0 0 auto;
+    }
+
+    .whatsapp-link svg {
+      color: #25d366;
+      fill: currentColor;
+      stroke: none;
+    }
+
+    .contact-arrow {
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .linktree-block {
+      display: grid;
+      gap: 10px;
+      justify-items: center;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+    }
+
+    .linktree-heading {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .contact-qr-wrap {
+      width: min(260px, 100%);
+      aspect-ratio: 1 / 1;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #fbfcfd;
+      padding: 12px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .contact-qr-wrap[aria-disabled="true"] {
+      cursor: default;
+      background: #f8f9fb;
+    }
+
+    .contact-qr {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .qr-placeholder {
+      color: #98a2b3;
+      font-size: 13px;
+      font-weight: 850;
+      text-align: center;
+    }
+
+    .contact-panel p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+      text-align: center;
+    }
+
+    .contact-note {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .gallery-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      place-items: center;
+      padding: 22px;
+      background: rgba(17, 24, 39, .64);
+    }
+
+    .gallery-modal.show {
+      display: grid;
+    }
+
+    .gallery-panel {
+      width: min(860px, 100%);
+      max-height: min(760px, 92vh);
+      border-radius: 8px;
+      background: white;
+      overflow: hidden;
+      box-shadow: 0 28px 80px rgba(0, 0, 0, .24);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+    }
+
+    .gallery-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .gallery-head strong {
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    .gallery-close {
+      width: 34px;
+      height: 34px;
+      border: 0;
+      border-radius: 50%;
+      background: #f4f6f9;
+      color: #273142;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .gallery-stage {
+      min-height: 320px;
+      display: grid;
+      place-items: center;
+      background: #f7f9fc;
+    }
+
+    .gallery-stage img {
+      width: 100%;
+      max-height: min(560px, 66vh);
+      object-fit: contain;
+      padding: 18px;
+    }
+
+    .gallery-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 780;
+    }
+
+    .gallery-nav {
+      display: flex;
+      gap: 8px;
+    }
+
+    .gallery-nav button {
+      min-width: 42px;
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      color: #273142;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .content {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .headline {
+      display: grid;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .headline h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.14;
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .product-specs {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 760;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .battery-choice {
+      display: inline-flex;
+      width: fit-content;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #f8f9fb;
+    }
+
+    .battery-choice button {
+      min-height: 30px;
+      border: 0;
+      border-radius: 999px;
+      padding: 0 10px;
+      background: transparent;
+      color: #667085;
+      font-size: 12px;
+      font-weight: 850;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .battery-choice button.active {
+      background: white;
+      color: var(--ink);
+      box-shadow: 0 6px 16px rgba(17, 24, 39, .08);
+    }
+
+    .primary-offer {
+      display: grid;
+      gap: 3px;
+      padding-top: 3px;
+    }
+
+    .primary-offer strong {
+      color: #111827;
+      font-size: clamp(27px, 2.4vw, 34px);
+      line-height: .98;
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .primary-offer span {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .promo-callout {
+      border: 1px solid rgba(0, 113, 227, .14);
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: #f8fbff;
+      display: grid;
+      gap: 2px;
+    }
+
+    .promo-callout span {
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .promo-callout strong {
+      color: #1f2937;
+      font-size: 14px;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .availability {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 6px 9px;
+      background: #eef8f2;
+      color: #08764b;
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1;
+    }
+
+    .availability::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      flex: 0 0 auto;
+    }
+
+    .availability.soon {
+      background: #fff7e6;
+      color: #9a5b00;
+    }
+
+    .availability.provider {
+      background: #fff7e6;
+      color: #9a5b00;
+    }
+
+    .availability.consult {
+      background: #f4f6f9;
+      color: #667085;
+    }
+
+    .payment-list {
+      display: grid;
+      gap: 6px;
+      padding-top: 2px;
+    }
+
+    .payment-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: baseline;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.2;
+    }
+
+    .payment-row::after {
+      content: "";
+      height: 1px;
+      background: linear-gradient(90deg, rgba(102,112,133,.18), rgba(102,112,133,.04));
+      align-self: center;
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .payment-row span {
+      font-weight: 760;
+    }
+
+    .payment-row strong {
+      color: #273142;
+      font-size: 13px;
+      font-weight: 850;
+      overflow-wrap: anywhere;
+      text-align: right;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 8px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 760;
+      line-height: 1;
+    }
+
+    .stock-ok { background: #eaf8f1; border-color: #a9ddc4; color: #08764b; }
+    .stock-low { background: #fff7e8; border-color: #f4ce95; color: var(--orange); }
+    .stock-out { background: #f4f6f9; border-color: #e4e7ec; color: #667085; }
+
+    .internal {
+      display: none;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    body.internal-mode .internal {
+      display: block;
+    }
+
+    .internal a {
+      color: var(--blue);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    @media (max-width: 1200px) {
+      .grid { grid-template-columns: repeat(3, minmax(230px, 1fr)); }
+      .filters { grid-template-columns: repeat(3, minmax(135px, 1fr)); }
+      body.internal-mode .filters { grid-template-columns: repeat(3, minmax(135px, 1fr)); }
+    }
+
+    @media (max-width: 860px) {
+      .topbar-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        justify-content: stretch;
+        flex-wrap: wrap;
+      }
+
+      .button {
+        flex: 1;
+      }
+
+      .brand-wordmark {
+        font-size: 32px;
+      }
+
+      .brand-meta {
+        margin-left: 14px;
+      }
+
+      .filters, .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .catalog-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-card {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-visual {
+        min-height: 260px;
+      }
+
+      .list .card {
+        grid-template-columns: 160px 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .topbar-inner, .filters, main {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .filters, .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-title {
+        display: grid;
+      }
+
+      .feature-card {
+        min-height: 0;
+      }
+
+      .feature-copy {
+        padding: 22px;
+      }
+
+      .list .card {
+        grid-template-columns: 1fr;
+      }
+
+      .list .photo {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="brand-wordmark" aria-label="iClub marca registrada">iClub<sup>&reg;</sup></div>
+          <div class="brand-meta">
+            <span id="updated">Conectando con Google Sheet</span>
+          </div>
+        </div>
+
+        <label class="search-wrap">
+          <input id="search" type="search" placeholder="Buscar modelo, color, capacidad, bateria o serial">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="m20 20-3.5-3.5"></path>
+          </svg>
+        </label>
+
+        <div class="actions">
+          <button id="contactToggle" class="button contact-button" type="button" title="Contacto iClub">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M4 4h6v6H4z"></path>
+              <path d="M14 4h6v6h-6z"></path>
+              <path d="M4 14h6v6H4z"></path>
+              <path d="M14 14h2v2h-2z"></path>
+              <path d="M18 14h2v6h-4v-2h2z"></path>
+              <path d="M14 18h2v2h-2z"></path>
+            </svg>
+            Contacto
+          </button>
+          <button id="internalToggle" class="button" type="button" title="Mostrar datos internos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            Interno
+          </button>
+          <button id="layoutToggle" class="icon-button" type="button" title="Cambiar vista">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+            </svg>
+          </button>
+          <button id="reload" class="icon-button" type="button" title="Actualizar datos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
+              <path d="M21 3v6h-6"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="promo-strip" aria-label="Promocion iClub">
+        <div class="promo-inner">
+          <span>Viv&iacute; la experiencia</span>
+        </div>
+      </div>
+
+    </header>
+
+    <main>
+      <div class="mode-tabs" aria-label="Modo de visualizacion">
+        <button id="catalogMode" class="tab-button" type="button">Catalogo</button>
+        <button id="gridMode" class="tab-button active" type="button">Grilla</button>
+      </div>
+
+      <section class="trade-entry" aria-label="Plan Canje iClub">
+        <div class="trade-entry-copy trade-entry-seal">
+          <div class="trade-entry-icon" aria-hidden="true">
+            <span class="trade-entry-apple">&#63743;</span>
+          </div>
+          <span class="trade-entry-kicker">Premium Reseller</span>
+          <h2>Asistencia iClub</h2>
+          <p>Ayuda con tu cuenta de Apple, iCloud, contrase&ntilde;as, configuraci&oacute;n, almacenamiento y m&aacute;s.</p>
+          <a class="trade-entry-button" href="https://wa.me/5491135823994?text=Hola%20iClub%20%F0%9F%91%8B%20Necesito%20asistencia%20con%20mi%20equipo%20o%20mi%20cuenta%20de%20Apple." target="_blank" rel="noreferrer">
+            <span class="trade-entry-whatsapp" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M19.1 4.9A9.84 9.84 0 0 0 12.06 2C6.56 2 2.1 6.45 2.1 11.93c0 1.75.46 3.45 1.33 4.96L2 22l5.24-1.38a9.93 9.93 0 0 0 4.82 1.23h.01c5.49 0 9.96-4.45 9.96-9.93 0-2.65-1.04-5.14-2.93-7.02Zm-7.04 15.27h-.01a8.25 8.25 0 0 1-4.2-1.15l-.3-.18-3.11.82.83-3.03-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.55 3.7-8.25 8.26-8.25a8.2 8.2 0 0 1 5.83 2.42 8.16 8.16 0 0 1 2.42 5.82c0 4.55-3.71 8.24-8.26 8.24Z"></path>
+              </svg>
+            </span>
+            Solicitar ayuda
+          </a>
+        </div>
+
+        <div class="trade-entry-copy">
+          <div class="trade-entry-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M7.5 7.5A6.5 6.5 0 0 1 18 9"></path>
+              <path d="M18 5.5V9h-3.5"></path>
+              <path d="M16.5 16.5A6.5 6.5 0 0 1 6 15"></path>
+              <path d="M6 18.5V15h3.5"></path>
+            </svg>
+          </div>
+          <span class="trade-entry-kicker">Plan Canje</span>
+          <h2>Cambi&aacute; tu iPhone</h2>
+          <p>Entreg&aacute; el tuyo y pag&aacute; solamente la diferencia.</p>
+          <button id="planCanjeOpen" class="trade-entry-button" type="button">Cotizar mi iPhone</button>
+        </div>
+
+        <div class="trade-entry-copy">
+          <div class="trade-entry-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M14.7 6.3a4 4 0 0 0-5 5l-5.2 5.2a2.1 2.1 0 0 0 3 3l5.2-5.2a4 4 0 0 0 5-5l-2.7 2.7-3-3 2.7-2.7Z"></path>
+            </svg>
+          </div>
+          <span class="trade-entry-kicker">Technical Support</span>
+          <h2>Cotiz&aacute; tu reparaci&oacute;n</h2>
+          <p>Servicio t&eacute;cnico especializado para tu equipo Apple.</p>
+          <a class="trade-entry-button" href="https://wa.me/5491125003054?text=Hola%20iClub%20%F0%9F%91%8B%20Quiero%20cotizar%20mi%20reparaci%C3%B3n." target="_blank" rel="noreferrer">
+            <span class="trade-entry-whatsapp" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M19.1 4.9A9.84 9.84 0 0 0 12.06 2C6.56 2 2.1 6.45 2.1 11.93c0 1.75.46 3.45 1.33 4.96L2 22l5.24-1.38a9.93 9.93 0 0 0 4.82 1.23h.01c5.49 0 9.96-4.45 9.96-9.93 0-2.65-1.04-5.14-2.93-7.02Zm-7.04 15.27h-.01a8.25 8.25 0 0 1-4.2-1.15l-.3-.18-3.11.82.83-3.03-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.55 3.7-8.25 8.26-8.25a8.2 8.2 0 0 1 5.83 2.42 8.16 8.16 0 0 1 2.42 5.82c0 4.55-3.71 8.24-8.26 8.24Z"></path>
+              </svg>
+            </span>
+            Cotizar mi reparaci&oacute;n
+          </a>
+        </div>
+      </section>
+
+      <div class="filters">
+        <select id="sourceFilter"><option value="">Stock equipos y ofertas</option></select>
+        <select id="categoryFilter"><option value="">Todas las categorias</option></select>
+        <select id="modelFilter"><option value="">Todos los modelos</option></select>
+        <select id="conditionFilter"><option value="">Todos los estados</option></select>
+        <select id="batteryFilter"><option value="">Todas las baterias</option></select>
+        <select id="stockFilter">
+          <option value="">Todo el stock</option>
+          <option value="branch">Stock sucursal</option>
+          <option value="available">Con stock</option>
+          <option value="low">Stock bajo</option>
+          <option value="out">Sin stock</option>
+        </select>
+      </div>
+
+      <div id="status" class="status"></div>
+      <section id="catalog" class="catalog" aria-label="Catalogo visual"></section>
+      <section id="grid" class="grid" aria-label="Catalogo de productos"></section>
+      <div id="empty" class="empty">No hay productos para esos filtros.</div>
+    </main>
+  </div>
+
+  <div id="contactModal" class="contact-modal" aria-hidden="true">
+    <div class="contact-panel" role="dialog" aria-modal="true" aria-label="Contacto iClub">
+      <button id="contactClose" class="contact-close" type="button" aria-label="Cerrar contacto">&times;</button>
+      <div class="contact-title">
+        <strong>Contacto iClub</strong>
+        <span>Canales oficiales para atencion y consultas comerciales.</span>
+      </div>
+      <a id="whatsappContact" class="contact-link whatsapp-link" href="#" target="_blank" rel="noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19.1 4.9A9.84 9.84 0 0 0 12.06 2C6.56 2 2.1 6.45 2.1 11.93c0 1.75.46 3.45 1.33 4.96L2 22l5.24-1.38a9.93 9.93 0 0 0 4.82 1.23h.01c5.49 0 9.96-4.45 9.96-9.93 0-2.65-1.04-5.14-2.93-7.02Zm-7.04 15.27h-.01a8.25 8.25 0 0 1-4.2-1.15l-.3-.18-3.11.82.83-3.03-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.55 3.7-8.25 8.26-8.25a8.2 8.2 0 0 1 5.83 2.42 8.16 8.16 0 0 1 2.42 5.82c0 4.55-3.71 8.24-8.26 8.24Zm4.53-6.17c-.25-.12-1.47-.72-1.7-.8-.23-.08-.4-.12-.56.12-.17.25-.64.8-.79.96-.15.17-.29.19-.54.07-.25-.13-1.05-.39-2-1.23a7.49 7.49 0 0 1-1.38-1.71c-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.43-.06-.13-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.08 0 1.23.9 2.41 1.02 2.58.12.17 1.76 2.68 4.26 3.76.6.26 1.06.41 1.42.52.6.19 1.14.16 1.57.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.16-.48-.28Z"></path>
+        </svg>
+        <span>WhatsApp iClub</span>
+        <span class="contact-arrow">&rsaquo;</span>
+      </a>
+      <div class="linktree-block">
+        <div class="linktree-heading">
+          <span>Linktree iClub</span>
+          <span id="linktreeStatus">Pendiente</span>
+        </div>
+        <a id="linktreeQrLink" class="contact-qr-wrap" href="#" target="_blank" rel="noreferrer" aria-label="Abrir Linktree iClub">
+          <img id="linktreeQr" class="contact-qr" src="" alt="QR de Linktree iClub" loading="lazy" hidden>
+          <span id="linktreeQrPlaceholder" class="qr-placeholder">Linktree pendiente</span>
+        </a>
+        <a id="linktreeContact" class="contact-link" href="#" target="_blank" rel="noreferrer">
+          <span>Abrir Linktree</span>
+          <span class="contact-arrow">&rsaquo;</span>
+        </a>
+        <div id="linktreeNote" class="contact-note"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="galleryModal" class="gallery-modal" aria-hidden="true">
+    <div class="gallery-panel" role="dialog" aria-modal="true" aria-label="Galeria de producto">
+      <div class="gallery-head">
+        <strong id="galleryTitle">Producto iClub</strong>
+        <button id="galleryClose" class="gallery-close" type="button" aria-label="Cerrar galeria">&times;</button>
+      </div>
+      <div class="gallery-stage">
+        <img id="galleryImage" alt="" loading="lazy">
+      </div>
+      <div class="gallery-controls">
+        <span id="galleryCounter">1 de 1</span>
+        <div class="gallery-nav">
+          <button id="galleryPrev" type="button" aria-label="Imagen anterior">&lsaquo;</button>
+          <button id="galleryNext" type="button" aria-label="Imagen siguiente">&rsaquo;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SHEET_ID = "1yIchT-R7KSY5NuIcfjMuYRjPjbQaZ3j5LdcfXee2USY";
+    const SHEET_NAME = "STOCK EQUIPOS Y OFERTAS";
+    const SOURCE_LABEL = "Stock equipos y ofertas";
+    const DRIVE_IMAGE_RESOLVER_URL = "https://script.google.com/macros/s/AKfycbyiHxpOvwkEOTl7UtfmIXZS5VbpEP9q2lBUDpBjqrJrQBd3hUtNzhvAgeRBZBAIFy6N/exec";
+    const ICLUB_CONTACT = {
+      whatsapp: "5491125003057",
+      linktree: "https://linktr.ee/iClubapple.com",
+    };
+    const ICLUB_LINKTREE_QR = "assets/qr-linktree-iclub.png";
+    const DRIVE_API_KEY = "";
+    const IMAGE_DEBUG = true;
+    const VALID_IMAGE_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+    const VALID_IMAGE_EXTENSIONS = /\.(jpe?g|png|webp)(\?.*)?$/i;
+    const IMAGE_RESOLVER_BATCH_SIZE = 8;
+    const IMAGE_RESOLVER_CONCURRENCY = 2;
+    const IMAGE_CACHE_TTL = 30 * 60 * 1000;
+    const IMAGE_CACHE_PREFIX = "iclub:image-row:";
+    const FIXED_COLUMNS = [
+      "link_info",
+      "photo_video",
+      "model",
+      "promotion",
+      "capacity",
+      "color",
+      "condition",
+      "battery",
+      "stock",
+      "stock_24hs",
+      "stock_provider",
+      "serial",
+      "notes",
+      "list_price",
+      "cash_price",
+      "transfer_price",
+      "installment_6",
+      "installment_3",
+    ];
+
+    const state = {
+      rows: [],
+      products: [],
+      filtered: [],
+      listMode: false,
+      internalMode: false,
+      viewMode: "grid",
+      batterySelections: {},
+      gallery: {
+        images: [],
+        title: "",
+        index: 0,
+      },
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const grid = $("grid");
+    const catalog = $("catalog");
+    const statusBox = $("status");
+    let imageResolveRun = 0;
+
+    function normalize(value) {
+      return String(value || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function firstUseful(row) {
+      const values = Object.entries(row)
+        .filter(([key]) => !key.startsWith("__"))
+        .map(([, value]) => String(value || "").trim())
+        .filter(Boolean);
+      return values[0] || "Producto iClub";
+    }
+
+    function parseNumber(value) {
+      const text = String(value || "").replace(/\./g, "").replace(",", ".").replace(/[^\d.-]/g, "");
+      const number = Number(text);
+      return Number.isFinite(number) ? number : 0;
+    }
+
+    function parseAvailability(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return 0;
+      const normalized = normalize(raw);
+      if (/^(no|false|falso|sin|n\/a|na|-)$/.test(normalized)) return 0;
+      if (/^(si|sí|yes|true|ok|disponible)$/.test(normalized)) return 1;
+      return Math.max(0, parseNumber(raw));
+    }
+
+    function formatMoney(value) {
+      const text = String(value || "").trim();
+      if (!text) return "";
+      if (/[A-Za-z$]/.test(text)) return text;
+      const number = parseNumber(text);
+      if (!number) return text;
+      return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(number);
+    }
+
+    function stockLabel(stock, stock24 = 0, stockProvider = 0) {
+      if (stock > 0) return ["Disponible ahora", stock <= 2 ? "stock-low" : "stock-ok"];
+      if (stock24 > 0 || stockProvider > 0) return ["Disponible con reserva", "stock-low"];
+      return ["Sin stock inmediato", "stock-out"];
+    }
+
+    function rowToProduct(row, index) {
+      const model = row.model || firstUseful(row);
+      const capacity = row.capacity;
+      const color = row.color;
+      const condition = row.condition;
+      const battery = row.battery;
+      const serial = row.serial;
+      const category = inferCategory(model);
+      const stock = parseAvailability(row.stock);
+      const stock24 = parseAvailability(row.stock_24hs);
+      const stockProvider = parseAvailability(row.stock_provider);
+      const title = [model, capacity, color].filter(Boolean).join(" ");
+      const imageSource = imageSourceFromCell(row.photo_video);
+
+      return {
+        id: `${index}-${serial || title}`,
+        title,
+        model,
+        category,
+        capacity,
+        color,
+        condition,
+        battery,
+        serial,
+        stock,
+        stock24,
+        stockProvider,
+        promotion: row.promotion,
+        notes: row.notes,
+        appleLink: row.link_info,
+        photoSource: row.photo_video,
+        imageSource,
+        images: imageSource.images,
+        photo: imageSource.images[0] || "",
+        priceList: row.list_price,
+        cash: row.cash_price,
+        transfer: row.transfer_price,
+        three: row.installment_3,
+        six: row.installment_6,
+        sourceLabel: SOURCE_LABEL,
+        sourceKey: "stock",
+        raw: row,
+        batteryPriceTier: row.__batteryPriceTier || "",
+        batteryPriceBlock: row.__batteryPriceBlock || "",
+        batteryPriceModel: row.__batteryPriceModel || "",
+      };
+    }
+
+    function normalizePhotoUrl(value) {
+      const text = String(value || "").trim();
+      if (!text) return "";
+      const fileId = driveFileId(text);
+      if (fileId) return driveImageUrl(fileId);
+      return text;
+    }
+
+    function imageSourceFromCell(value) {
+      const text = String(value || "").trim();
+      if (!text) return { raw: "", folderUrl: "", folderId: "", images: [], error: "" };
+      const folderId = driveFolderId(text);
+      if (folderId) {
+        return {
+          raw: text,
+          folderUrl: text,
+          folderId,
+          images: [],
+          error: "",
+        };
+      }
+
+      const candidates = text.match(/https?:\/\/[^\s,;]+/gi) || [];
+      if (!candidates.length && /^https?:\/\//i.test(text)) candidates.push(text);
+
+      const images = unique(candidates
+        .map((url) => normalizePhotoUrl(url))
+        .filter((url) => /^https?:\/\//i.test(url) && !isDriveFolderUrl(url)));
+
+      return {
+        raw: text,
+        folderUrl: "",
+        folderId: "",
+        images,
+        error: "",
+      };
+    }
+
+    function driveFileId(url) {
+      const text = String(url || "");
+      return text.match(/drive\.google\.com\/file\/d\/([^/?#]+)/i)?.[1]
+        || text.match(/[?&]id=([^&#]+)/i)?.[1]
+        || "";
+    }
+
+    function isDriveFolderUrl(url) {
+      return /drive\.google\.com\/drive\/folders\//i.test(String(url || ""));
+    }
+
+    function driveFolderId(url) {
+      const text = String(url || "");
+      return text.match(/drive\.google\.com\/drive\/folders\/([^/?#]+)/i)?.[1]
+        || text.match(/[?&]folderId=([^&#]+)/i)?.[1]
+        || "";
+    }
+
+    function driveImageUrl(fileId, size = 900) {
+      return `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w${size}`;
+    }
+
+    async function resolveImagesForProducts(products, options = {}) {
+      if (DRIVE_IMAGE_RESOLVER_URL) {
+        await resolveImagesFromSheetLinks(products, options);
+        products.forEach(logImageDiagnostic);
+        return;
+      }
+
+      const folderMap = new Map();
+      products.forEach((product) => {
+        if (!product.imageSource.folderId) return;
+        if (product.imageSource.resolvedFromSheet) return;
+        if (!folderMap.has(product.imageSource.folderId)) {
+          folderMap.set(product.imageSource.folderId, {
+            folderUrl: product.imageSource.folderUrl,
+            products: [],
+          });
+        }
+        folderMap.get(product.imageSource.folderId).products.push(product);
+      });
+
+      if (!folderMap.size) {
+        products.forEach(logImageDiagnostic);
+        return;
+      }
+
+      const entries = [...folderMap.entries()];
+      for (let index = 0; index < entries.length; index += 4) {
+        const batch = entries.slice(index, index + 4);
+        await Promise.all(batch.map(async ([folderId, group]) => {
+          try {
+            const images = await fetchDriveFolderImages(folderId);
+            group.products.forEach((product) => {
+              product.images = images;
+              product.photo = images[0] || "";
+              product.imageSource.images = images;
+              product.imageSource.error = images.length ? "" : "No se encontraron JPG, JPEG, PNG o WEBP en la carpeta.";
+              logImageDiagnostic(product);
+            });
+          } catch (error) {
+            group.products.forEach((product) => {
+              product.images = [];
+              product.photo = "";
+              product.imageSource.error = error.message;
+              logImageDiagnostic(product);
+            });
+          }
+        }));
+      }
+
+      products
+        .filter((product) => !product.imageSource.folderId)
+        .forEach(logImageDiagnostic);
+    }
+
+    function imageCacheKey(rowNumber) {
+      return `${IMAGE_CACHE_PREFIX}${SHEET_ID}:${SHEET_NAME}:${rowNumber}`;
+    }
+
+    function readImageCache(rowNumber) {
+      try {
+        const raw = sessionStorage.getItem(imageCacheKey(rowNumber));
+        if (!raw) return null;
+        const cached = JSON.parse(raw);
+        if (!cached || Date.now() - cached.savedAt > IMAGE_CACHE_TTL) {
+          sessionStorage.removeItem(imageCacheKey(rowNumber));
+          return null;
+        }
+        return cached.rowData || null;
+      } catch {
+        return null;
+      }
+    }
+
+    function writeImageCache(rowNumber, rowData) {
+      try {
+        sessionStorage.setItem(imageCacheKey(rowNumber), JSON.stringify({
+          savedAt: Date.now(),
+          rowData,
+        }));
+      } catch {
+        // If storage is full or blocked, image loading still works without cache.
+      }
+    }
+
+    function applyResolvedImage(product, rowData) {
+      const mainImage = normalizeResolvedImages([rowData.mainImage || ""])[0] || "";
+      const images = unique([
+        mainImage,
+        ...normalizeResolvedImages(rowData.images || rowData.files || []),
+      ]);
+      const fallbackImages = product.photo ? [product.photo] : [];
+      const nextImages = images.length ? images : (product.images.length ? product.images : fallbackImages);
+
+      product.imageSource.folderUrl = rowData.folderUrl || product.imageSource.folderUrl;
+      product.imageSource.folderId = rowData.folderId || product.imageSource.folderId;
+      product.imageSource.images = nextImages;
+      product.imageSource.error = rowData.error || "";
+      product.imageSource.resolvedFromSheet = true;
+      product.images = nextImages;
+      product.photo = mainImage || nextImages[0] || product.photo || "";
+    }
+
+    async function resolveImagesFromSheetLinks(products, options = {}) {
+      const productsWithDriveFolders = products
+        .filter((product) => product.imageSource.folderId);
+      const pendingProducts = [];
+
+      productsWithDriveFolders.forEach((product) => {
+        const rowNumber = product.raw.__rowNumber;
+        const cached = rowNumber ? readImageCache(rowNumber) : null;
+        if (cached) {
+          applyResolvedImage(product, cached);
+          return;
+        }
+        pendingProducts.push(product);
+      });
+
+      if (pendingProducts.length !== productsWithDriveFolders.length) {
+        options.onBatch?.();
+      }
+
+      const rowNumbers = pendingProducts.map((product) => product.raw.__rowNumber).filter(Boolean);
+      if (!rowNumbers.length) return;
+
+      const batches = [];
+      for (let index = 0; index < rowNumbers.length; index += IMAGE_RESOLVER_BATCH_SIZE) {
+        batches.push(rowNumbers.slice(index, index + IMAGE_RESOLVER_BATCH_SIZE));
+      }
+
+      let nextBatchIndex = 0;
+      async function resolveNextBatch() {
+        const batchRows = batches[nextBatchIndex];
+        nextBatchIndex += 1;
+        if (!batchRows) return;
+
+        try {
+          const payload = await fetchDriveImageResolver("", {
+            spreadsheetId: SHEET_ID,
+            sheetName: SHEET_NAME,
+            rows: batchRows.join(","),
+          });
+          const productsByRow = payload.products || payload.byRow || {};
+
+          pendingProducts.forEach((product) => {
+            const sheetRow = String(product.raw.__rowNumber);
+            const rowData = productsByRow[sheetRow];
+            if (!rowData) return;
+
+            writeImageCache(sheetRow, rowData);
+            applyResolvedImage(product, rowData);
+
+            console.log("iClub image resolver", {
+              sheetRow,
+              model: product.model,
+              resolvedMainImage: rowData.mainImage || "",
+              resolvedImages: rowData.images || [],
+              productPhoto: product.photo,
+              productImages: product.images,
+            });
+          });
+          options.onBatch?.();
+        } catch (error) {
+          pendingProducts
+            .filter((product) => batchRows.includes(product.raw.__rowNumber))
+            .forEach((product) => {
+              product.imageSource.error = error.message;
+            });
+          options.onBatch?.();
+        }
+      }
+
+      const workers = Array.from(
+        { length: Math.min(IMAGE_RESOLVER_CONCURRENCY, batches.length) },
+        async () => {
+          while (nextBatchIndex < batches.length) {
+            await resolveNextBatch();
+          }
+        }
+      );
+      await Promise.all(workers);
+    }
+
+    async function fetchDriveFolderImages(folderId) {
+      if (DRIVE_IMAGE_RESOLVER_URL) {
+        const payload = await fetchDriveImageResolver(folderId);
+        return normalizeResolvedImages(payload.images || payload.files || []);
+      }
+
+      if (DRIVE_API_KEY) {
+        const query = encodeURIComponent(`'${folderId}' in parents and trashed = false`);
+        const fields = encodeURIComponent("files(id,name,mimeType)");
+        const url = `https://www.googleapis.com/drive/v3/files?q=${query}&fields=${fields}&key=${encodeURIComponent(DRIVE_API_KEY)}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Google Drive API rechazo la carpeta (${response.status})`);
+        const payload = await response.json();
+        return normalizeResolvedImages(payload.files || []);
+      }
+
+      throw new Error("Falta configurar DRIVE_IMAGE_RESOLVER_URL o DRIVE_API_KEY para enumerar carpetas de Drive desde el catalogo.");
+    }
+
+    function fetchDriveImageResolver(folderId, extraParams = {}) {
+      return new Promise((resolve, reject) => {
+        const callbackName = `iclubDriveImages_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const script = document.createElement("script");
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error("El resolvedor de imagenes no respondio."));
+        }, 15000);
+
+        function cleanup() {
+          clearTimeout(timeout);
+          delete window[callbackName];
+          script.remove();
+        }
+
+        window[callbackName] = (payload) => {
+          cleanup();
+          if (payload?.error) {
+            reject(new Error(payload.error));
+            return;
+          }
+          resolve(payload || {});
+        };
+
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("No se pudo cargar el resolvedor de imagenes."));
+        };
+
+        const separator = DRIVE_IMAGE_RESOLVER_URL.includes("?") ? "&" : "?";
+        const params = new URLSearchParams({
+          ...extraParams,
+          callback: callbackName,
+        });
+        if (folderId) params.set("folderId", folderId);
+        script.src = `${DRIVE_IMAGE_RESOLVER_URL}${separator}${params.toString()}`;
+        document.head.appendChild(script);
+      });
+    }
+
+    function normalizeResolvedImages(items) {
+      return unique(items
+        .map((item) => {
+          if (typeof item === "string") return item;
+          return item;
+        })
+        .filter((item) => {
+          if (typeof item === "string") return /^https?:\/\//i.test(item);
+          const mimeType = String(item.mimeType || item.mime_type || "").toLowerCase();
+          const name = String(item.name || item.title || item.fileName || item.file_name || "");
+          const url = String(item.url || item.thumbnailLink || item.webContentLink || item.mainImage || "");
+          return VALID_IMAGE_MIME_TYPES.has(mimeType) || VALID_IMAGE_EXTENSIONS.test(name) || /^https?:\/\//i.test(url);
+        })
+        .map((item) => {
+          if (typeof item === "string") return item;
+          const id = item.id || driveFileId(item.url || item.webViewLink || item.thumbnailLink || "");
+          if (id) return driveImageUrl(id);
+          return normalizePhotoUrl(item.url || item.thumbnailLink || item.webContentLink || item.mainImage || "");
+        })
+        .filter(Boolean));
+    }
+
+    function logImageDiagnostic(product) {
+      if (!IMAGE_DEBUG) return;
+      console.groupCollapsed(`Imagen iClub: ${product.title}`);
+      console.log("Producto:", product.title);
+      console.log("Folder URL:", product.imageSource.folderUrl || "");
+      console.log("Folder ID:", product.imageSource.folderId || "");
+      console.log("Images found:", product.images);
+      console.log("Main image URL:", product.photo || "");
+      console.log("Error:", product.imageSource.error || "");
+      console.groupEnd();
+    }
+
+    function inferCategory(model) {
+      const text = normalize(model);
+      if (text.includes("iphone")) return "iPhone";
+      if (text.includes("ipad")) return "iPad";
+      if (text.includes("watch")) return "Apple Watch";
+      if (text.includes("mac")) return "Mac";
+      if (text.includes("airpod")) return "AirPods";
+      if (text.includes("airtag")) return "AirTag";
+      if (text.includes("vision pro")) return "Vision Pro";
+      if (text.includes("magic mouse")) return "Magic Mouse";
+      if (text.includes("magsafe")) return "MagSafe";
+      return "Equipos";
+    }
+
+    function isCatalogEligible(product) {
+      const text = normalize(`${product.title} ${product.model} ${product.category}`);
+      const allowed = [
+        "iphone", "ipad", "macbook", "imac", "mac mini", "mac studio", "apple watch",
+        "watch", "airpods", "airtag", "vision pro", "magic mouse", "magsafe",
+      ];
+      const excluded = [
+        "funda", "fundas", "vidrio", "glass", "templado", "hidrogel", "protector",
+        "cable", "cargador", "soporte", "parlante", "pendrive", "memoria",
+        "servicio", "logistica", "adelanto", "perfume", "cleaner", "strap",
+        "vaso", "taza", "llavero", "calco", "sticker", "reparacion",
+      ];
+
+      if (!allowed.some((word) => text.includes(word))) return false;
+      if (text.includes("funda airpods")) return false;
+      return !excluded.some((word) => text.includes(word));
+    }
+
+    function isUsed(product) {
+      const text = normalize(`${product.condition} ${product.battery} ${product.serial}`);
+      return Boolean(product.serial || text.includes("semi") || text.includes("usado") || text.includes("reacondicionado"));
+    }
+
+    function hasAvailability(product) {
+      return product.stock > 0 || product.stock24 > 0 || product.stockProvider > 0;
+    }
+
+    function hasDeferredAvailability(product) {
+      return product.stock24 > 0 || product.stockProvider > 0 || isBranchPreparedVariant(product);
+    }
+
+    function totalAvailability(product) {
+      return product.stock + product.stock24 + product.stockProvider;
+    }
+
+    function physicalSerial(product) {
+      const serial = String(product.serial || "").trim();
+      if (!serial) return "";
+      const normalized = normalize(serial);
+      if (["-", "0", "1", "sin serial", "s/n", "sn"].includes(normalized)) return "";
+      return normalized;
+    }
+
+    function batteryPriceTierFromTitle(title) {
+      const text = normalize(title);
+      if (!text.includes("stock iphone") || !text.includes("bateria")) return "";
+      if (text.includes("100")) return "battery_100";
+      if (text.includes("-99") || text.includes("menos") || text.includes("menor")) return "battery_under_99";
+      return "";
+    }
+
+    function batteryPriceModelFromTitle(title) {
+      const text = String(title || "").replace(/\s+/g, " ").trim();
+      const match = text.match(/STOCK\s+(IPHONE.+?)\s*-\s*BATERIA/i);
+      return match ? match[1].trim().toUpperCase() : "";
+    }
+
+    function batteryPriceKey(product) {
+      return [
+        normalize(product.batteryPriceModel || product.model),
+        normalize(product.capacity),
+        normalize(product.condition),
+      ].join("|");
+    }
+
+    function isBatteryReferenceOnly(product) {
+      return product.batteryPriceTier === "battery_100"
+        && !product.stock
+        && !physicalSerial(product)
+        && !String(product.color || "").trim();
+    }
+
+    function chooseBatteryReference(items) {
+      return items.find(isBatteryReferenceOnly) || items[0] || null;
+    }
+
+    function batteryActualLabel(product) {
+      const battery = String(product.battery || "").replace(/\s+/g, " ").trim();
+      if (!battery || normalize(battery) === "actual") return "Actual";
+      return /%|\d/.test(battery) ? `${battery} actual` : battery;
+    }
+
+    function attachBatteryPriceOptions(products) {
+      const references = new Map();
+      products
+        .filter((product) => product.batteryPriceTier === "battery_100")
+        .forEach((product) => {
+          const key = batteryPriceKey(product);
+          if (!references.has(key)) references.set(key, []);
+          references.get(key).push(product);
+        });
+
+      products.forEach((product) => {
+        product.batteryPricing = null;
+        if (product.batteryPriceTier !== "battery_under_99") return;
+        const reference = chooseBatteryReference(references.get(batteryPriceKey(product)) || []);
+        if (!reference) return;
+        product.batteryPricing = {
+          actual: {
+            label: batteryActualLabel(product),
+            priceList: product.priceList,
+            cash: product.cash,
+            transfer: product.transfer,
+          },
+          new100: {
+            label: "100% nueva",
+            battery: "100%",
+            priceList: reference.priceList,
+            cash: reference.cash,
+            transfer: reference.transfer,
+            referenceRow: reference.raw.__rowNumber,
+          },
+        };
+      });
+
+      return products.filter((product) => !isBatteryReferenceOnly(product));
+    }
+
+    function selectedBatteryOption(product) {
+      const selected = state.batterySelections[product.id] || "actual";
+      if (selected === "new100" && product.batteryPricing?.new100) return "new100";
+      return "actual";
+    }
+
+    function batteryDisplayProduct(product) {
+      const selected = selectedBatteryOption(product);
+      if (selected !== "new100" || !product.batteryPricing?.new100) return product;
+      const reference = product.batteryPricing.new100;
+      return {
+        ...product,
+        battery: reference.battery,
+        priceList: reference.priceList,
+        cash: reference.cash,
+        transfer: reference.transfer,
+      };
+    }
+
+    function batteryChoiceTemplate(product) {
+      if (!product.batteryPricing?.new100) return "";
+      const selected = selectedBatteryOption(product);
+      return `
+        <div class="battery-choice" aria-label="Configuracion comercial de bateria">
+          <button class="${selected === "actual" ? "active" : ""}" type="button" data-battery-product-id="${escapeAttr(product.id)}" data-battery-option="actual" aria-pressed="${selected === "actual"}">
+            ${escapeHtml(product.batteryPricing.actual.label)}
+          </button>
+          <button class="${selected === "new100" ? "active" : ""}" type="button" data-battery-product-id="${escapeAttr(product.id)}" data-battery-option="new100" aria-pressed="${selected === "new100"}">
+            ${escapeHtml(product.batteryPricing.new100.label)}
+          </button>
+        </div>
+      `;
+    }
+
+    function hasLocalStockBySerial(serial) {
+      if (!serial) return false;
+      return state.products.some((product) => physicalSerial(product) === serial && product.stock > 0);
+    }
+
+    function isBranchPreparedVariant(product) {
+      const serial = physicalSerial(product);
+      return Boolean(serial && product.stock <= 0 && hasLocalStockBySerial(serial));
+    }
+
+    function hasBranchAvailability(product) {
+      return product.stock > 0 || isBranchPreparedVariant(product);
+    }
+
+    function sourceUrl() {
+      const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?headers=0&tqx=out:json`;
+      return `${base}&sheet=${encodeURIComponent(SHEET_NAME)}`;
+    }
+
+    function loadGviz(url) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error("Sin respuesta de Google Sheets"));
+        }, 12000);
+
+        function cleanup() {
+          clearTimeout(timeout);
+          delete window.google;
+          script.remove();
+        }
+
+        window.google = {
+          visualization: {
+            Query: {
+              setResponse(response) {
+                cleanup();
+                if (response.status === "error") {
+                  reject(new Error(response.errors?.[0]?.detailed_message || "Google rechazo la lectura"));
+                  return;
+                }
+                resolve(response.table);
+              },
+            },
+          },
+        };
+
+        script.onerror = () => {
+          cleanup();
+          reject(new Error("No se pudo conectar"));
+        };
+        script.src = `${url}&cache=${Date.now()}`;
+        document.head.appendChild(script);
+      });
+    }
+
+    async function loadAllSources() {
+      showStatus(`Cargando ${SHEET_NAME}...`);
+      $("updated").textContent = "Actualizando stock";
+
+      const table = await loadGviz(sourceUrl());
+      const rows = tableToRows(table);
+      if (!rows.length) throw new Error("No se encontraron filas reales de producto.");
+      hideStatus();
+      return rows;
+    }
+
+    function cellText(row, index) {
+      const cell = row?.c?.[index];
+      return cell ? String(cell.f || cell.v || "").trim() : "";
+    }
+
+    function headerIndex(table) {
+      return table.rows.findIndex((row) => {
+        const values = (row.c || []).map((cell) => normalize(cellText({ c: [cell] }, 0)));
+        return values.some((value) => value.includes("serial"))
+          && values.some((value) => value.includes("capacidad"));
+      });
+    }
+
+    function findHeaderColumn(headers, patterns) {
+      return headers.findIndex((header) => patterns.some((pattern) => pattern.test(normalize(header))));
+    }
+
+    function sheetColumnMap(table) {
+      const detectedHeaderIndex = headerIndex(table);
+      const headerRow = detectedHeaderIndex >= 0 ? table.rows[detectedHeaderIndex] : table.rows[1];
+      const headers = Array.from({ length: Math.max(24, headerRow?.c?.length || 0) }, (_, index) => cellText(headerRow, index));
+      const serialIndex = findHeaderColumn(headers, [/^serial$/, /serial\/imei/, /imei/]);
+      const notesIndex = findHeaderColumn(headers, [/observ/]);
+      const providerIndex = findHeaderColumn(headers, [/stock.*proveedor/, /proveedor/]);
+
+      const map = {
+        link_info: findHeaderColumn(headers, [/link.*info/]),
+        photo_video: findHeaderColumn(headers, [/foto/, /video/]),
+        model: 2,
+        promotion: findHeaderColumn(headers, [/promo/, /oferta/]),
+        capacity: findHeaderColumn(headers, [/capacidad/]),
+        color: findHeaderColumn(headers, [/color/]),
+        condition: findHeaderColumn(headers, [/estado/, /condicion/]),
+        battery: findHeaderColumn(headers, [/bateria/]),
+        serial: serialIndex,
+        notes: notesIndex >= 0 ? notesIndex : serialIndex + 1,
+        list_price: serialIndex + 2,
+        cash_price: serialIndex + 3,
+        transfer_price: serialIndex + 4,
+        installment_6: serialIndex + 5,
+        installment_3: serialIndex + 6,
+        __headerRowIndex: detectedHeaderIndex,
+      };
+
+      if (providerIndex >= 0) {
+        map.stock_provider = providerIndex;
+        map.stock_24hs = providerIndex - 1;
+        map.stock = providerIndex - 2;
+      } else {
+        map.stock_provider = serialIndex - 1;
+        map.stock_24hs = serialIndex - 2;
+        map.stock = serialIndex - 3;
+      }
+
+      return map;
+    }
+
+    function tableToRows(table) {
+      const columnMap = sheetColumnMap(table);
+      let currentBatteryPriceBlock = "";
+      let currentBatteryPriceTier = "";
+      let currentBatteryPriceModel = "";
+      return table.rows
+        .map((row, rowIndex) => {
+          const rowValues = Array.from({ length: Math.max(24, row?.c?.length || 0) }, (_, index) => cellText(row, index));
+          const batteryHeading = rowValues.find((value) => batteryPriceTierFromTitle(value));
+          if (batteryHeading) {
+            currentBatteryPriceBlock = batteryHeading;
+            currentBatteryPriceTier = batteryPriceTierFromTitle(batteryHeading);
+            currentBatteryPriceModel = batteryPriceModelFromTitle(batteryHeading);
+          }
+          const item = { __rowNumber: rowIndex + 1 };
+          FIXED_COLUMNS.forEach((field) => {
+            item[field] = cellText(row, columnMap[field]);
+          });
+          item.__columnMap = columnMap;
+          item.__batteryPriceBlock = currentBatteryPriceBlock;
+          item.__batteryPriceTier = currentBatteryPriceTier;
+          item.__batteryPriceModel = currentBatteryPriceModel;
+          return item;
+        })
+        .filter(isRealProductRow);
+    }
+
+    function isRealProductRow(row) {
+      const model = normalize(row.model);
+      const wholeRow = normalize(FIXED_COLUMNS.map((field) => row[field]).join(" "));
+      if (!model) return false;
+      if (!wholeRow) return false;
+      if (normalize(row.link_info).includes("link info")) return false;
+      if (normalize(row.promotion).includes("promo / oferta")) return false;
+      if (model.startsWith("stock iphone")) return false;
+      if (["iphone", "iphones", "equipo", "equipos", "macbook", "macbooks", "fundas"].includes(model)) return false;
+      if (model.includes("cotizador") || model.includes("plan caje") || model.includes("plan canje")) return false;
+
+      const hasCommercialValue = Boolean(
+        row.capacity || row.color || row.condition || row.battery || row.serial ||
+        row.stock || row.stock_24hs || row.stock_provider || row.promotion || row.list_price || row.cash_price ||
+        row.transfer_price || row.installment_6 || row.installment_3
+      );
+      return hasCommercialValue;
+    }
+
+    function setOptions(selectId, values, baseLabel) {
+      const select = $(selectId);
+      const previous = select.value;
+      select.innerHTML = `<option value="">${baseLabel}</option>`;
+      values.filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), "es")).forEach((value) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        select.appendChild(option);
+      });
+      select.value = values.includes(previous) ? previous : "";
+    }
+
+    function refreshFilters() {
+      setOptions("sourceFilter", unique(state.products.map((p) => p.sourceLabel)), "Stock equipos y ofertas");
+      setOptions("categoryFilter", unique(state.products.map((p) => p.category)), "Todas las categorías");
+      setOptions("modelFilter", unique(state.products.map((p) => p.model)), "Todos los modelos");
+
+      if (state.internalMode) {
+        setOptions("conditionFilter", unique(state.products.map((p) => p.condition)), "Todos los estados");
+        setOptions("batteryFilter", unique(state.products.map((p) => p.battery)), "Todas las baterías");
+        return;
+      }
+
+      setCommercialOptions("conditionFilter", [
+        ["new", "Nuevos"],
+        ["used", "Seminuevos"],
+      ], "Todos los estados");
+      setCommercialOptions("batteryFilter", [
+        ["new", "Nuevo"],
+        ["100", "100%"],
+        ["95_99", "95% a 99%"],
+        ["90_94", "90% a 94%"],
+        ["85_89", "85% a 89%"],
+        ["under_85", "Menos de 85%"],
+      ], "Todas las baterías");
+    }
+
+    function unique(values) {
+      return [...new Set(values.map((value) => String(value || "").trim()).filter(Boolean))];
+    }
+
+    function setCommercialOptions(selectId, options, baseLabel) {
+      const select = $(selectId);
+      const previous = select.value;
+      select.innerHTML = `<option value="">${baseLabel}</option>`;
+      options.forEach(([value, label]) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = label;
+        select.appendChild(option);
+      });
+      select.value = options.some(([value]) => value === previous) ? previous : "";
+    }
+
+    function matchesClientCondition(product, selected) {
+      if (!selected) return true;
+      const condition = normalize(product.condition);
+      if (selected === "new") return condition === "new" || condition.includes("nuevo");
+      if (selected === "used") return condition.includes("semi") || condition.includes("usado") || condition.includes("reacondicionado");
+      return true;
+    }
+
+    function batteryBucket(product) {
+      const value = normalize(product.battery);
+      if (!value) return "";
+      if (value === "new" || value.includes("nuevo")) return "new";
+      if (/^100\s*%?$/.test(value)) return "100";
+      if (value === "-90%" || value === "-90") return "90_94";
+
+      const match = value.match(/(\d+(?:[.,]\d+)?)/);
+      if (!match) return "";
+      const percent = Number(match[1].replace(",", "."));
+      if (!Number.isFinite(percent)) return "";
+      if (percent === 100) return "100";
+      if (percent >= 95 && percent <= 99) return "95_99";
+      if (percent >= 90 && percent <= 94) return "90_94";
+      if (percent >= 85 && percent <= 89) return "85_89";
+      if (percent < 85) return "under_85";
+      return "";
+    }
+
+    function matchesClientBattery(product, selected) {
+      if (!selected) return true;
+      return batteryBucket(product) === selected;
+    }
+
+    function isProviderSeminuevoVisualDuplicateCandidate(product) {
+      return normalize(product.condition).includes("seminuevo")
+        && product.stockProvider > 0
+        && product.stock <= 0
+        && product.stock24 <= 0
+        && !physicalSerial(product);
+    }
+
+    function providerVisualGroupKey(product) {
+      const batteryConfig = product.batteryPriceTier || normalize(product.battery);
+      const commercial100 = product.batteryPricing?.new100 || {};
+      return [
+        normalize(product.model),
+        normalize(product.capacity),
+        normalize(product.condition),
+        batteryConfig,
+        "provider",
+        normalize(product.priceList),
+        normalize(product.cash),
+        normalize(product.transfer),
+        normalize(commercial100.priceList),
+        normalize(commercial100.cash),
+        normalize(commercial100.transfer),
+      ].join("|");
+    }
+
+    function representativeScore(product) {
+      return [
+        parseNumber(product.cash) > 0 ? 100 : 0,
+        product.photo ? 30 : 0,
+        product.images?.length ? 20 : 0,
+        product.priceList ? 10 : 0,
+        product.transfer ? 10 : 0,
+        product.color ? 4 : 0,
+        product.promotion ? 2 : 0,
+      ].reduce((sum, value) => sum + value, 0);
+    }
+
+    function visualProductsForRender(products) {
+      if (state.internalMode) return products;
+
+      const grouped = new Map();
+      const output = [];
+      products.forEach((product) => {
+        if (!isProviderSeminuevoVisualDuplicateCandidate(product)) {
+          output.push(product);
+          return;
+        }
+
+        const key = providerVisualGroupKey(product);
+        const existing = grouped.get(key);
+        if (!existing) {
+          grouped.set(key, { product, outputIndex: output.length, count: 1 });
+          product.visualGroupCount = 1;
+          output.push(product);
+          return;
+        }
+
+        existing.count += 1;
+        if (representativeScore(product) > representativeScore(existing.product)) {
+          product.visualGroupCount = existing.count;
+          grouped.set(key, { product, outputIndex: existing.outputIndex, count: existing.count });
+          output[existing.outputIndex] = product;
+        } else {
+          existing.product.visualGroupCount = existing.count;
+        }
+      });
+
+      grouped.forEach((entry) => {
+        entry.product.visualGroupCount = entry.count;
+      });
+      return output;
+    }
+
+    function applyFilters() {
+      const search = normalize($("search").value);
+      const source = state.internalMode ? $("sourceFilter").value : "";
+      const category = $("categoryFilter").value;
+      const model = state.internalMode ? $("modelFilter").value : "";
+      const condition = $("conditionFilter").value;
+      const battery = $("batteryFilter").value;
+      const stockMode = state.internalMode ? $("stockFilter").value : "";
+
+      state.filtered = state.products.filter((product) => {
+        const haystack = normalize([
+          product.title, product.category, product.condition, product.battery,
+          product.serial, product.branch, product.priceList, product.cash, product.sourceLabel,
+        ].join(" "));
+
+        if (search && !haystack.includes(search)) return false;
+        if (source && product.sourceLabel !== source) return false;
+        if (category && product.category !== category) return false;
+        if (model && product.model !== model) return false;
+        if (!state.internalMode && !hasAvailability(product)) return false;
+        if (state.internalMode && condition && product.condition !== condition) return false;
+        if (!state.internalMode && !matchesClientCondition(product, condition)) return false;
+        if (state.internalMode && battery && product.battery !== battery) return false;
+        if (!state.internalMode && !matchesClientBattery(product, battery)) return false;
+        if (stockMode === "branch" && !hasBranchAvailability(product)) return false;
+        if (stockMode === "available" && !hasAvailability(product)) return false;
+        if (stockMode === "low" && !(totalAvailability(product) > 0 && totalAvailability(product) <= 2)) return false;
+        if (stockMode === "out" && hasAvailability(product)) return false;
+        return true;
+      });
+
+      render();
+    }
+
+    function render() {
+      const visibleProducts = visualProductsForRender(state.filtered);
+      catalog.classList.toggle("hidden", state.viewMode !== "catalog");
+      grid.classList.toggle("hidden", state.viewMode !== "grid");
+      grid.classList.toggle("list", state.listMode);
+      grid.innerHTML = visibleProducts.map(cardTemplate).join("");
+      catalog.innerHTML = catalogTemplate(visibleProducts);
+      $("empty").classList.toggle("show", !visibleProducts.length);
+      renderMetrics(visibleProducts);
+    }
+
+    function renderMetrics(visible = state.filtered) {
+      const metricProducts = $("metricProducts");
+      const metricUnits = $("metricUnits");
+      const metricModels = $("metricModels");
+      const metricUsed = $("metricUsed");
+      if (!metricProducts || !metricUnits || !metricModels || !metricUsed) return;
+      metricProducts.textContent = visible.length;
+      metricUnits.textContent = visible.reduce((sum, item) => sum + item.stock, 0);
+      metricModels.textContent = unique(visible.map((item) => item.model)).length;
+      metricUsed.textContent = visible.filter(isUsed).length;
+    }
+
+    function catalogTemplate(products) {
+      if (!products.length) return "";
+      const sections = [
+        ["iPhone nuevos", products.filter((item) => item.category === "iPhone" && !isUsed(item))],
+        ["iPhone seminuevos", products.filter((item) => item.category === "iPhone" && isUsed(item))],
+        ["Mac", products.filter((item) => item.category === "Mac")],
+        ["iPad, Watch y AirPods", products.filter((item) => ["iPad", "Apple Watch", "AirPods"].includes(item.category))],
+        ["Otros Apple", products.filter((item) => ["AirTag", "Vision Pro", "Magic Mouse", "MagSafe"].includes(item.category))],
+      ].filter(([, items]) => items.length);
+
+      return sections.map(([title, items]) => {
+        const groups = groupCatalogItems(items).slice(0, 10);
+        return `
+          <section class="catalog-section">
+            <div class="section-title">
+              <h2>${escapeHtml(title)}</h2>
+              <span>${items.length} variantes actualizadas desde Sheet</span>
+            </div>
+            <div class="catalog-grid">
+              ${groups.map(featureCardTemplate).join("")}
+            </div>
+          </section>
+        `;
+      }).join("");
+    }
+
+    function groupCatalogItems(items) {
+      const map = new Map();
+      items.forEach((item) => {
+        const key = normalize(baseModelName(item.model));
+        if (!map.has(key)) {
+          map.set(key, {
+            title: baseModelName(item.model),
+            category: item.category,
+            items: [],
+            colors: new Set(),
+            totalStock: 0,
+            hasDeferred: false,
+          });
+        }
+        const group = map.get(key);
+        group.items.push(item);
+        group.totalStock += item.stock;
+        group.hasDeferred = group.hasDeferred || hasDeferredAvailability(item);
+        if (item.color) group.colors.add(item.color);
+      });
+
+      return [...map.values()].sort((a, b) => {
+        if (b.totalStock !== a.totalStock) return b.totalStock - a.totalStock;
+        return a.title.localeCompare(b.title, "es");
+      });
+    }
+
+    function baseModelName(model) {
+      return String(model || "Producto iClub")
+        .replace(/\b(64|128|256|512)\s?GB\b/ig, "")
+        .replace(/\b1\s?TB\b/ig, "")
+        .replace(/\b2\s?TB\b/ig, "")
+        .replace(/\bBATERIA.*$/ig, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function featureCardTemplate(group, index) {
+      const variants = compactVariants(group.items).slice(0, 5);
+      const colors = [...group.colors].slice(0, 7);
+      const isLight = index % 3 === 1;
+      const compact = group.items.length <= 2 ? " compact" : "";
+      const availabilityLabel = group.totalStock > 0 ? "Disponible ahora" : (group.hasDeferred ? "Disponible con reserva" : "Consultar disponibilidad");
+      return `
+        <article class="feature-card ${isLight ? "light" : ""}${compact}">
+          <div class="feature-copy">
+            <small>${escapeHtml(group.category)} · ${escapeHtml(availabilityLabel)}</small>
+            <h3>${escapeHtml(group.title)}</h3>
+            <div class="feature-meta">
+              ${variants.map((variant) => `
+                <div class="variant-row">
+                  <span>${escapeHtml(variant.capacity || "Equipo")}</span>
+                  <strong>${escapeHtml(formatMoney(variant.cash) || formatMoney(variant.priceList) || "-")}</strong>
+                  <span>${escapeHtml(variant.stock > 0 ? "Disponible ahora" : (hasDeferredAvailability(variant) ? "Con reserva" : "Consultar"))}</span>
+                </div>
+              `).join("")}
+            </div>
+            <div class="color-dots">
+              ${colors.map((color) => `<span class="dot" title="${escapeAttr(color)}" style="--dot-color:${colorToCss(color)}"></span>`).join("")}
+            </div>
+          </div>
+          <div class="feature-visual">
+            ${featureVisual(group)}
+          </div>
+        </article>
+      `;
+    }
+
+    function compactVariants(items) {
+      const map = new Map();
+      items.forEach((item) => {
+        const key = `${item.capacity || "Equipo"}-${formatMoney(item.cash) || formatMoney(item.priceList)}`;
+        if (!map.has(key)) {
+          map.set(key, { ...item });
+        } else {
+          map.get(key).stock += item.stock;
+          map.get(key).stock24 += item.stock24;
+        }
+      });
+      return [...map.values()].sort((a, b) => parseNumber(a.capacity) - parseNumber(b.capacity));
+    }
+
+    function featureVisual(group) {
+      const imageItem = group.items.find((item) => item.photo);
+      if (imageItem?.photo) {
+        return `<img src="${escapeAttr(imageItem.photo)}" alt="${escapeAttr(group.title)}" loading="lazy" onerror="this.replaceWith(window.phoneClusterNode())">`;
+      }
+      return `
+        <div class="phone-cluster">
+          <div class="phone-unit"></div>
+          <div class="phone-unit"></div>
+          <div class="phone-unit"></div>
+        </div>
+      `;
+    }
+
+    window.phoneClusterNode = function() {
+      const wrap = document.createElement("div");
+      wrap.className = "phone-cluster";
+      wrap.innerHTML = '<div class="phone-unit"></div><div class="phone-unit"></div><div class="phone-unit"></div>';
+      return wrap;
+    };
+
+    function colorToCss(color) {
+      const text = normalize(color);
+      if (text.includes("black") || text.includes("negro") || text.includes("dark")) return "#141820";
+      if (text.includes("white") || text.includes("blanco") || text.includes("starlight")) return "#f6f2e8";
+      if (text.includes("silver") || text.includes("plata") || text.includes("natural")) return "#cfd4dc";
+      if (text.includes("orange") || text.includes("naranja")) return "#f47c34";
+      if (text.includes("blue") || text.includes("azul") || text.includes("ultramarine")) return "#5d8ee8";
+      if (text.includes("green") || text.includes("sage") || text.includes("teal")) return "#9fbca4";
+      if (text.includes("pink") || text.includes("rosa")) return "#e9a3c3";
+      if (text.includes("purple") || text.includes("lavander")) return "#c8b5ee";
+      if (text.includes("gold")) return "#e4d1a4";
+      if (text.includes("red")) return "#d71920";
+      return "#cbd5e1";
+    }
+
+    function displayCase(value) {
+      return String(value || "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase()
+        .replace(/\b[\w/.-]+\b/g, (word) => {
+          if (/^\d+(gb|tb)$/i.test(word)) return word.toUpperCase();
+          if (/^(usd|aaa)$/i.test(word)) return word.toUpperCase();
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        })
+        .replace(/\bIphone\b/g, "iPhone")
+        .replace(/\bIpad\b/g, "iPad")
+        .replace(/\bMacbook\b/g, "MacBook")
+        .replace(/\bAirpods\b/g, "AirPods");
+    }
+
+    function removeKnownDetail(text, detail) {
+      const source = String(text || "");
+      const value = String(detail || "").trim();
+      if (!value) return source;
+      const escaped = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s*");
+      return source.replace(new RegExp(`\\b${escaped}\\b`, "ig"), " ");
+    }
+
+    function presentationModel(product) {
+      let name = String(product.model || product.title || "Producto iClub");
+      name = removeKnownDetail(name, product.capacity);
+      name = removeKnownDetail(name, product.color);
+      name = name.replace(/\b\d+\s*(gb|tb)\b/ig, " ");
+      name = name.replace(/\s+/g, " ").trim();
+      return displayCase(name || product.model || product.title || "Producto iClub");
+    }
+
+    function presentationSpecs(product) {
+      const parts = [
+        product.capacity,
+        product.color,
+        product.condition,
+        product.battery ? `Bateria ${product.battery}` : "",
+      ];
+      const seen = new Set();
+      return parts
+        .map((part) => displayCase(part))
+        .filter((part) => {
+          const key = normalize(part);
+          if (!key || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        })
+        .join(" · ");
+    }
+
+    function availabilityView(product) {
+      if (state.internalMode) {
+        if ($("stockFilter")?.value === "branch" && isBranchPreparedVariant(product)) {
+          return { label: "Preparación 24 hs", className: "soon" };
+        }
+        if (product.stock > 0) return { label: "Disponible ahora", className: "now" };
+        if (product.stock24 > 0) return { label: "Entrega en 24 hs", className: "soon" };
+        if (product.stockProvider > 0) return { label: "Entrega en hasta 48 hs", className: "provider" };
+        return { label: "Consultar disponibilidad", className: "consult" };
+      }
+      if ($("stockFilter")?.value === "branch" && isBranchPreparedVariant(product)) {
+        return { label: "Disponible con reserva", className: "soon" };
+      }
+      if (product.stock > 0) return { label: "Disponible ahora", className: "now" };
+      if (product.stock24 > 0) return { label: "Disponible con reserva", className: "soon" };
+      if (product.stockProvider > 0) return { label: "Disponible con reserva", className: "provider" };
+      return { label: "Consultar disponibilidad", className: "consult" };
+    }
+
+    function cleanPromotionText(value) {
+      return String(value || "")
+        .replace(/\b(stock\s*)?(24\s*h(?:ora)?s?|48\s*h(?:ora)?s?)\b/ig, "")
+        .replace(/\b(entrega\s*(en|hasta)?|stock\s*proveedor|proveedor)\b/ig, "")
+        .replace(/[·|,-]\s*$/g, "")
+        .replace(/\s*[·|,-]\s*/g, " · ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function promotionView(rawValue) {
+      const raw = cleanPromotionText(rawValue);
+      if (!raw) return null;
+
+      if (/^usd\s*[\d.,]+$/i.test(raw)) {
+        return { label: "Precio especial", value: raw.toUpperCase() };
+      }
+
+      const accessory = raw.match(/^usd\s*([\d.,]+)\s+(.+)$/i);
+      if (accessory && /airpods|cargador|case|funda|vidrio|watch|pencil/i.test(accessory[2])) {
+        if (/airpods\s+pro\s+aaa/i.test(accessory[2])) return null;
+        return {
+          label: "Promo especial",
+          value: `${displayCase(accessory[2])} por USD ${accessory[1]}`,
+        };
+      }
+
+      return { label: "Promo especial", value: displayCase(raw) };
+    }
+
+    function primaryCatalogPrice(product) {
+      return formatMoney(product.cash) || "";
+    }
+
+    function primaryCatalogPriceValue(product) {
+      return parseNumber(product.cash);
+    }
+
+    window.iClubCatalog = {
+      getProducts() {
+        return state.products;
+      },
+      getAvailableTradeInProducts() {
+        return state.products.filter((product) =>
+          product.category === "iPhone" && hasAvailability(product) && primaryCatalogPriceValue(product) > 0
+        );
+      },
+      getProductById(productId) {
+        return state.products.find((product) => product.id === productId) || null;
+      },
+      hasAvailability,
+      isUsed,
+      presentationModel,
+      presentationSpecs,
+      promotionView,
+      primaryPrice: primaryCatalogPrice,
+      primaryPriceValue: primaryCatalogPriceValue,
+      shortModel,
+    };
+
+    function cardTemplate(product) {
+      const displayProduct = batteryDisplayProduct(product);
+      const modelName = presentationModel(displayProduct);
+      const specs = presentationSpecs(displayProduct);
+      const availability = availabilityView(product);
+      const promotion = promotionView(product.promotion);
+      const photo = product.photo && /^https?:\/\//i.test(product.photo)
+        ? `<img src="${escapeAttr(product.photo)}" alt="${escapeAttr(product.title)}" loading="lazy" onerror="this.replaceWith(window.placeholderNode('${escapeAttr(modelName)}'))">`
+        : `<div class="placeholder">${escapeHtml(shortModel(modelName))}</div>`;
+      const galleryButton = product.images.length > 1
+        ? `<button class="gallery-trigger" type="button" data-gallery-id="${escapeAttr(product.id)}">${product.images.length} fotos</button>`
+        : "";
+
+      return `
+        <article class="card">
+          <div class="photo">
+            <span class="source-pill">${escapeHtml(product.sourceLabel)}</span>
+            ${photo}
+            ${galleryButton}
+          </div>
+          <div class="content">
+            <div class="headline">
+              <h2>${escapeHtml(modelName)}</h2>
+              ${specs ? `<div class="product-specs">${escapeHtml(specs)}</div>` : ""}
+            </div>
+            ${batteryChoiceTemplate(product)}
+            <div class="primary-offer">
+              <strong>${escapeHtml(formatMoney(displayProduct.cash) || formatMoney(displayProduct.priceList) || "-")}</strong>
+              <span>Promo efectivo</span>
+            </div>
+            ${promotion ? `<div class="promo-callout"><span>${escapeHtml(promotion.label)}</span><strong>${escapeHtml(promotion.value)}</strong></div>` : ""}
+            <div class="availability ${escapeAttr(availability.className)}">
+              ${escapeHtml(availability.label)}
+            </div>
+            <div class="payment-list">
+              ${priceTemplate("Lista", displayProduct.priceList)}
+              ${priceTemplate("Transferencia", displayProduct.transfer)}
+              ${priceTemplate("6 cuotas", product.six)}
+              ${priceTemplate("3 cuotas", product.three)}
+            </div>
+            <div class="internal">
+              ${product.serial ? `<div><strong>Serial/IMEI:</strong> ${escapeHtml(product.serial)}</div>` : ""}
+              ${product.notes ? `<div><strong>Notas:</strong> ${escapeHtml(product.notes)}</div>` : ""}
+              ${product.appleLink ? `<div><a href="${escapeAttr(product.appleLink)}" target="_blank" rel="noreferrer">Ver ficha Apple</a></div>` : ""}
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function priceTemplate(label, value) {
+      return `
+        <div class="payment-row">
+          <span>${escapeHtml(label)}</span>
+          <strong>${escapeHtml(formatMoney(value) || "-")}</strong>
+        </div>
+      `;
+    }
+
+    function shortModel(model) {
+      const clean = String(model || "iClub").replace(/\s+/g, " ").trim();
+      return clean.split(" ").slice(0, 4).join(" ");
+    }
+
+    window.placeholderNode = function(model) {
+      const div = document.createElement("div");
+      div.className = "placeholder";
+      div.textContent = shortModel(model);
+      return div;
+    };
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;",
+      }[char]));
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value).replace(/`/g, "&#096;");
+    }
+
+    function showStatus(message) {
+      statusBox.innerHTML = message;
+      statusBox.classList.add("show");
+    }
+
+    function hideStatus() {
+      statusBox.classList.remove("show");
+    }
+
+    function openGallery(productId) {
+      const product = state.products.find((item) => item.id === productId);
+      if (!product || !product.images.length) return;
+      state.gallery = {
+        images: product.images,
+        title: product.title,
+        index: 0,
+      };
+      $("galleryTitle").textContent = presentationModel(product);
+      $("galleryModal").classList.add("show");
+      $("galleryModal").setAttribute("aria-hidden", "false");
+      renderGalleryImage();
+    }
+
+    function closeGallery() {
+      $("galleryModal").classList.remove("show");
+      $("galleryModal").setAttribute("aria-hidden", "true");
+      $("galleryImage").removeAttribute("src");
+    }
+
+    function openContactModal() {
+      $("contactModal").classList.add("show");
+      $("contactModal").setAttribute("aria-hidden", "false");
+    }
+
+    function closeContactModal() {
+      $("contactModal").classList.remove("show");
+      $("contactModal").setAttribute("aria-hidden", "true");
+    }
+
+    function initContactLinks() {
+      const whatsappUrl = `https://wa.me/${ICLUB_CONTACT.whatsapp}`;
+      $("whatsappContact").href = whatsappUrl;
+
+      const linktreeUrl = String(ICLUB_CONTACT.linktree || "").trim();
+      const linktreeQr = String(ICLUB_LINKTREE_QR || "").trim();
+      const linktreeReady = /^https?:\/\//i.test(linktreeUrl);
+      const qrReady = Boolean(linktreeQr);
+      $("linktreeStatus").textContent = linktreeReady ? "Activo" : "Sin URL";
+      $("linktreeNote").textContent = linktreeReady
+        ? "Escanea el QR o toca para abrir el Linktree oficial."
+        : "Todavia no hay una URL de Linktree configurada. Complete ICLUB_CONTACT.linktree para activar este acceso.";
+      $("linktreeQr").src = qrReady ? linktreeQr : "";
+      $("linktreeQr").hidden = !qrReady;
+      $("linktreeQrPlaceholder").hidden = qrReady;
+
+      ["linktreeQrLink", "linktreeContact"].forEach((id) => {
+        const element = $(id);
+        element.href = linktreeReady ? linktreeUrl : "#";
+        element.setAttribute("aria-disabled", linktreeReady ? "false" : "true");
+      });
+    }
+
+    function moveGallery(step) {
+      const total = state.gallery.images.length;
+      if (!total) return;
+      state.gallery.index = (state.gallery.index + step + total) % total;
+      renderGalleryImage();
+    }
+
+    function renderGalleryImage() {
+      const image = state.gallery.images[state.gallery.index];
+      $("galleryImage").src = image;
+      $("galleryImage").alt = state.gallery.title;
+      $("galleryCounter").textContent = `${state.gallery.index + 1} de ${state.gallery.images.length}`;
+      $("galleryPrev").disabled = state.gallery.images.length <= 1;
+      $("galleryNext").disabled = state.gallery.images.length <= 1;
+    }
+
+    async function init() {
+      const runId = ++imageResolveRun;
+      try {
+        state.rows = await loadAllSources();
+        const products = state.rows.map(rowToProduct).filter((p) => p.title.trim()).filter(isCatalogEligible);
+        state.products = attachBatteryPriceOptions(products);
+        refreshFilters();
+        applyFilters();
+        $("updated").textContent = `Actualizado ${new Date().toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" })}`;
+        resolveImagesForProducts(state.products, {
+          onBatch: () => {
+            if (runId !== imageResolveRun) return;
+            applyFilters();
+          },
+        }).then(() => {
+          if (runId !== imageResolveRun) return;
+          applyFilters();
+        }).catch((error) => {
+          console.warn("No se pudieron resolver todas las imagenes.", error);
+        });
+      } catch (error) {
+        state.rows = [];
+        state.products = [];
+        state.filtered = [];
+        refreshFilters();
+        render();
+        $("updated").textContent = "Sheet pendiente de acceso";
+        showStatus(`
+          <strong>No pude leer la pestaña ${SHEET_NAME} todavia.</strong>
+          El catalogo esta configurado para tomar solo esa pestaña. Revisa que el Sheet siga compartido por enlace y toca actualizar.
+        `);
+      }
+    }
+
+    ["search", "sourceFilter", "categoryFilter", "modelFilter", "conditionFilter", "batteryFilter", "stockFilter"].forEach((id) => {
+      $(id).addEventListener("input", applyFilters);
+      $(id).addEventListener("change", applyFilters);
+    });
+
+    $("internalToggle").addEventListener("click", () => {
+      state.internalMode = !state.internalMode;
+      document.body.classList.toggle("internal-mode", state.internalMode);
+      $("internalToggle").classList.toggle("active", state.internalMode);
+      refreshFilters();
+      applyFilters();
+    });
+
+    $("layoutToggle").addEventListener("click", () => {
+      state.listMode = !state.listMode;
+      render();
+    });
+
+    $("catalogMode").addEventListener("click", () => {
+      state.viewMode = "catalog";
+      $("catalogMode").classList.add("active");
+      $("gridMode").classList.remove("active");
+      render();
+    });
+
+    $("gridMode").addEventListener("click", () => {
+      state.viewMode = "grid";
+      $("gridMode").classList.add("active");
+      $("catalogMode").classList.remove("active");
+      render();
+    });
+
+    $("reload").addEventListener("click", init);
+    initContactLinks();
+    $("contactToggle").addEventListener("click", openContactModal);
+    $("contactClose").addEventListener("click", closeContactModal);
+    $("contactModal").addEventListener("click", (event) => {
+      if (event.target === $("contactModal")) closeContactModal();
+    });
+    ["linktreeQrLink", "linktreeContact"].forEach((id) => {
+      $(id).addEventListener("click", (event) => {
+        if (!/^https?:\/\//i.test(String(ICLUB_CONTACT.linktree || ""))) {
+          event.preventDefault();
+        }
+      });
+    });
+
+    document.addEventListener("click", (event) => {
+      const batteryButton = event.target.closest("[data-battery-option]");
+      if (batteryButton) {
+        event.preventDefault();
+        event.stopPropagation();
+        state.batterySelections[batteryButton.dataset.batteryProductId] = batteryButton.dataset.batteryOption;
+        render();
+        return;
+      }
+
+      const trigger = event.target.closest("[data-gallery-id]");
+      if (trigger) {
+        event.preventDefault();
+        event.stopPropagation();
+        openGallery(trigger.dataset.galleryId);
+      }
+    });
+
+    $("galleryClose").addEventListener("click", closeGallery);
+    $("galleryModal").addEventListener("click", (event) => {
+      if (event.target === $("galleryModal")) closeGallery();
+    });
+    $("galleryPrev").addEventListener("click", () => moveGallery(-1));
+    $("galleryNext").addEventListener("click", () => moveGallery(1));
+    document.addEventListener("keydown", (event) => {
+      if (!$("galleryModal").classList.contains("show")) return;
+      if (event.key === "Escape") closeGallery();
+      if (event.key === "ArrowLeft") moveGallery(-1);
+      if (event.key === "ArrowRight") moveGallery(1);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && $("contactModal").classList.contains("show")) closeContactModal();
+    });
+
+    init();
+  </script>
+  <script type="module" src="plan-canje-ui.js"></script>
+</body>
+</html>
