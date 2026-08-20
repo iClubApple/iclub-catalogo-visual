@@ -178,6 +178,40 @@
       background: #f8f9fb;
     }
 
+    .trade-entry-icon .trade-entry-apple-icon {
+      fill: currentColor;
+      stroke: none;
+    }
+
+    .floating-whatsapp {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 18;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #25d366;
+      color: white;
+      box-shadow: 0 14px 34px rgba(17, 24, 39, .18);
+      text-decoration: none;
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+
+    .floating-whatsapp:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 42px rgba(17, 24, 39, .22);
+    }
+
+    .floating-whatsapp svg {
+      width: 27px;
+      height: 27px;
+      fill: currentColor;
+    }
+
     .promo-strip {
       border-top: 1px solid rgba(230, 232, 238, .65);
       border-bottom: 1px solid rgba(230, 232, 238, .65);
@@ -797,7 +831,8 @@
       text-align: center;
     }
 
-    .gallery-modal {
+    .gallery-modal,
+    .reserve-modal {
       position: fixed;
       inset: 0;
       z-index: 20;
@@ -807,11 +842,18 @@
       background: rgba(17, 24, 39, .64);
     }
 
-    .gallery-modal.show {
+    .reserve-modal {
+      z-index: 28;
+      backdrop-filter: blur(8px);
+    }
+
+    .gallery-modal.show,
+    .reserve-modal.show {
       display: grid;
     }
 
-    .gallery-panel {
+    .gallery-panel,
+    .reserve-panel {
       width: min(860px, 100%);
       max-height: min(760px, 92vh);
       border-radius: 8px;
@@ -822,7 +864,16 @@
       grid-template-rows: auto minmax(0, 1fr) auto;
     }
 
-    .gallery-head {
+    .reserve-panel {
+      width: min(460px, 100%);
+      max-height: min(760px, 92vh);
+      overflow: auto;
+      display: grid;
+      grid-template-rows: none;
+    }
+
+    .gallery-head,
+    .reserve-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -831,12 +882,14 @@
       border-bottom: 1px solid var(--line);
     }
 
-    .gallery-head strong {
+    .gallery-head strong,
+    .reserve-head strong {
       font-size: 15px;
       line-height: 1.2;
     }
 
-    .gallery-close {
+    .gallery-close,
+    .reserve-close {
       width: 34px;
       height: 34px;
       border: 0;
@@ -846,6 +899,140 @@
       font-size: 22px;
       line-height: 1;
       cursor: pointer;
+    }
+
+    .reserve-body {
+      display: grid;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .reserve-product {
+      display: grid;
+      gap: 5px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfd;
+    }
+
+    .reserve-product strong {
+      color: var(--ink);
+      font-size: 17px;
+      line-height: 1.15;
+    }
+
+    .reserve-product span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 760;
+      line-height: 1.35;
+    }
+
+    .reserve-fieldset {
+      display: grid;
+      gap: 8px;
+      border: 0;
+      padding: 0;
+      margin: 0;
+    }
+
+    .reserve-fieldset legend {
+      padding: 0;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .reserve-options {
+      display: grid;
+      gap: 8px;
+    }
+
+    .reserve-option {
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: center;
+      background: white;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .reserve-option input {
+      accent-color: #1f2937;
+    }
+
+    .reserve-option small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 720;
+    }
+
+    .reserve-option.disabled {
+      color: #98a2b3;
+      background: #f8f9fb;
+      cursor: not-allowed;
+    }
+
+    .reserve-option.disabled input {
+      cursor: not-allowed;
+    }
+
+    .reserve-actions {
+      display: grid;
+      gap: 8px;
+      padding-top: 2px;
+    }
+
+    .reserve-submit,
+    .reserve-button {
+      min-height: 42px;
+      border: 0;
+      border-radius: 999px;
+      background: #252a33;
+      color: white;
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .16s ease, transform .16s ease;
+    }
+
+    .reserve-submit:hover,
+    .reserve-button:hover {
+      background: #323845;
+      transform: translateY(-1px);
+    }
+
+    .reserve-submit:disabled {
+      background: #d4d9e2;
+      color: #7b8494;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .reserve-payment-logos {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-top: 7px;
+      color: #667085;
+      font-size: 11px;
+      font-weight: 850;
     }
 
     .gallery-stage {
@@ -1067,6 +1254,101 @@
       text-align: right;
     }
 
+    .payment-logos {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-items: center;
+      padding-top: 2px;
+    }
+
+    .payment-logo {
+      height: 18px;
+      min-width: 34px;
+      border: 1px solid #e5e8ef;
+      border-radius: 5px;
+      padding: 0 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #fbfcfd;
+      color: #344054;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0;
+      line-height: 1;
+    }
+
+    .payment-logo svg {
+      display: block;
+      width: auto;
+      height: 12px;
+    }
+
+    .payment-logo.visa {
+      color: #1a1f71;
+    }
+
+    .payment-logo.mastercard {
+      color: #111827;
+    }
+
+    .payment-logo.mp {
+      width: 22px;
+      min-width: 22px;
+      height: 22px;
+      padding: 0;
+      border-radius: 50%;
+      background: #eef9ff;
+      color: #009ee3;
+    }
+
+    .reserve-button {
+      margin-top: 2px;
+      width: 100%;
+    }
+
+    .financing-row {
+      margin-top: 4px;
+      border: 1px solid rgba(0, 113, 227, .14);
+      border-radius: 8px;
+      padding: 10px;
+      background: #f8fbff;
+      display: grid;
+      gap: 6px;
+    }
+
+    .financing-row::after {
+      display: none;
+    }
+
+    .financing-copy {
+      display: grid;
+      gap: 2px;
+    }
+
+    .financing-copy span {
+      color: #075db8;
+      font-size: 11px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .financing-copy small {
+      color: #667085;
+      font-size: 11.5px;
+      font-weight: 760;
+      line-height: 1.3;
+    }
+
+    .financing-row strong {
+      color: #111827;
+      font-size: 15px;
+      font-weight: 950;
+      text-align: left;
+    }
+
     .chips {
       display: flex;
       flex-wrap: wrap;
@@ -1201,7 +1483,7 @@
         </div>
 
         <label class="search-wrap">
-          <input id="search" type="search" placeholder="Buscar modelo, color, capacidad, bateria o serial">
+          <input id="search" type="search" placeholder="Buscar modelo, color, capacidad o bateria">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <circle cx="11" cy="11" r="7"></circle>
             <path d="m20 20-3.5-3.5"></path>
@@ -1219,13 +1501,6 @@
               <path d="M14 18h2v2h-2z"></path>
             </svg>
             Contacto
-          </button>
-          <button id="internalToggle" class="button" type="button" title="Mostrar datos internos">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-            Interno
           </button>
           <button id="layoutToggle" class="icon-button" type="button" title="Cambiar vista">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -1261,7 +1536,10 @@
       <section class="trade-entry" aria-label="Plan Canje iClub">
         <div class="trade-entry-copy trade-entry-seal">
           <div class="trade-entry-icon" aria-hidden="true">
-            <span class="trade-entry-apple">&#63743;</span>
+            <svg viewBox="0 0 24 24" class="trade-entry-apple-icon">
+              <path d="M16.3 2.2c.1 1.1-.3 2.1-1 2.9-.8.9-1.8 1.4-2.9 1.3-.1-1 .3-2.1 1-2.8.8-.9 1.9-1.5 2.9-1.4Z"></path>
+              <path d="M20.2 17.3c-.4.9-.7 1.3-1.2 2.1-.8 1.2-1.9 2.8-3.3 2.8-1.2 0-1.5-.8-3.2-.8-1.6 0-2 .8-3.2.8-1.4.1-2.5-1.5-3.3-2.7-2.2-3.3-2.5-7.1-1.1-9.1 1-1.5 2.5-2.3 4-2.3s2.4.8 3.6.8c1.2 0 1.9-.8 3.7-.8 1.3 0 2.7.7 3.7 2-3.2 1.8-2.7 6.3.3 7.2Z"></path>
+            </svg>
           </div>
           <span class="trade-entry-kicker">Premium Reseller</span>
           <h2>Asistencia iClub</h2>
@@ -1365,6 +1643,48 @@
     </div>
   </div>
 
+  <div id="reserveModal" class="reserve-modal" aria-hidden="true">
+    <div class="reserve-panel" role="dialog" aria-modal="true" aria-label="Reservar equipo">
+      <div class="reserve-head">
+        <strong>Reservar equipo</strong>
+        <button id="reserveClose" class="reserve-close" type="button" aria-label="Cerrar reserva">&times;</button>
+      </div>
+      <div class="reserve-body">
+        <div class="reserve-product">
+          <strong id="reserveProductName">Equipo iClub</strong>
+          <span id="reserveProductSpecs"></span>
+        </div>
+        <fieldset class="reserve-fieldset">
+          <legend>Forma de pago</legend>
+          <div id="reservePaymentOptions" class="reserve-options"></div>
+        </fieldset>
+        <fieldset class="reserve-fieldset">
+          <legend>Cu&aacute;ndo quiere retirarlo</legend>
+          <div class="reserve-options">
+            <label class="reserve-option">
+              <input type="radio" name="reservePickup" value="Hoy" checked>
+              <span>
+                Hoy
+                <small>Sujeto a disponibilidad de turnos diarios</small>
+              </span>
+            </label>
+            <label class="reserve-option">
+              <input type="radio" name="reservePickup" value="Mañana">
+              <span>Ma&ntilde;ana</span>
+            </label>
+            <label class="reserve-option">
+              <input type="radio" name="reservePickup" value="Quiero coordinar">
+              <span>Quiero coordinar</span>
+            </label>
+          </div>
+        </fieldset>
+        <div class="reserve-actions">
+          <button id="reserveSubmit" class="reserve-submit" type="button">Continuar por WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="galleryModal" class="gallery-modal" aria-hidden="true">
     <div class="gallery-panel" role="dialog" aria-modal="true" aria-label="Galeria de producto">
       <div class="gallery-head">
@@ -1383,6 +1703,12 @@
       </div>
     </div>
   </div>
+
+  <a id="floatingWhatsapp" class="floating-whatsapp" href="#" target="_blank" rel="noreferrer" aria-label="Consultar por WhatsApp">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M19.1 4.9A9.84 9.84 0 0 0 12.06 2C6.56 2 2.1 6.45 2.1 11.93c0 1.75.46 3.45 1.33 4.96L2 22l5.24-1.38a9.93 9.93 0 0 0 4.82 1.23h.01c5.49 0 9.96-4.45 9.96-9.93 0-2.65-1.04-5.14-2.93-7.02Zm-7.04 15.27h-.01a8.25 8.25 0 0 1-4.2-1.15l-.3-.18-3.11.82.83-3.03-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.55 3.7-8.25 8.26-8.25a8.2 8.2 0 0 1 5.83 2.42 8.16 8.16 0 0 1 2.42 5.82c0 4.55-3.71 8.24-8.26 8.24Zm4.53-6.17c-.25-.12-1.47-.72-1.7-.8-.23-.08-.4-.12-.56.12-.17.25-.64.8-.79.96-.15.17-.29.19-.54.07-.25-.13-1.05-.39-2-1.23a7.49 7.49 0 0 1-1.38-1.71c-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.43-.06-.13-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.08 0 1.23.9 2.41 1.02 2.58.12.17 1.76 2.68 4.26 3.76.6.26 1.06.41 1.42.52.6.19 1.14.16 1.57.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.16-.48-.28Z"></path>
+    </svg>
+  </a>
 
   <script>
     const SHEET_ID = "1yIchT-R7KSY5NuIcfjMuYRjPjbQaZ3j5LdcfXee2USY";
@@ -1435,6 +1761,9 @@
         images: [],
         title: "",
         index: 0,
+      },
+      reserve: {
+        productId: "",
       },
     };
 
@@ -2739,15 +3068,13 @@
               ${escapeHtml(availability.label)}
             </div>
             <div class="payment-list">
-              ${priceTemplate("Lista", displayProduct.priceList)}
               ${priceTemplate("Transferencia", displayProduct.transfer)}
-              ${priceTemplate("6 cuotas", product.six)}
-              ${priceTemplate("3 cuotas", product.three)}
+              ${priceTemplate("Precio de lista", displayProduct.priceList)}
+              ${financingTemplate(product.six)}
             </div>
+            <button class="reserve-button" type="button" data-reserve-id="${escapeAttr(product.id)}">Reservar equipo</button>
             <div class="internal">
-              ${product.serial ? `<div><strong>Serial/IMEI:</strong> ${escapeHtml(product.serial)}</div>` : ""}
               ${product.notes ? `<div><strong>Notas:</strong> ${escapeHtml(product.notes)}</div>` : ""}
-              ${product.appleLink ? `<div><a href="${escapeAttr(product.appleLink)}" target="_blank" rel="noreferrer">Ver ficha Apple</a></div>` : ""}
             </div>
           </div>
         </article>
@@ -2759,6 +3086,47 @@
         <div class="payment-row">
           <span>${escapeHtml(label)}</span>
           <strong>${escapeHtml(formatMoney(value) || "-")}</strong>
+        </div>
+      `;
+    }
+
+    function financingTemplate(value) {
+      const formatted = formatMoney(value);
+      if (!formatted) return "";
+      return `
+        <div class="financing-row">
+          <div class="financing-copy">
+            <span>Promo 6 cuotas sin interés</span>
+            <small>Precio de lista en hasta 6 cuotas sin interés</small>
+          </div>
+          <strong>${escapeHtml(formatted)} por cuota</strong>
+          ${paymentLogosTemplate()}
+        </div>
+      `;
+    }
+
+    function paymentLogosTemplate() {
+      return `
+        <div class="payment-logos" aria-label="Medios de pago">
+          <span class="payment-logo visa" aria-label="Visa">
+            <svg viewBox="0 0 42 14" role="img" aria-hidden="true">
+              <text x="1" y="11" fill="currentColor" font-size="11" font-weight="900" font-family="Arial, sans-serif">VISA</text>
+            </svg>
+          </span>
+          <span class="payment-logo mastercard" aria-label="Mastercard">
+            <svg viewBox="0 0 42 14" role="img" aria-hidden="true">
+              <circle cx="15" cy="7" r="5" fill="#eb001b"></circle>
+              <circle cx="21" cy="7" r="5" fill="#f79e1b" opacity=".9"></circle>
+              <text x="27" y="10" fill="#344054" font-size="5" font-weight="900" font-family="Arial, sans-serif">MC</text>
+            </svg>
+          </span>
+          <span class="payment-logo mp" aria-label="Mercado Pago">
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"></circle>
+              <path d="M6.4 12.2c1.7-1.6 3.4-1.6 5.1 0 1.7 1.4 3.4 1.4 5.1 0" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round"></path>
+              <path d="M8.1 14.2c1.1.8 2.2.8 3.3 0 .8-.6 1.6-.6 2.5 0 .8.6 1.6.6 2.4 0" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round"></path>
+            </svg>
+          </span>
         </div>
       `;
     }
@@ -2828,9 +3196,139 @@
       $("contactModal").setAttribute("aria-hidden", "true");
     }
 
+    function currentReserveProduct() {
+      return state.products.find((product) => product.id === state.reserve.productId) || null;
+    }
+
+    function reservePaymentOptions(product) {
+      const displayProduct = batteryDisplayProduct(product);
+      return [
+        {
+          id: "cash",
+          label: "Efectivo",
+          price: displayProduct.cash,
+          displayPrice: formatMoney(displayProduct.cash),
+        },
+        {
+          id: "transfer",
+          label: "Transferencia",
+          price: displayProduct.transfer,
+          displayPrice: formatMoney(displayProduct.transfer),
+        },
+        {
+          id: "card_6",
+          label: "Tarjeta de crédito",
+          listPrice: displayProduct.priceList,
+          displayListPrice: formatMoney(displayProduct.priceList),
+          detail: "PROMO 6 CUOTAS SIN INTERÉS",
+          price: product.six,
+          displayPrice: formatMoney(product.six) ? `${formatMoney(product.six)} por cuota` : "",
+        },
+      ];
+    }
+
+    function renderReservePaymentOptions(product) {
+      const options = reservePaymentOptions(product);
+      const firstAvailable = options.find((option) => option.displayPrice);
+      $("reservePaymentOptions").innerHTML = options.map((option) => {
+        const disabled = !option.displayPrice;
+        const checked = firstAvailable?.id === option.id;
+        return `
+          <label class="reserve-option ${disabled ? "disabled" : ""}">
+            <input type="radio" name="reservePayment" value="${escapeAttr(option.id)}" ${checked ? "checked" : ""} ${disabled ? "disabled" : ""}>
+            <span>
+              ${escapeHtml(option.label)}
+              ${option.displayListPrice ? `<small>Precio de lista: ${escapeHtml(option.displayListPrice)}</small>` : ""}
+              ${option.detail ? `<small>${escapeHtml(option.detail)}</small>` : ""}
+              <small>${escapeHtml(option.displayPrice || "No disponible para este equipo")}</small>
+              ${option.id === "card_6" && !disabled ? `<span class="reserve-payment-logos">Visa · Mastercard · Mercado Pago</span>` : ""}
+            </span>
+          </label>
+        `;
+      }).join("");
+      $("reserveSubmit").disabled = !firstAvailable;
+    }
+
+    function openReserveModal(productId) {
+      const product = state.products.find((item) => item.id === productId);
+      if (!product) return;
+      const displayProduct = batteryDisplayProduct(product);
+      state.reserve.productId = product.id;
+      $("reserveProductName").textContent = presentationModel(displayProduct);
+      $("reserveProductSpecs").textContent = presentationSpecs(displayProduct);
+      renderReservePaymentOptions(product);
+      const todayPickup = document.querySelector('input[name="reservePickup"][value="Hoy"]');
+      if (todayPickup) todayPickup.checked = true;
+      $("reserveModal").classList.add("show");
+      $("reserveModal").setAttribute("aria-hidden", "false");
+    }
+
+    function closeReserveModal() {
+      $("reserveModal").classList.remove("show");
+      $("reserveModal").setAttribute("aria-hidden", "true");
+      state.reserve.productId = "";
+    }
+
+    function selectedReservePayment(product) {
+      const selected = document.querySelector('input[name="reservePayment"]:checked')?.value || "";
+      return reservePaymentOptions(product).find((option) => option.id === selected && option.displayPrice) || null;
+    }
+
+    function selectedReservePickup() {
+      return document.querySelector('input[name="reservePickup"]:checked')?.value || "Quiero coordinar";
+    }
+
+    function reserveWhatsappMessage(product, payment, pickup) {
+      const displayProduct = batteryDisplayProduct(product);
+      const specs = [
+        displayProduct.capacity,
+        displayProduct.color ? displayCase(displayProduct.color) : "",
+        displayProduct.condition ? displayCase(displayProduct.condition) : "",
+      ].filter(Boolean).join(" · ");
+      const paymentLines = payment.id === "card_6"
+        ? [
+            "💳 Tarjeta de crédito",
+            payment.displayListPrice ? `Precio de lista: ${payment.displayListPrice}` : "",
+            "",
+            "🔥 PROMO 6 CUOTAS SIN INTERÉS",
+            payment.displayPrice,
+          ]
+        : [
+            payment.id === "cash" ? "💵 Forma de pago" : "💳 Forma de pago",
+            `${payment.label} — ${payment.displayPrice}`,
+          ];
+      const lines = [
+        "Hola iClub 👋",
+        "",
+        "📱 Quiero reservar este equipo",
+        "",
+        presentationModel(displayProduct),
+        specs,
+        "",
+        ...paymentLines,
+        "",
+        "📍 Retiro",
+        pickup,
+        "",
+        "Quiero confirmar disponibilidad y coordinar la reserva. 🙌",
+      ].filter((line, index, list) => line || list[index - 1] !== "");
+      return lines.join("\n");
+    }
+
+    function continueReserveByWhatsapp() {
+      const product = currentReserveProduct();
+      if (!product) return;
+      const payment = selectedReservePayment(product);
+      if (!payment) return;
+      const pickup = selectedReservePickup();
+      const message = reserveWhatsappMessage(product, payment, pickup);
+      window.open(`https://wa.me/${ICLUB_CONTACT.whatsapp}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    }
+
     function initContactLinks() {
       const whatsappUrl = `https://wa.me/${ICLUB_CONTACT.whatsapp}`;
       $("whatsappContact").href = whatsappUrl;
+      $("floatingWhatsapp").href = `${whatsappUrl}?text=${encodeURIComponent("Hola iClub 👋 Quiero hacer una consulta sobre los equipos disponibles.")}`;
 
       const linktreeUrl = String(ICLUB_CONTACT.linktree || "").trim();
       const linktreeQr = String(ICLUB_LINKTREE_QR || "").trim();
@@ -2906,14 +3404,6 @@
       $(id).addEventListener("change", applyFilters);
     });
 
-    $("internalToggle").addEventListener("click", () => {
-      state.internalMode = !state.internalMode;
-      document.body.classList.toggle("internal-mode", state.internalMode);
-      $("internalToggle").classList.toggle("active", state.internalMode);
-      refreshFilters();
-      applyFilters();
-    });
-
     $("layoutToggle").addEventListener("click", () => {
       state.listMode = !state.listMode;
       render();
@@ -2963,9 +3453,22 @@
         event.preventDefault();
         event.stopPropagation();
         openGallery(trigger.dataset.galleryId);
+        return;
+      }
+
+      const reserveTrigger = event.target.closest("[data-reserve-id]");
+      if (reserveTrigger) {
+        event.preventDefault();
+        event.stopPropagation();
+        openReserveModal(reserveTrigger.dataset.reserveId);
       }
     });
 
+    $("reserveClose").addEventListener("click", closeReserveModal);
+    $("reserveSubmit").addEventListener("click", continueReserveByWhatsapp);
+    $("reserveModal").addEventListener("click", (event) => {
+      if (event.target === $("reserveModal")) closeReserveModal();
+    });
     $("galleryClose").addEventListener("click", closeGallery);
     $("galleryModal").addEventListener("click", (event) => {
       if (event.target === $("galleryModal")) closeGallery();
@@ -2980,6 +3483,7 @@
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && $("contactModal").classList.contains("show")) closeContactModal();
+      if (event.key === "Escape" && $("reserveModal").classList.contains("show")) closeReserveModal();
     });
 
     init();
