@@ -95,6 +95,10 @@
       text-overflow: ellipsis;
     }
 
+    .brand-meta span[hidden] {
+      display: none;
+    }
+
     .search-wrap {
       position: relative;
       min-width: 0;
@@ -1149,6 +1153,14 @@
       overflow-wrap: anywhere;
     }
 
+    .primary-offer em {
+      color: #667085;
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 850;
+      line-height: 1.1;
+    }
+
     .primary-offer span {
       color: var(--blue);
       font-size: 12px;
@@ -1252,6 +1264,17 @@
       font-weight: 850;
       overflow-wrap: anywhere;
       text-align: right;
+    }
+
+    .price-dual {
+      display: inline;
+      max-width: 100%;
+      white-space: nowrap;
+    }
+
+    .price-dual .ars {
+      color: #667085;
+      font-weight: 780;
     }
 
     .payment-logos {
@@ -1479,6 +1502,7 @@
           <div class="brand-wordmark" aria-label="iClub marca registrada">iClub<sup>&reg;</sup></div>
           <div class="brand-meta">
             <span id="updated">Conectando con Google Sheet</span>
+            <span id="exchangeRateMeta" hidden></span>
           </div>
         </div>
 
@@ -1713,6 +1737,8 @@
   <script>
     const SHEET_ID = "1yIchT-R7KSY5NuIcfjMuYRjPjbQaZ3j5LdcfXee2USY";
     const SHEET_NAME = "STOCK EQUIPOS Y OFERTAS";
+    const EXCHANGE_RATE_SHEET_NAME = "PRECIOS EQUIPOS APPLE";
+    const EXCHANGE_RATE_RANGE = "B1";
     const SOURCE_LABEL = "Stock equipos y ofertas";
     const DRIVE_IMAGE_RESOLVER_URL = "https://script.google.com/macros/s/AKfycbyiHxpOvwkEOTl7UtfmIXZS5VbpEP9q2lBUDpBjqrJrQBd3hUtNzhvAgeRBZBAIFy6N/exec";
     const ICLUB_CONTACT = {
@@ -1756,6 +1782,7 @@
       listMode: false,
       internalMode: false,
       viewMode: "grid",
+      exchangeRate: null,
       batterySelections: {},
       gallery: {
         images: [],
@@ -1812,6 +1839,38 @@
       const number = parseNumber(text);
       if (!number) return text;
       return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(number);
+    }
+
+    function formatArsValue(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number) || number <= 0) return "";
+      return `$${Math.round(number).toLocaleString("es-AR", { maximumFractionDigits: 0 })}`;
+    }
+
+    function arsEquivalent(value) {
+      if (!state.exchangeRate) return "";
+      const usd = parseNumber(value);
+      if (!Number.isFinite(usd) || usd <= 0) return "";
+      return formatArsValue(usd * state.exchangeRate);
+    }
+
+    function priceWithArs(value) {
+      const usd = formatMoney(value);
+      if (!usd) return "";
+      const ars = arsEquivalent(value);
+      return ars ? `${usd} · ${ars}` : usd;
+    }
+
+    function priceWithArsHtml(value) {
+      const usd = formatMoney(value);
+      if (!usd) return "";
+      const ars = arsEquivalent(value);
+      return `
+        <span class="price-dual">
+          <span>${escapeHtml(usd)}</span>
+          ${ars ? `<span class="ars">· ${escapeHtml(ars)}</span>` : ""}
+        </span>
+      `;
     }
 
     function stockLabel(stock, stock24 = 0, stockProvider = 0) {
@@ -2388,6 +2447,15 @@
       return `${base}&sheet=${encodeURIComponent(SHEET_NAME)}`;
     }
 
+    function exchangeRateUrl() {
+      const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?headers=0&tqx=out:json`;
+      const params = new URLSearchParams({
+        sheet: EXCHANGE_RATE_SHEET_NAME,
+        range: EXCHANGE_RATE_RANGE,
+      });
+      return `${base}&${params.toString()}`;
+    }
+
     function loadGviz(url) {
       return new Promise((resolve, reject) => {
         const script = document.createElement("script");
@@ -2435,6 +2503,26 @@
       if (!rows.length) throw new Error("No se encontraron filas reales de producto.");
       hideStatus();
       return rows;
+    }
+
+    async function loadExchangeRate() {
+      try {
+        const table = await loadGviz(exchangeRateUrl());
+        const value = Number(table?.rows?.[0]?.c?.[0]?.v);
+        state.exchangeRate = Number.isFinite(value) && value > 0 ? value : null;
+      } catch (error) {
+        state.exchangeRate = null;
+        console.warn("No se pudo cargar el tipo de cambio iClub.", error);
+      }
+      renderExchangeRate();
+      return state.exchangeRate;
+    }
+
+    function renderExchangeRate() {
+      const element = $("exchangeRateMeta");
+      if (!element) return;
+      element.hidden = true;
+      element.textContent = "";
     }
 
     function cellText(row, index) {
@@ -3061,6 +3149,7 @@
             ${batteryChoiceTemplate(product)}
             <div class="primary-offer">
               <strong>${escapeHtml(formatMoney(displayProduct.cash) || formatMoney(displayProduct.priceList) || "-")}</strong>
+              ${arsEquivalent(displayProduct.cash || displayProduct.priceList) ? `<em>${escapeHtml(arsEquivalent(displayProduct.cash || displayProduct.priceList))}</em>` : ""}
               <span>Promo efectivo</span>
             </div>
             ${promotion ? `<div class="promo-callout"><span>${escapeHtml(promotion.label)}</span><strong>${escapeHtml(promotion.value)}</strong></div>` : ""}
@@ -3082,10 +3171,11 @@
     }
 
     function priceTemplate(label, value) {
+      const price = priceWithArsHtml(value);
       return `
         <div class="payment-row">
           <span>${escapeHtml(label)}</span>
-          <strong>${escapeHtml(formatMoney(value) || "-")}</strong>
+          <strong>${price || "-"}</strong>
         </div>
       `;
     }
@@ -3099,7 +3189,7 @@
             <span>Promo 6 cuotas sin interés</span>
             <small>Precio de lista en hasta 6 cuotas sin interés</small>
           </div>
-          <strong>${escapeHtml(formatted)}</strong>
+          <strong>${priceWithArsHtml(value) || escapeHtml(formatted)}</strong>
           ${paymentLogosTemplate()}
         </div>
       `;
@@ -3208,21 +3298,28 @@
           label: "Efectivo",
           price: displayProduct.cash,
           displayPrice: formatMoney(displayProduct.cash),
+          displayArs: arsEquivalent(displayProduct.cash),
+          displayPriceLine: priceWithArs(displayProduct.cash),
         },
         {
           id: "transfer",
           label: "Transferencia",
           price: displayProduct.transfer,
           displayPrice: formatMoney(displayProduct.transfer),
+          displayArs: arsEquivalent(displayProduct.transfer),
+          displayPriceLine: priceWithArs(displayProduct.transfer),
         },
         {
           id: "card_6",
           label: "Tarjeta de crédito",
           listPrice: displayProduct.priceList,
           displayListPrice: formatMoney(displayProduct.priceList),
+          displayListPriceLine: priceWithArs(displayProduct.priceList),
           detail: "PROMO 6 CUOTAS SIN INTERÉS",
           price: product.six,
           displayPrice: formatMoney(product.six),
+          displayArs: arsEquivalent(product.six),
+          displayPriceLine: priceWithArs(product.six),
         },
       ];
     }
@@ -3238,9 +3335,10 @@
             <input type="radio" name="reservePayment" value="${escapeAttr(option.id)}" ${checked ? "checked" : ""} ${disabled ? "disabled" : ""}>
             <span>
               ${escapeHtml(option.label)}
-              ${option.displayListPrice ? `<small>Precio de lista: ${escapeHtml(option.displayListPrice)}</small>` : ""}
+              ${option.displayListPriceLine ? `<small>Precio de lista: ${escapeHtml(option.displayListPriceLine)}</small>` : ""}
               ${option.detail ? `<small>${escapeHtml(option.detail)}</small>` : ""}
-              <small>${escapeHtml(option.displayPrice || "No disponible para este equipo")}</small>
+              <small>${escapeHtml(option.id === "card_6" ? (option.displayPriceLine || option.displayPrice || "No disponible para este equipo") : (option.displayPrice || "No disponible para este equipo"))}</small>
+              ${option.displayArs && option.id !== "card_6" ? `<small>${escapeHtml(option.displayArs)}</small>` : ""}
               ${option.id === "card_6" && !disabled ? `<span class="reserve-payment-logos">Visa · Mastercard · Mercado Pago</span>` : ""}
             </span>
           </label>
@@ -3288,14 +3386,15 @@
       const paymentLines = payment.id === "card_6"
         ? [
             "💳 Tarjeta de crédito",
-            payment.displayListPrice ? `Precio de lista: ${payment.displayListPrice}` : "",
+            "Precio de lista:",
+            payment.displayListPriceLine || payment.displayListPrice || "",
             "",
             "🔥 PROMO 6 CUOTAS SIN INTERÉS",
-            payment.displayPrice,
+            payment.displayPriceLine || payment.displayPrice,
           ]
         : [
-            payment.id === "cash" ? "💵 Forma de pago" : "💳 Forma de pago",
-            `${payment.label} — ${payment.displayPrice}`,
+            payment.id === "cash" ? "💵 Efectivo" : "💳 Transferencia",
+            payment.displayPriceLine || payment.displayPrice,
           ];
       const lines = [
         "Hola iClub 👋",
@@ -3368,12 +3467,18 @@
     async function init() {
       const runId = ++imageResolveRun;
       try {
+        state.exchangeRate = null;
+        renderExchangeRate();
         state.rows = await loadAllSources();
         const products = state.rows.map(rowToProduct).filter((p) => p.title.trim()).filter(isCatalogEligible);
         state.products = attachBatteryPriceOptions(products);
         refreshFilters();
         applyFilters();
         $("updated").textContent = `Actualizado ${new Date().toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" })}`;
+        loadExchangeRate().then(() => {
+          if (runId !== imageResolveRun) return;
+          applyFilters();
+        });
         resolveImagesForProducts(state.products, {
           onBatch: () => {
             if (runId !== imageResolveRun) return;
@@ -3389,7 +3494,9 @@
         state.rows = [];
         state.products = [];
         state.filtered = [];
+        state.exchangeRate = null;
         refreshFilters();
+        renderExchangeRate();
         render();
         $("updated").textContent = "Sheet pendiente de acceso";
         showStatus(`
