@@ -3099,7 +3099,7 @@
             <span>Promo 6 cuotas sin interés</span>
             <small>Precio de lista en hasta 6 cuotas sin interés</small>
           </div>
-          <strong>${escapeHtml(formatted)} por cuota</strong>
+          <strong>${escapeHtml(formatted)}</strong>
           ${paymentLogosTemplate()}
         </div>
       `;
@@ -3222,7 +3222,7 @@
           displayListPrice: formatMoney(displayProduct.priceList),
           detail: "PROMO 6 CUOTAS SIN INTERÉS",
           price: product.six,
-          displayPrice: formatMoney(product.six) ? `${formatMoney(product.six)} por cuota` : "",
+          displayPrice: formatMoney(product.six),
         },
       ];
     }
