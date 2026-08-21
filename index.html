@@ -836,7 +836,8 @@
     }
 
     .gallery-modal,
-    .reserve-modal {
+    .reserve-modal,
+    .service-modal {
       position: fixed;
       inset: 0;
       z-index: 20;
@@ -846,18 +847,21 @@
       background: rgba(17, 24, 39, .64);
     }
 
-    .reserve-modal {
+    .reserve-modal,
+    .service-modal {
       z-index: 28;
       backdrop-filter: blur(8px);
     }
 
     .gallery-modal.show,
-    .reserve-modal.show {
+    .reserve-modal.show,
+    .service-modal.show {
       display: grid;
     }
 
     .gallery-panel,
-    .reserve-panel {
+    .reserve-panel,
+    .service-panel {
       width: min(860px, 100%);
       max-height: min(760px, 92vh);
       border-radius: 8px;
@@ -868,7 +872,8 @@
       grid-template-rows: auto minmax(0, 1fr) auto;
     }
 
-    .reserve-panel {
+    .reserve-panel,
+    .service-panel {
       width: min(460px, 100%);
       max-height: min(760px, 92vh);
       overflow: auto;
@@ -877,7 +882,8 @@
     }
 
     .gallery-head,
-    .reserve-head {
+    .reserve-head,
+    .service-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -887,13 +893,15 @@
     }
 
     .gallery-head strong,
-    .reserve-head strong {
+    .reserve-head strong,
+    .service-head strong {
       font-size: 15px;
       line-height: 1.2;
     }
 
     .gallery-close,
-    .reserve-close {
+    .reserve-close,
+    .service-close {
       width: 34px;
       height: 34px;
       border: 0;
@@ -903,6 +911,151 @@
       font-size: 22px;
       line-height: 1;
       cursor: pointer;
+    }
+
+    .service-body {
+      display: grid;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .service-step-title {
+      display: grid;
+      gap: 5px;
+    }
+
+    .service-step-title h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 19px;
+      line-height: 1.12;
+    }
+
+    .service-step-title p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 720;
+      line-height: 1.35;
+    }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .service-option {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: white;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    .service-option.selected {
+      border-color: rgba(0, 113, 227, .36);
+      background: #f4f9ff;
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, .08);
+    }
+
+    .service-field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .service-field label {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .service-field input,
+    .service-field textarea {
+      width: 100%;
+      border: 1px solid #e3e7ee;
+      border-radius: 8px;
+      outline: none;
+      background: white;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .service-field input {
+      min-height: 44px;
+      padding: 0 12px;
+    }
+
+    .service-field textarea {
+      min-height: 96px;
+      resize: vertical;
+      padding: 11px 12px;
+      line-height: 1.4;
+    }
+
+    .service-field input:focus,
+    .service-field textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, .10);
+    }
+
+    .service-summary {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfd;
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 760;
+      line-height: 1.35;
+    }
+
+    .service-summary strong {
+      color: var(--ink);
+    }
+
+    .service-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .service-action {
+      min-height: 42px;
+      border: 0;
+      border-radius: 999px;
+      background: #252a33;
+      color: white;
+      padding: 0 16px;
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .service-action.secondary {
+      border: 1px solid #e3e7ee;
+      background: white;
+      color: var(--ink);
+    }
+
+    .service-action:disabled {
+      background: #d4d9e2;
+      color: #7b8494;
+      cursor: not-allowed;
     }
 
     .reserve-body {
@@ -1602,14 +1755,14 @@
           <span class="trade-entry-kicker">Technical Support</span>
           <h2>Cotiz&aacute; tu reparaci&oacute;n</h2>
           <p>Servicio t&eacute;cnico especializado para tu equipo Apple.</p>
-          <a class="trade-entry-button" href="https://wa.me/5491125003054?text=Hola%20iClub%20%F0%9F%91%8B%20Quiero%20cotizar%20mi%20reparaci%C3%B3n." target="_blank" rel="noreferrer">
+          <button id="serviceOpen" class="trade-entry-button" type="button">
             <span class="trade-entry-whatsapp" aria-hidden="true">
               <svg viewBox="0 0 24 24">
                 <path d="M19.1 4.9A9.84 9.84 0 0 0 12.06 2C6.56 2 2.1 6.45 2.1 11.93c0 1.75.46 3.45 1.33 4.96L2 22l5.24-1.38a9.93 9.93 0 0 0 4.82 1.23h.01c5.49 0 9.96-4.45 9.96-9.93 0-2.65-1.04-5.14-2.93-7.02Zm-7.04 15.27h-.01a8.25 8.25 0 0 1-4.2-1.15l-.3-.18-3.11.82.83-3.03-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.55 3.7-8.25 8.26-8.25a8.2 8.2 0 0 1 5.83 2.42 8.16 8.16 0 0 1 2.42 5.82c0 4.55-3.71 8.24-8.26 8.24Z"></path>
               </svg>
             </span>
             Cotizar mi reparaci&oacute;n
-          </a>
+          </button>
         </div>
       </section>
 
@@ -1709,6 +1862,16 @@
     </div>
   </div>
 
+  <div id="serviceModal" class="service-modal" aria-hidden="true">
+    <div class="service-panel" role="dialog" aria-modal="true" aria-label="Solicitud de Servicio Tecnico">
+      <div class="service-head">
+        <strong>Servicio T&eacute;cnico iClub</strong>
+        <button id="serviceClose" class="service-close" type="button" aria-label="Cerrar servicio tecnico">&times;</button>
+      </div>
+      <div id="serviceBody" class="service-body"></div>
+    </div>
+  </div>
+
   <div id="galleryModal" class="gallery-modal" aria-hidden="true">
     <div class="gallery-panel" role="dialog" aria-modal="true" aria-label="Galeria de producto">
       <div class="gallery-head">
@@ -1791,6 +1954,16 @@
       },
       reserve: {
         productId: "",
+      },
+      service: {
+        step: 1,
+        category: "",
+        model: "",
+        problem: "",
+        powersOn: "",
+        screenDamaged: "",
+        batteryDegraded: "",
+        detail: "",
       },
     };
 
@@ -3424,6 +3597,175 @@
       window.open(`https://wa.me/${ICLUB_CONTACT.whatsapp}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
     }
 
+    const SERVICE_WHATSAPP = "5491125003054";
+    const SERVICE_CATEGORIES = ["iPhone", "iPad", "Mac", "Apple Watch", "AirPods", "Otro"];
+    const SERVICE_MODEL_PLACEHOLDERS = {
+      iPhone: "Ejemplo: iPhone 15 Pro Max",
+      iPad: 'Ejemplo: iPad Air 11"',
+      Mac: "Ejemplo: MacBook Air M3",
+      "Apple Watch": "Ejemplo: Apple Watch Series 9",
+      AirPods: "Ejemplo: AirPods Pro 2",
+      Otro: "Escribí marca y modelo",
+    };
+    const SERVICE_PROBLEMS = ["Pantalla", "Batería", "Carga", "No enciende", "Software", "Otro"];
+
+    function resetServiceState() {
+      state.service = {
+        step: 1,
+        category: "",
+        model: "",
+        problem: "",
+        powersOn: "",
+        screenDamaged: "",
+        batteryDegraded: "",
+        detail: "",
+      };
+    }
+
+    function openServiceModal() {
+      resetServiceState();
+      $("serviceModal").classList.add("show");
+      $("serviceModal").setAttribute("aria-hidden", "false");
+      renderService();
+    }
+
+    function closeServiceModal() {
+      $("serviceModal").classList.remove("show");
+      $("serviceModal").setAttribute("aria-hidden", "true");
+    }
+
+    function serviceModelPlaceholder() {
+      return SERVICE_MODEL_PLACEHOLDERS[state.service.category] || "Escribí marca y modelo";
+    }
+
+    function serviceCanContinue() {
+      if (state.service.step === 1) return Boolean(state.service.category && state.service.model.trim());
+      if (state.service.step === 2) {
+        return Boolean(state.service.problem && state.service.powersOn && state.service.screenDamaged && state.service.batteryDegraded);
+      }
+      return true;
+    }
+
+    function serviceOptionTemplate(type, value, selectedValue) {
+      return `
+        <button class="service-option ${selectedValue === value ? "selected" : ""}" type="button" data-service-select="${escapeAttr(type)}" data-value="${escapeAttr(value)}">
+          ${escapeHtml(value)}
+        </button>
+      `;
+    }
+
+    function serviceChoiceTemplate(type, values, selectedValue) {
+      return `
+        <div class="service-grid">
+          ${values.map((value) => serviceOptionTemplate(type, value, selectedValue)).join("")}
+        </div>
+      `;
+    }
+
+    function renderService() {
+      const body = $("serviceBody");
+      if (state.service.step === 1) {
+        body.innerHTML = `
+          <div class="service-step-title">
+            <h3>¿Con qué equipo necesitás ayuda?</h3>
+            <p>Elegí el tipo de equipo y escribí el modelo exacto.</p>
+          </div>
+          ${serviceChoiceTemplate("category", SERVICE_CATEGORIES, state.service.category)}
+          <div class="service-field">
+            <label for="serviceModel">¿Qué modelo es?</label>
+            <input id="serviceModel" type="text" value="${escapeAttr(state.service.model)}" placeholder="${escapeAttr(serviceModelPlaceholder())}" autocomplete="off">
+          </div>
+          ${serviceActionsTemplate({ showBack: false, nextLabel: "Continuar", nextDisabled: !serviceCanContinue() })}
+        `;
+        return;
+      }
+
+      if (state.service.step === 2) {
+        body.innerHTML = `
+          <div class="service-step-title">
+            <h3>¿Cuál es el problema principal?</h3>
+            <p>Estos datos ayudan a preparar el diagnóstico antes de recibir el equipo.</p>
+          </div>
+          ${serviceChoiceTemplate("problem", SERVICE_PROBLEMS, state.service.problem)}
+          <div class="service-field">
+            <label>¿Enciende?</label>
+            ${serviceChoiceTemplate("powersOn", ["Sí", "No"], state.service.powersOn)}
+          </div>
+          <div class="service-field">
+            <label>Pantalla dañada</label>
+            ${serviceChoiceTemplate("screenDamaged", ["Sí", "No"], state.service.screenDamaged)}
+          </div>
+          <div class="service-field">
+            <label>Batería degradada</label>
+            ${serviceChoiceTemplate("batteryDegraded", ["Sí", "No"], state.service.batteryDegraded)}
+          </div>
+          ${serviceActionsTemplate({ nextLabel: "Continuar", nextDisabled: !serviceCanContinue() })}
+        `;
+        return;
+      }
+
+      body.innerHTML = `
+        <div class="service-step-title">
+          <h3>Solicitud de Servicio Técnico</h3>
+          <p>Agregá un detalle para que el equipo técnico tenga mejor contexto.</p>
+        </div>
+        <div class="service-field">
+          <label for="serviceDetail">Detalle</label>
+          <textarea id="serviceDetail" placeholder="Ejemplo: El táctil dejó de responder después de una caída.">${escapeHtml(state.service.detail)}</textarea>
+        </div>
+        <div class="service-summary">
+          <div><strong>Equipo:</strong> ${escapeHtml(state.service.category)}</div>
+          <div><strong>Modelo:</strong> ${escapeHtml(state.service.model)}</div>
+          <div><strong>Problema:</strong> ${escapeHtml(state.service.problem)}</div>
+          <div><strong>Enciende:</strong> ${escapeHtml(state.service.powersOn)}</div>
+          <div><strong>Pantalla dañada:</strong> ${escapeHtml(state.service.screenDamaged)}</div>
+          <div><strong>Batería degradada:</strong> ${escapeHtml(state.service.batteryDegraded)}</div>
+          <div><strong>Detalle:</strong> <span id="serviceDetailSummary">${escapeHtml(state.service.detail || "Sin detalle adicional.")}</span></div>
+        </div>
+        ${serviceActionsTemplate({ nextLabel: "Enviar por WhatsApp", nextAction: "whatsapp" })}
+      `;
+    }
+
+    function serviceActionsTemplate(options = {}) {
+      const nextAction = options.nextAction || "next";
+      return `
+        <div class="service-actions">
+          ${options.showBack === false ? "<span></span>" : `<button class="service-action secondary" type="button" data-service-action="back">Atrás</button>`}
+          <button class="service-action" type="button" data-service-action="${escapeAttr(nextAction)}" ${options.nextDisabled ? "disabled" : ""}>
+            ${escapeHtml(options.nextLabel || "Continuar")}
+          </button>
+        </div>
+      `;
+    }
+
+    function serviceWhatsappMessage() {
+      const detail = state.service.detail.trim() || "Sin detalle adicional.";
+      return [
+        "Hola iClub 👋",
+        "",
+        "🔧 Solicitud de Servicio Técnico",
+        "",
+        `📱 Equipo: ${state.service.category}`,
+        `📋 Modelo: ${state.service.model}`,
+        "",
+        `⚠️ Problema principal: ${state.service.problem}`,
+        "",
+        `🔌 ¿Enciende? ${state.service.powersOn}`,
+        `📲 Pantalla dañada: ${state.service.screenDamaged}`,
+        `🔋 Batería degradada: ${state.service.batteryDegraded}`,
+        "",
+        "📝 Detalle:",
+        detail,
+        "",
+        "Quiero solicitar un diagnóstico y coordinar cómo llevar el equipo. 🙌",
+      ].join("\n");
+    }
+
+    function continueServiceWhatsapp() {
+      const message = serviceWhatsappMessage();
+      window.open(`https://wa.me/${SERVICE_WHATSAPP}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    }
+
     function initContactLinks() {
       const whatsappUrl = `https://wa.me/${ICLUB_CONTACT.whatsapp}`;
       $("whatsappContact").href = whatsappUrl;
@@ -3534,8 +3876,48 @@
     initContactLinks();
     $("contactToggle").addEventListener("click", openContactModal);
     $("contactClose").addEventListener("click", closeContactModal);
+    $("serviceOpen").addEventListener("click", openServiceModal);
+    $("serviceClose").addEventListener("click", closeServiceModal);
     $("contactModal").addEventListener("click", (event) => {
       if (event.target === $("contactModal")) closeContactModal();
+    });
+    $("serviceModal").addEventListener("click", (event) => {
+      if (event.target === $("serviceModal")) closeServiceModal();
+    });
+    $("serviceModal").addEventListener("input", (event) => {
+      if (event.target.id === "serviceModel") {
+        state.service.model = event.target.value;
+        const nextButton = $("serviceModal").querySelector('[data-service-action="next"]');
+        if (nextButton) nextButton.disabled = !serviceCanContinue();
+      }
+      if (event.target.id === "serviceDetail") {
+        state.service.detail = event.target.value;
+        const summary = $("serviceDetailSummary");
+        if (summary) summary.textContent = state.service.detail.trim() || "Sin detalle adicional.";
+      }
+    });
+    $("serviceModal").addEventListener("click", (event) => {
+      const selectButton = event.target.closest("[data-service-select]");
+      if (selectButton) {
+        state.service[selectButton.dataset.serviceSelect] = selectButton.dataset.value;
+        renderService();
+        return;
+      }
+
+      const actionButton = event.target.closest("[data-service-action]");
+      if (!actionButton || actionButton.disabled) return;
+      if (actionButton.dataset.serviceAction === "back") {
+        state.service.step = Math.max(1, state.service.step - 1);
+        renderService();
+        return;
+      }
+      if (actionButton.dataset.serviceAction === "whatsapp") {
+        continueServiceWhatsapp();
+        return;
+      }
+      if (!serviceCanContinue()) return;
+      state.service.step = Math.min(3, state.service.step + 1);
+      renderService();
     });
     ["linktreeQrLink", "linktreeContact"].forEach((id) => {
       $(id).addEventListener("click", (event) => {
@@ -3591,6 +3973,7 @@
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && $("contactModal").classList.contains("show")) closeContactModal();
       if (event.key === "Escape" && $("reserveModal").classList.contains("show")) closeReserveModal();
+      if (event.key === "Escape" && $("serviceModal").classList.contains("show")) closeServiceModal();
     });
 
     init();
