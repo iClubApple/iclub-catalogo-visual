@@ -1,4 +1,4 @@
-await import("./plan-canje-diagnostic.js");
+await import("./plan-canje-diagnostic.js?v=plan-canje-block-title");
 
 const logic = window.iClubPlanCanje;
 const WHATSAPP_URL = "https://wa.me/5491125003057";
@@ -60,28 +60,31 @@ const BENEFIT_PRODUCTS = [
 ];
 const GENERAL_CONDITIONS = [
   {
-    value: "Excelente",
-    title: "Excelente",
-    description: "Está impecable o prácticamente sin marcas.",
-    marks: "",
+    value: "MAL",
+    title: "MAL",
+    description: "Daños estéticos importantes y/o problemas funcionales.",
+    tone: "bad",
+    marks: {
+      front: '<span class="phone-mark crack one"></span><span class="phone-mark crack two"></span><span class="phone-mark crack four"></span><span class="phone-mark line three"></span><span class="phone-mark small five"></span>',
+    },
   },
   {
-    value: "Bueno",
-    title: "Bueno",
-    description: "Tiene marcas leves normales de uso.",
-    marks: '<span class="phone-mark tiny one"></span>',
+    value: "REGULAR",
+    title: "REGULAR",
+    description: "Detalles estéticos o desgaste por uso normal.",
+    tone: "regular",
+    marks: {
+      front: '<span class="phone-mark tiny one"></span><span class="phone-mark line three"></span><span class="phone-mark hairline six"></span>',
+    },
   },
   {
-    value: "Regular",
-    title: "Regular",
-    description: "Tiene marcas o golpes visibles.",
-    marks: '<span class="phone-mark tiny one"></span><span class="phone-mark small two"></span><span class="phone-mark line three"></span>',
-  },
-  {
-    value: "Malo",
-    title: "Malo",
-    description: "Presenta daños importantes.",
-    marks: '<span class="phone-mark crack one"></span><span class="phone-mark crack two"></span><span class="phone-mark small three"></span>',
+    value: "EXCELENTE",
+    title: "EXCELENTE",
+    description: "Sin detalles estéticos relevantes y funcionando correctamente.",
+    tone: "excellent",
+    marks: {
+      front: "",
+    },
   },
 ];
 
@@ -205,11 +208,11 @@ function hasReportedDamage() {
 }
 
 function isGeneralConditionDisabled(condition) {
-  return condition.value === "Excelente" && hasReportedDamage();
+  return condition.value === "EXCELENTE" && hasReportedDamage();
 }
 
 function sanitizeGeneralCondition() {
-  if (state.generalCondition === "Excelente" && hasReportedDamage()) {
+  if (state.generalCondition === "EXCELENTE" && hasReportedDamage()) {
     state.generalCondition = "";
   }
 }
@@ -847,10 +850,12 @@ function generalConditionButton(condition) {
   const selected = state.generalCondition === condition.value;
   const disabled = isGeneralConditionDisabled(condition);
   return `
-    <button class="trade-condition-option ${selected ? "selected" : ""} ${disabled ? "disabled" : ""}" type="button" data-trade-select="generalCondition" data-value="${escapeAttr(condition.value)}" ${disabled ? "disabled aria-disabled=\"true\"" : ""}>
-      <span class="trade-phone-illustration ${normalize(condition.value)}" aria-hidden="true">
-        <span class="phone-speaker"></span>
-        ${condition.marks}
+    <button class="trade-condition-option ${selected ? "selected" : ""} ${disabled ? "disabled" : ""} ${escapeAttr(condition.tone)}" type="button" data-trade-select="generalCondition" data-value="${escapeAttr(condition.value)}" ${disabled ? "disabled aria-disabled=\"true\"" : ""}>
+      <span class="trade-phone-pair" aria-hidden="true">
+        <span class="trade-phone-illustration front ${escapeAttr(condition.tone)}">
+          <span class="phone-speaker"></span>
+          ${condition.marks.front}
+        </span>
       </span>
       <span class="trade-condition-copy">
         <strong>${escapeHtml(condition.title)}</strong>

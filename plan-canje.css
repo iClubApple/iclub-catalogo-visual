@@ -343,28 +343,29 @@
 
 .trade-condition-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
 .trade-condition-option {
-  min-height: 132px;
+  min-height: 252px;
   border: 1px solid #e3e7ee;
   border-radius: 8px;
   background: white;
   color: #111318;
   padding: 14px;
   display: grid;
-  grid-template-columns: 58px 1fr;
-  align-items: center;
-  gap: 14px;
-  text-align: left;
+  grid-template-rows: minmax(132px, auto) 1fr;
+  align-items: stretch;
+  gap: 13px;
+  text-align: center;
   cursor: pointer;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease, transform .18s ease;
 }
 
 .trade-condition-option.selected {
   border-color: #111318;
-  box-shadow: inset 0 0 0 1px #111318;
+  box-shadow: inset 0 0 0 1px #111318, 0 14px 30px rgba(17, 19, 24, .08);
   background: #f8f9fb;
 }
 
@@ -376,24 +377,38 @@
   box-shadow: none;
 }
 
+.trade-phone-pair {
+  min-height: 132px;
+  border-radius: 8px;
+  background: #f7f8fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+}
+
 .trade-phone-illustration {
-  width: 46px;
-  height: 76px;
+  width: 58px;
+  height: 112px;
   border: 2px solid #111318;
-  border-radius: 10px;
+  border-radius: 16px;
   background: linear-gradient(180deg, #ffffff, #f5f6f8);
   position: relative;
   display: block;
-  box-shadow: 0 8px 18px rgba(17, 24, 39, .08);
+  box-shadow: 0 10px 22px rgba(17, 24, 39, .08);
+}
+
+.trade-phone-illustration.front {
+  transform: none;
 }
 
 .phone-speaker {
-  width: 14px;
-  height: 3px;
+  width: 20px;
+  height: 5px;
   border-radius: 999px;
   background: #111318;
   position: absolute;
-  top: 7px;
+  top: 8px;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -406,55 +421,82 @@
 }
 
 .phone-mark.tiny {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
 }
 
 .phone-mark.small {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
 }
 
 .phone-mark.line {
-  width: 14px;
+  width: 17px;
   height: 2px;
   border-radius: 999px;
   transform: rotate(-18deg);
 }
 
+.phone-mark.hairline {
+  width: 18px;
+  height: 1px;
+  border-radius: 999px;
+  opacity: .46;
+  transform: rotate(16deg);
+}
+
 .phone-mark.crack {
   width: 2px;
-  height: 34px;
+  height: 40px;
   border-radius: 999px;
   transform: rotate(28deg);
 }
 
 .phone-mark.one {
-  top: 28px;
-  right: 11px;
+  top: 34px;
+  right: 13px;
 }
 
 .phone-mark.two {
-  left: 12px;
-  bottom: 18px;
+  left: 15px;
+  bottom: 29px;
 }
 
 .phone-mark.three {
-  right: 10px;
-  bottom: 12px;
+  right: 13px;
+  bottom: 18px;
+}
+
+.phone-mark.four {
+  top: 45px;
+  left: 27px;
+  height: 28px;
+  transform: rotate(-34deg);
+}
+
+.phone-mark.five {
+  left: 14px;
+  top: 25px;
+}
+
+.phone-mark.six {
+  left: 18px;
+  bottom: 33px;
 }
 
 .trade-condition-copy {
   display: grid;
-  gap: 5px;
+  align-content: start;
+  gap: 7px;
 }
 
 .trade-condition-copy strong {
   color: #111318;
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1.1;
+  letter-spacing: .02em;
 }
 
 .trade-condition-copy span {
