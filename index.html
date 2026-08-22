@@ -2723,6 +2723,7 @@
       if (text.includes("vision pro")) return "Vision Pro";
       if (text.includes("magic mouse")) return "Magic Mouse";
       if (text.includes("magsafe")) return "MagSafe";
+      if (text.includes("battery pack") || text.includes("batery pack")) return "Battery Pack";
       return "Equipos";
     }
 
@@ -2731,6 +2732,7 @@
       const allowed = [
         "iphone", "ipad", "macbook", "mackbook", "imac", "mac mini", "mac studio", "apple watch",
         "watch", "apple pencil", "pencil", "airpods", "airtag", "vision pro", "magic mouse", "magsafe",
+        "battery pack", "batery pack",
       ];
       const excluded = [
         "funda", "fundas", "vidrio", "glass", "templado", "hidrogel", "protector",
@@ -3320,7 +3322,7 @@
         ["iPhone seminuevos", products.filter((item) => item.category === "iPhone" && isUsed(item))],
         ["Mac", products.filter((item) => item.category === "Mac")],
         ["iPad, Watch y AirPods", products.filter((item) => ["iPad", "Apple Watch", "AirPods"].includes(item.category))],
-        ["Otros Apple", products.filter((item) => ["Apple Pencil", "AirTag", "Vision Pro", "Magic Mouse", "MagSafe"].includes(item.category))],
+        ["Otros Apple", products.filter((item) => ["Apple Pencil", "AirTag", "Vision Pro", "Magic Mouse", "MagSafe", "Battery Pack"].includes(item.category))],
       ].filter(([, items]) => items.length);
 
       return sections.map(([title, items]) => {
@@ -3472,8 +3474,10 @@
         .replace(/\bMacbook\b/g, "MacBook")
         .replace(/\bMackbook\b/g, "MacBook")
         .replace(/\bAirpods\b/g, "AirPods")
+        .replace(/\bBatery\b/g, "Battery")
         .replace(/\bSe\b/g, "SE")
-        .replace(/\bUsb\s*C\b/g, "USB-C");
+        .replace(/\bUsb\s*C\b/g, "USB-C")
+        .replace(/\bMah\b/g, "mAh");
     }
 
     function removeKnownDetail(text, detail) {
@@ -3491,8 +3495,8 @@
       name = name.replace(/\b\d+\s*(gb|tb)\b/ig, " ");
       if (product.category === "Mac") {
         name = name.replace(/\b\d{2}(?:[,.]\d)?\s*["”]/g, " ");
+        name = name.replace(/\s*\.\s*/g, " ");
       }
-      name = name.replace(/\s*\.\s*/g, " ");
       name = name.replace(/\s+/g, " ").trim();
       if (product.category === "Apple Watch" && /^serie\b/i.test(name) && !/^apple watch\b/i.test(name)) {
         name = `Apple Watch ${name}`;
@@ -3507,11 +3511,12 @@
     function presentationSpecs(product) {
       const quality = productQualityLabel(product);
       const modelAlreadyShowsQuality = quality && normalize(product.model).includes(normalize(quality));
+      const hasOtherSpecs = Boolean(product.capacity || embeddedModelSpecs(product) || product.color || product.condition || product.battery);
       const parts = [
         product.capacity,
         embeddedModelSpecs(product),
         product.color,
-        modelAlreadyShowsQuality ? "" : quality,
+        modelAlreadyShowsQuality || !hasOtherSpecs ? "" : quality,
         product.condition,
         product.battery ? `Bateria ${product.battery}` : "",
       ];
