@@ -4,7 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>iClub Catalogo Visual</title>
-  <link rel="stylesheet" href="plan-canje.css">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/logo-iclub-oficial.png">
+  <link rel="stylesheet" href="plan-canje.css?v=benefits-image-fit-4b">
   <style>
     :root {
       --bg: #f6f7f9;
@@ -39,12 +41,9 @@
     }
 
     .topbar {
-      position: sticky;
-      top: 0;
       z-index: 10;
       border-bottom: 1px solid rgba(230, 232, 238, .9);
       background: rgba(255, 255, 255, .94);
-      backdrop-filter: blur(18px);
     }
 
     .topbar-inner {
@@ -52,37 +51,51 @@
       margin: 0 auto;
       padding: 10px 22px;
       display: grid;
-      grid-template-columns: minmax(230px, 310px) minmax(260px, 1fr) auto;
+      grid-template-columns: minmax(190px, 1fr) auto minmax(190px, 1fr);
+      grid-template-areas:
+        "meta brand actions";
       gap: 20px;
       align-items: center;
     }
 
     .brand {
+      grid-area: brand;
       min-width: 0;
       display: flex;
       align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 3px;
     }
 
     .brand-wordmark {
-      color: var(--ink);
-      font-size: 34px;
-      font-weight: 900;
-      line-height: .9;
+      width: 118px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+
+    .brand-wordmark img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .brand-tagline {
+      color: #585f6d;
+      font-size: 11px;
+      font-weight: 650;
       letter-spacing: 0;
+      line-height: 1;
       white-space: nowrap;
     }
 
-    .brand-wordmark sup {
-      font-size: 12px;
-      line-height: 1;
-      margin-left: 2px;
-      vertical-align: super;
-    }
-
     .brand-meta {
-      display: grid;
+      grid-area: meta;
+      display: none;
       gap: 3px;
-      margin-left: 20px;
       min-width: 0;
     }
 
@@ -95,9 +108,16 @@
       text-overflow: ellipsis;
     }
 
+    .brand-meta span[hidden] {
+      display: none;
+    }
+
     .search-wrap {
+      grid-area: search;
       position: relative;
       min-width: 0;
+      width: min(860px, 100%);
+      margin: 0 auto;
     }
 
     .search-wrap input {
@@ -131,6 +151,7 @@
     }
 
     .actions {
+      grid-area: actions;
       display: flex;
       align-items: center;
       justify-content: flex-end;
@@ -178,28 +199,172 @@
       background: #f8f9fb;
     }
 
-    .promo-strip {
-      border-top: 1px solid rgba(230, 232, 238, .65);
-      border-bottom: 1px solid rgba(230, 232, 238, .65);
-      background: linear-gradient(90deg, rgba(13,15,20,.96), rgba(31,37,48,.96));
+    .trade-entry-icon .trade-entry-apple-icon {
+      fill: currentColor;
+      stroke: none;
+    }
+
+    .floating-whatsapp {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 18;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #25d366;
       color: white;
+      box-shadow: 0 14px 34px rgba(17, 24, 39, .18);
+      text-decoration: none;
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+
+    .floating-whatsapp:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 42px rgba(17, 24, 39, .22);
+    }
+
+    .floating-whatsapp svg {
+      width: 27px;
+      height: 27px;
+      fill: currentColor;
+    }
+
+    .promo-strip {
+      border-top: 1px solid rgba(230, 232, 238, .9);
+      border-bottom: 1px solid rgba(230, 232, 238, .95);
+      background: var(--bg);
+      color: var(--ink);
     }
 
     .promo-inner {
       max-width: 1480px;
-      min-height: 34px;
+      min-height: 50px;
       margin: 0 auto;
-      padding: 6px 22px;
-      display: flex;
+      padding: 12px 22px 10px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 850;
+      justify-content: stretch;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 800;
       letter-spacing: 0;
     }
 
-    .promo-inner span {
-      color: #f5f7fb;
+    .promo-link {
+      min-height: 38px;
+      border: 1px solid rgba(226, 232, 240, .92);
+      border-radius: 999px;
+      padding: 0 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #252a34;
+      text-decoration: none;
+      background: #ffffff;
+      box-shadow: 0 8px 22px rgba(17, 24, 39, .035);
+      transition: color .16s ease, background .16s ease, border-color .16s ease, transform .16s ease;
+      white-space: nowrap;
+    }
+
+    .promo-link:hover {
+      color: var(--blue);
+      background: #ffffff;
+      border-color: rgba(0, 113, 227, .22);
+      box-shadow: 0 10px 26px rgba(17, 24, 39, .06);
+      transform: translateY(-1px);
+    }
+
+    .promo-link:hover .promo-logo-mark.store {
+      background: var(--blue);
+    }
+
+    .promo-link svg {
+      width: 15px;
+      height: 15px;
+      flex: 0 0 auto;
+      color: var(--blue);
+      stroke-width: 2.1;
+    }
+
+    .promo-logo-mark {
+      min-width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      display: inline-grid;
+      place-items: center;
+      background: #f3f6fb;
+      color: #101318;
+      font-size: 10px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .promo-logo-mark.store {
+      background: #101318;
+      color: #ffffff;
+    }
+
+    .promo-logo-mark.ml {
+      background: #fff159;
+      color: #2d3277;
+      font-size: 9px;
+    }
+
+    .promo-link .trust-stars {
+      color: #f5a524;
+      font-size: 12px;
+    }
+
+    .trust-strip {
+      display: none;
+    }
+
+    .trust-inner {
+      max-width: 1480px;
+      min-height: 54px;
+      margin: 0 auto;
+      padding: 8px 22px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      align-items: center;
+    }
+
+    .trust-item {
+      min-width: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      color: #262b35;
+      font-size: 14px;
+      font-weight: 820;
+      line-height: 1.15;
+      white-space: nowrap;
+    }
+
+    .trust-item svg {
+      width: 19px;
+      height: 19px;
+      flex: 0 0 auto;
+      color: var(--blue);
+      stroke-width: 2.2;
+    }
+
+    .trust-stars {
+      display: inline-flex;
+      align-items: center;
+      gap: 1px;
+      color: #f5a524;
+      font-size: 13px;
+      letter-spacing: 0;
+      line-height: 1;
     }
 
     .filters {
@@ -231,33 +396,33 @@
     .filters select {
       width: 100%;
       min-height: 36px;
-      border: 1px solid rgba(255, 255, 255, .08);
+      border: 1px solid #3a3d44;
       border-radius: 999px;
       padding: 0 38px;
       outline: none;
       background:
         linear-gradient(45deg, transparent 50%, #ffffff 50%) calc(100% - 18px) 50% / 6px 6px no-repeat,
-        linear-gradient(90deg, rgba(13,15,20,.96), rgba(31,37,48,.96));
+        #3a3d44;
       color: white;
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
       appearance: none;
-      box-shadow: 0 8px 20px rgba(17, 24, 39, .08);
+      box-shadow: 0 6px 16px rgba(17, 24, 39, .06);
       text-align: center;
       text-align-last: center;
     }
 
     .filters select:hover {
-      border-color: rgba(255, 255, 255, .14);
+      border-color: #252830;
       background:
         linear-gradient(45deg, transparent 50%, #ffffff 50%) calc(100% - 18px) 50% / 6px 6px no-repeat,
-        linear-gradient(90deg, rgba(13,15,20,.96), rgba(31,37,48,.96));
+        #252830;
     }
 
     .filters select:focus {
-      border-color: rgba(255, 255, 255, .22);
-      box-shadow: 0 0 0 3px rgba(17, 24, 39, .12), 0 8px 20px rgba(17, 24, 39, .08);
+      border-color: #252830;
+      box-shadow: 0 0 0 3px rgba(58, 61, 68, .14), 0 6px 16px rgba(17, 24, 39, .06);
     }
 
     body.internal-mode .filters select {
@@ -797,7 +962,9 @@
       text-align: center;
     }
 
-    .gallery-modal {
+    .gallery-modal,
+    .reserve-modal,
+    .service-modal {
       position: fixed;
       inset: 0;
       z-index: 20;
@@ -807,11 +974,21 @@
       background: rgba(17, 24, 39, .64);
     }
 
-    .gallery-modal.show {
+    .reserve-modal,
+    .service-modal {
+      z-index: 28;
+      backdrop-filter: blur(8px);
+    }
+
+    .gallery-modal.show,
+    .reserve-modal.show,
+    .service-modal.show {
       display: grid;
     }
 
-    .gallery-panel {
+    .gallery-panel,
+    .reserve-panel,
+    .service-panel {
       width: min(860px, 100%);
       max-height: min(760px, 92vh);
       border-radius: 8px;
@@ -822,7 +999,18 @@
       grid-template-rows: auto minmax(0, 1fr) auto;
     }
 
-    .gallery-head {
+    .reserve-panel,
+    .service-panel {
+      width: min(460px, 100%);
+      max-height: min(760px, 92vh);
+      overflow: auto;
+      display: grid;
+      grid-template-rows: none;
+    }
+
+    .gallery-head,
+    .reserve-head,
+    .service-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -831,12 +1019,16 @@
       border-bottom: 1px solid var(--line);
     }
 
-    .gallery-head strong {
+    .gallery-head strong,
+    .reserve-head strong,
+    .service-head strong {
       font-size: 15px;
       line-height: 1.2;
     }
 
-    .gallery-close {
+    .gallery-close,
+    .reserve-close,
+    .service-close {
       width: 34px;
       height: 34px;
       border: 0;
@@ -846,6 +1038,285 @@
       font-size: 22px;
       line-height: 1;
       cursor: pointer;
+    }
+
+    .service-body {
+      display: grid;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .service-step-title {
+      display: grid;
+      gap: 5px;
+    }
+
+    .service-step-title h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 19px;
+      line-height: 1.12;
+    }
+
+    .service-step-title p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 720;
+      line-height: 1.35;
+    }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .service-option {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: white;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    .service-option.selected {
+      border-color: rgba(0, 113, 227, .36);
+      background: #f4f9ff;
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, .08);
+    }
+
+    .service-field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .service-field label {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .service-field input,
+    .service-field textarea {
+      width: 100%;
+      border: 1px solid #e3e7ee;
+      border-radius: 8px;
+      outline: none;
+      background: white;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .service-field input {
+      min-height: 44px;
+      padding: 0 12px;
+    }
+
+    .service-field textarea {
+      min-height: 96px;
+      resize: vertical;
+      padding: 11px 12px;
+      line-height: 1.4;
+    }
+
+    .service-field input:focus,
+    .service-field textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, .10);
+    }
+
+    .service-summary {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfd;
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 760;
+      line-height: 1.35;
+    }
+
+    .service-summary strong {
+      color: var(--ink);
+    }
+
+    .service-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .service-action {
+      min-height: 42px;
+      border: 0;
+      border-radius: 999px;
+      background: #252a33;
+      color: white;
+      padding: 0 16px;
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .service-action.secondary {
+      border: 1px solid #e3e7ee;
+      background: white;
+      color: var(--ink);
+    }
+
+    .service-action:disabled {
+      background: #d4d9e2;
+      color: #7b8494;
+      cursor: not-allowed;
+    }
+
+    .reserve-body {
+      display: grid;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .reserve-product {
+      display: grid;
+      gap: 5px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfd;
+    }
+
+    .reserve-product strong {
+      color: var(--ink);
+      font-size: 17px;
+      line-height: 1.15;
+    }
+
+    .reserve-product span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 760;
+      line-height: 1.35;
+    }
+
+    .reserve-fieldset {
+      display: grid;
+      gap: 8px;
+      border: 0;
+      padding: 0;
+      margin: 0;
+    }
+
+    .reserve-fieldset legend {
+      padding: 0;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .reserve-options {
+      display: grid;
+      gap: 8px;
+    }
+
+    .reserve-option {
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: center;
+      background: white;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .reserve-option input {
+      accent-color: #1f2937;
+    }
+
+    .reserve-option small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 720;
+    }
+
+    .reserve-option.disabled {
+      color: #98a2b3;
+      background: #f8f9fb;
+      cursor: not-allowed;
+    }
+
+    .reserve-option.disabled input {
+      cursor: not-allowed;
+    }
+
+    .reserve-actions {
+      display: grid;
+      gap: 8px;
+      padding-top: 2px;
+    }
+
+    .reserve-submit,
+    .reserve-button {
+      min-height: 42px;
+      border: 0;
+      border-radius: 999px;
+      background: #252a33;
+      color: white;
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .16s ease, transform .16s ease;
+    }
+
+    .reserve-submit:hover,
+    .reserve-button:hover {
+      background: #323845;
+      transform: translateY(-1px);
+    }
+
+    .reserve-submit:disabled {
+      background: #d4d9e2;
+      color: #7b8494;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .reserve-payment-logos {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-top: 7px;
+      color: #667085;
+      font-size: 11px;
+      font-weight: 850;
     }
 
     .gallery-stage {
@@ -860,6 +1331,22 @@
       max-height: min(560px, 66vh);
       object-fit: contain;
       padding: 18px;
+    }
+
+    .gallery-image-fallback {
+      display: none;
+      width: min(320px, 72%);
+      margin: 26px;
+    }
+
+    .gallery-image-fallback.show {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 760;
     }
 
     .gallery-controls {
@@ -960,6 +1447,14 @@
       line-height: .98;
       letter-spacing: 0;
       overflow-wrap: anywhere;
+    }
+
+    .primary-offer em {
+      color: #667085;
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 850;
+      line-height: 1.1;
     }
 
     .primary-offer span {
@@ -1067,6 +1562,112 @@
       text-align: right;
     }
 
+    .price-dual {
+      display: inline;
+      max-width: 100%;
+      white-space: nowrap;
+    }
+
+    .price-dual .ars {
+      color: #667085;
+      font-weight: 780;
+    }
+
+    .payment-logos {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-items: center;
+      padding-top: 2px;
+    }
+
+    .payment-logo {
+      height: 18px;
+      min-width: 34px;
+      border: 1px solid #e5e8ef;
+      border-radius: 5px;
+      padding: 0 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #fbfcfd;
+      color: #344054;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0;
+      line-height: 1;
+    }
+
+    .payment-logo svg {
+      display: block;
+      width: auto;
+      height: 12px;
+    }
+
+    .payment-logo.visa {
+      color: #1a1f71;
+    }
+
+    .payment-logo.mastercard {
+      color: #111827;
+    }
+
+    .payment-logo.mp {
+      width: 22px;
+      min-width: 22px;
+      height: 22px;
+      padding: 0;
+      border-radius: 50%;
+      background: #eef9ff;
+      color: #009ee3;
+    }
+
+    .reserve-button {
+      margin-top: 2px;
+      width: 100%;
+    }
+
+    .financing-row {
+      margin-top: 4px;
+      border: 1px solid rgba(0, 113, 227, .14);
+      border-radius: 8px;
+      padding: 10px;
+      background: #f8fbff;
+      display: grid;
+      gap: 6px;
+    }
+
+    .financing-row::after {
+      display: none;
+    }
+
+    .financing-copy {
+      display: grid;
+      gap: 2px;
+    }
+
+    .financing-copy span {
+      color: #075db8;
+      font-size: 11px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .financing-copy small {
+      color: #667085;
+      font-size: 11.5px;
+      font-weight: 760;
+      line-height: 1.3;
+    }
+
+    .financing-row strong {
+      color: #111827;
+      font-size: 15px;
+      font-weight: 950;
+      text-align: left;
+    }
+
     .chips {
       display: flex;
       flex-wrap: wrap;
@@ -1116,6 +1717,9 @@
     @media (max-width: 860px) {
       .topbar-inner {
         grid-template-columns: 1fr;
+        grid-template-areas:
+          "brand"
+          "actions";
       }
 
       .actions {
@@ -1128,11 +1732,33 @@
       }
 
       .brand-wordmark {
-        font-size: 32px;
+        width: 112px;
+        height: 45px;
       }
 
       .brand-meta {
-        margin-left: 14px;
+        justify-items: center;
+        text-align: center;
+      }
+
+      .promo-inner {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .trust-inner {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        min-height: auto;
+        padding: 9px 16px;
+        gap: 9px 12px;
+      }
+
+      .trust-item {
+        justify-content: flex-start;
+        font-size: 12px;
+      }
+
+      .trust-item:last-child {
+        grid-column: 1 / -1;
       }
 
       .filters, .grid {
@@ -1157,9 +1783,34 @@
     }
 
     @media (max-width: 560px) {
-      .topbar-inner, .filters, main {
+      .topbar-inner, .filters, main, .promo-inner {
         padding-left: 12px;
         padding-right: 12px;
+      }
+
+      .promo-inner {
+        display: flex;
+        justify-content: flex-start;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+      }
+
+      .promo-link {
+        flex: 0 0 auto;
+      }
+
+      .promo-inner::-webkit-scrollbar {
+        display: none;
+      }
+
+      .trust-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .trust-item,
+      .trust-item:last-child {
+        grid-column: auto;
       }
 
       .filters, .grid {
@@ -1194,19 +1845,17 @@
     <header class="topbar">
       <div class="topbar-inner">
         <div class="brand">
-          <div class="brand-wordmark" aria-label="iClub marca registrada">iClub<sup>&reg;</sup></div>
+          <div class="brand-wordmark" aria-label="iClub marca registrada">
+            <img src="assets/logo-iclub-oficial.png" alt="iClub">
+          </div>
+          <span class="brand-tagline">Viv&iacute; la experiencia</span>
           <div class="brand-meta">
             <span id="updated">Conectando con Google Sheet</span>
+            <span id="exchangeRateMeta" hidden></span>
           </div>
         </div>
 
-        <label class="search-wrap">
-          <input id="search" type="search" placeholder="Buscar modelo, color, capacidad, bateria o serial">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <circle cx="11" cy="11" r="7"></circle>
-            <path d="m20 20-3.5-3.5"></path>
-          </svg>
-        </label>
+        <input id="search" type="search" value="" hidden>
 
         <div class="actions">
           <button id="contactToggle" class="button contact-button" type="button" title="Contacto iClub">
@@ -1219,13 +1868,6 @@
               <path d="M14 18h2v2h-2z"></path>
             </svg>
             Contacto
-          </button>
-          <button id="internalToggle" class="button" type="button" title="Mostrar datos internos">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-            Interno
           </button>
           <button id="layoutToggle" class="icon-button" type="button" title="Cambiar vista">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -1244,13 +1886,39 @@
         </div>
       </div>
 
-      <div class="promo-strip" aria-label="Promocion iClub">
-        <div class="promo-inner">
-          <span>Viv&iacute; la experiencia</span>
-        </div>
-      </div>
-
     </header>
+
+    <div class="promo-strip" aria-label="Confianza iClub">
+      <div class="promo-inner">
+        <a class="promo-link" href="https://share.google/Zn8LHXlKe3VYL5Bf5" target="_blank" rel="noreferrer">
+          <span class="trust-stars" aria-hidden="true">★★★★★</span>
+          <span>+5.000 rese&ntilde;as en Google</span>
+        </a>
+        <a class="promo-link" href="https://www.instagram.com/iclubapplear?igsi=MWJpazI5cjh1d2lhaQ==" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M17.5 6.5h.01"></path>
+          </svg>
+          <span>Instagram</span>
+        </a>
+        <a class="promo-link" href="https://www.iclubapple.com" target="_blank" rel="noreferrer">
+          <span class="promo-logo-mark store" aria-hidden="true">iC</span>
+          <span>Tienda Nube</span>
+        </a>
+        <a class="promo-link" href="https://www.mercadolibre.com.ar/tienda/iclub#from=share_eshop" target="_blank" rel="noreferrer">
+          <span class="promo-logo-mark ml" aria-hidden="true">ML</span>
+          <span>Mercado Libre</span>
+        </a>
+        <span class="promo-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+            <path d="M12 3 5 6v5c0 4.5 2.8 8.2 7 10 4.2-1.8 7-5.5 7-10V6l-7-3Z"></path>
+            <path d="m9 12 2 2 4-5"></path>
+          </svg>
+          <span>Equipos verificados</span>
+        </span>
+      </div>
+    </div>
 
     <main>
       <div class="mode-tabs" aria-label="Modo de visualizacion">
@@ -1261,7 +1929,10 @@
       <section class="trade-entry" aria-label="Plan Canje iClub">
         <div class="trade-entry-copy trade-entry-seal">
           <div class="trade-entry-icon" aria-hidden="true">
-            <span class="trade-entry-apple">&#63743;</span>
+            <svg viewBox="0 0 24 24" class="trade-entry-apple-icon">
+              <path d="M16.3 2.2c.1 1.1-.3 2.1-1 2.9-.8.9-1.8 1.4-2.9 1.3-.1-1 .3-2.1 1-2.8.8-.9 1.9-1.5 2.9-1.4Z"></path>
+              <path d="M20.2 17.3c-.4.9-.7 1.3-1.2 2.1-.8 1.2-1.9 2.8-3.3 2.8-1.2 0-1.5-.8-3.2-.8-1.6 0-2 .8-3.2.8-1.4.1-2.5-1.5-3.3-2.7-2.2-3.3-2.5-7.1-1.1-9.1 1-1.5 2.5-2.3 4-2.3s2.4.8 3.6.8c1.2 0 1.9-.8 3.7-.8 1.3 0 2.7.7 3.7 2-3.2 1.8-2.7 6.3.3 7.2Z"></path>
+            </svg>
           </div>
           <span class="trade-entry-kicker">Premium Reseller</span>
           <h2>Asistencia iClub</h2>
@@ -1300,14 +1971,14 @@
           <span class="trade-entry-kicker">Technical Support</span>
           <h2>Cotiz&aacute; tu reparaci&oacute;n</h2>
           <p>Servicio t&eacute;cnico especializado para tu equipo Apple.</p>
-          <a class="trade-entry-button" href="https://wa.me/5491125003054?text=Hola%20iClub%20%F0%9F%91%8B%20Quiero%20cotizar%20mi%20reparaci%C3%B3n." target="_blank" rel="noreferrer">
+          <button id="serviceOpen" class="trade-entry-button" type="button">
             <span class="trade-entry-whatsapp" aria-hidden="true">
               <svg viewBox="0 0 24 24">
                 <path d="M19.1 4.9A9.84 9.84 0 0 0 12.06 2C6.56 2 2.1 6.45 2.1 11.93c0 1.75.46 3.45 1.33 4.96L2 22l5.24-1.38a9.93 9.93 0 0 0 4.82 1.23h.01c5.49 0 9.96-4.45 9.96-9.93 0-2.65-1.04-5.14-2.93-7.02Zm-7.04 15.27h-.01a8.25 8.25 0 0 1-4.2-1.15l-.3-.18-3.11.82.83-3.03-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.55 3.7-8.25 8.26-8.25a8.2 8.2 0 0 1 5.83 2.42 8.16 8.16 0 0 1 2.42 5.82c0 4.55-3.71 8.24-8.26 8.24Z"></path>
               </svg>
             </span>
             Cotizar mi reparaci&oacute;n
-          </a>
+          </button>
         </div>
       </section>
 
@@ -1365,6 +2036,58 @@
     </div>
   </div>
 
+  <div id="reserveModal" class="reserve-modal" aria-hidden="true">
+    <div class="reserve-panel" role="dialog" aria-modal="true" aria-label="Reservar equipo">
+      <div class="reserve-head">
+        <strong>Reservar equipo</strong>
+        <button id="reserveClose" class="reserve-close" type="button" aria-label="Cerrar reserva">&times;</button>
+      </div>
+      <div class="reserve-body">
+        <div class="reserve-product">
+          <strong id="reserveProductName">Equipo iClub</strong>
+          <span id="reserveProductSpecs"></span>
+        </div>
+        <fieldset class="reserve-fieldset">
+          <legend>Forma de pago</legend>
+          <div id="reservePaymentOptions" class="reserve-options"></div>
+        </fieldset>
+        <fieldset class="reserve-fieldset">
+          <legend>Cu&aacute;ndo quiere retirarlo</legend>
+          <div class="reserve-options">
+            <label class="reserve-option">
+              <input type="radio" name="reservePickup" value="Hoy" checked>
+              <span>
+                Hoy
+                <small>Sujeto a disponibilidad de turnos diarios</small>
+              </span>
+            </label>
+            <label class="reserve-option">
+              <input type="radio" name="reservePickup" value="Mañana">
+              <span>Ma&ntilde;ana</span>
+            </label>
+            <label class="reserve-option">
+              <input type="radio" name="reservePickup" value="Quiero coordinar">
+              <span>Quiero coordinar</span>
+            </label>
+          </div>
+        </fieldset>
+        <div class="reserve-actions">
+          <button id="reserveSubmit" class="reserve-submit" type="button">Continuar por WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="serviceModal" class="service-modal" aria-hidden="true">
+    <div class="service-panel" role="dialog" aria-modal="true" aria-label="Solicitud de Servicio Tecnico">
+      <div class="service-head">
+        <strong>Servicio T&eacute;cnico iClub</strong>
+        <button id="serviceClose" class="service-close" type="button" aria-label="Cerrar servicio tecnico">&times;</button>
+      </div>
+      <div id="serviceBody" class="service-body"></div>
+    </div>
+  </div>
+
   <div id="galleryModal" class="gallery-modal" aria-hidden="true">
     <div class="gallery-panel" role="dialog" aria-modal="true" aria-label="Galeria de producto">
       <div class="gallery-head">
@@ -1373,6 +2096,10 @@
       </div>
       <div class="gallery-stage">
         <img id="galleryImage" alt="" loading="lazy">
+        <div id="galleryImageFallback" class="gallery-image-fallback" hidden>
+          <div id="galleryImageFallbackVisual"></div>
+          <span>No se pudo cargar esta imagen.</span>
+        </div>
       </div>
       <div class="gallery-controls">
         <span id="galleryCounter">1 de 1</span>
@@ -1384,9 +2111,17 @@
     </div>
   </div>
 
+  <a id="floatingWhatsapp" class="floating-whatsapp" href="#" target="_blank" rel="noreferrer" aria-label="Consultar por WhatsApp">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M19.1 4.9A9.84 9.84 0 0 0 12.06 2C6.56 2 2.1 6.45 2.1 11.93c0 1.75.46 3.45 1.33 4.96L2 22l5.24-1.38a9.93 9.93 0 0 0 4.82 1.23h.01c5.49 0 9.96-4.45 9.96-9.93 0-2.65-1.04-5.14-2.93-7.02Zm-7.04 15.27h-.01a8.25 8.25 0 0 1-4.2-1.15l-.3-.18-3.11.82.83-3.03-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.55 3.7-8.25 8.26-8.25a8.2 8.2 0 0 1 5.83 2.42 8.16 8.16 0 0 1 2.42 5.82c0 4.55-3.71 8.24-8.26 8.24Zm4.53-6.17c-.25-.12-1.47-.72-1.7-.8-.23-.08-.4-.12-.56.12-.17.25-.64.8-.79.96-.15.17-.29.19-.54.07-.25-.13-1.05-.39-2-1.23a7.49 7.49 0 0 1-1.38-1.71c-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.43-.06-.13-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.08 0 1.23.9 2.41 1.02 2.58.12.17 1.76 2.68 4.26 3.76.6.26 1.06.41 1.42.52.6.19 1.14.16 1.57.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.16-.48-.28Z"></path>
+    </svg>
+  </a>
+
   <script>
     const SHEET_ID = "1yIchT-R7KSY5NuIcfjMuYRjPjbQaZ3j5LdcfXee2USY";
     const SHEET_NAME = "STOCK EQUIPOS Y OFERTAS";
+    const EXCHANGE_RATE_SHEET_NAME = "PRECIOS EQUIPOS APPLE";
+    const EXCHANGE_RATE_RANGE = "B1";
     const SOURCE_LABEL = "Stock equipos y ofertas";
     const DRIVE_IMAGE_RESOLVER_URL = "https://script.google.com/macros/s/AKfycbyiHxpOvwkEOTl7UtfmIXZS5VbpEP9q2lBUDpBjqrJrQBd3hUtNzhvAgeRBZBAIFy6N/exec";
     const ICLUB_CONTACT = {
@@ -1395,9 +2130,10 @@
     };
     const ICLUB_LINKTREE_QR = "assets/qr-linktree-iclub.png";
     const DRIVE_API_KEY = "";
-    const IMAGE_DEBUG = true;
+    const IMAGE_DEBUG = false;
     const VALID_IMAGE_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
     const VALID_IMAGE_EXTENSIONS = /\.(jpe?g|png|webp)(\?.*)?$/i;
+    const DRIVE_THUMBNAIL_SIZE = 1200;
     const IMAGE_RESOLVER_BATCH_SIZE = 8;
     const IMAGE_RESOLVER_CONCURRENCY = 2;
     const IMAGE_CACHE_TTL = 30 * 60 * 1000;
@@ -1430,11 +2166,25 @@
       listMode: false,
       internalMode: false,
       viewMode: "grid",
+      exchangeRate: null,
       batterySelections: {},
       gallery: {
         images: [],
         title: "",
         index: 0,
+      },
+      reserve: {
+        productId: "",
+      },
+      service: {
+        step: 1,
+        category: "",
+        model: "",
+        problem: "",
+        powersOn: "",
+        screenDamaged: "",
+        batteryDegraded: "",
+        detail: "",
       },
     };
 
@@ -1483,6 +2233,38 @@
       const number = parseNumber(text);
       if (!number) return text;
       return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(number);
+    }
+
+    function formatArsValue(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number) || number <= 0) return "";
+      return `$${Math.round(number).toLocaleString("es-AR", { maximumFractionDigits: 0 })}`;
+    }
+
+    function arsEquivalent(value) {
+      if (!state.exchangeRate) return "";
+      const usd = parseNumber(value);
+      if (!Number.isFinite(usd) || usd <= 0) return "";
+      return formatArsValue(usd * state.exchangeRate);
+    }
+
+    function priceWithArs(value) {
+      const usd = formatMoney(value);
+      if (!usd) return "";
+      const ars = arsEquivalent(value);
+      return ars ? `${usd} · ${ars}` : usd;
+    }
+
+    function priceWithArsHtml(value) {
+      const usd = formatMoney(value);
+      if (!usd) return "";
+      const ars = arsEquivalent(value);
+      return `
+        <span class="price-dual">
+          <span>${escapeHtml(usd)}</span>
+          ${ars ? `<span class="ars">· ${escapeHtml(ars)}</span>` : ""}
+        </span>
+      `;
     }
 
     function stockLabel(stock, stock24 = 0, stockProvider = 0) {
@@ -1595,7 +2377,7 @@
         || "";
     }
 
-    function driveImageUrl(fileId, size = 900) {
+    function driveImageUrl(fileId, size = DRIVE_THUMBNAIL_SIZE) {
       return `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w${size}`;
     }
 
@@ -2059,6 +2841,15 @@
       return `${base}&sheet=${encodeURIComponent(SHEET_NAME)}`;
     }
 
+    function exchangeRateUrl() {
+      const base = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?headers=0&tqx=out:json`;
+      const params = new URLSearchParams({
+        sheet: EXCHANGE_RATE_SHEET_NAME,
+        range: EXCHANGE_RATE_RANGE,
+      });
+      return `${base}&${params.toString()}`;
+    }
+
     function loadGviz(url) {
       return new Promise((resolve, reject) => {
         const script = document.createElement("script");
@@ -2106,6 +2897,26 @@
       if (!rows.length) throw new Error("No se encontraron filas reales de producto.");
       hideStatus();
       return rows;
+    }
+
+    async function loadExchangeRate() {
+      try {
+        const table = await loadGviz(exchangeRateUrl());
+        const value = Number(table?.rows?.[0]?.c?.[0]?.v);
+        state.exchangeRate = Number.isFinite(value) && value > 0 ? value : null;
+      } catch (error) {
+        state.exchangeRate = null;
+        console.warn("No se pudo cargar el tipo de cambio iClub.", error);
+      }
+      renderExchangeRate();
+      return state.exchangeRate;
+    }
+
+    function renderExchangeRate() {
+      const element = $("exchangeRateMeta");
+      if (!element) return;
+      element.hidden = true;
+      element.textContent = "";
     }
 
     function cellText(row, index) {
@@ -2732,6 +3543,7 @@
             ${batteryChoiceTemplate(product)}
             <div class="primary-offer">
               <strong>${escapeHtml(formatMoney(displayProduct.cash) || formatMoney(displayProduct.priceList) || "-")}</strong>
+              ${arsEquivalent(displayProduct.cash || displayProduct.priceList) ? `<em>${escapeHtml(arsEquivalent(displayProduct.cash || displayProduct.priceList))}</em>` : ""}
               <span>Promo efectivo</span>
             </div>
             ${promotion ? `<div class="promo-callout"><span>${escapeHtml(promotion.label)}</span><strong>${escapeHtml(promotion.value)}</strong></div>` : ""}
@@ -2739,15 +3551,13 @@
               ${escapeHtml(availability.label)}
             </div>
             <div class="payment-list">
-              ${priceTemplate("Lista", displayProduct.priceList)}
               ${priceTemplate("Transferencia", displayProduct.transfer)}
-              ${priceTemplate("6 cuotas", product.six)}
-              ${priceTemplate("3 cuotas", product.three)}
+              ${priceTemplate("Precio de lista", displayProduct.priceList)}
+              ${financingTemplate(product.six)}
             </div>
+            <button class="reserve-button" type="button" data-reserve-id="${escapeAttr(product.id)}">Reservar equipo</button>
             <div class="internal">
-              ${product.serial ? `<div><strong>Serial/IMEI:</strong> ${escapeHtml(product.serial)}</div>` : ""}
               ${product.notes ? `<div><strong>Notas:</strong> ${escapeHtml(product.notes)}</div>` : ""}
-              ${product.appleLink ? `<div><a href="${escapeAttr(product.appleLink)}" target="_blank" rel="noreferrer">Ver ficha Apple</a></div>` : ""}
             </div>
           </div>
         </article>
@@ -2755,10 +3565,52 @@
     }
 
     function priceTemplate(label, value) {
+      const price = priceWithArsHtml(value);
       return `
         <div class="payment-row">
           <span>${escapeHtml(label)}</span>
-          <strong>${escapeHtml(formatMoney(value) || "-")}</strong>
+          <strong>${price || "-"}</strong>
+        </div>
+      `;
+    }
+
+    function financingTemplate(value) {
+      const formatted = formatMoney(value);
+      if (!formatted) return "";
+      return `
+        <div class="financing-row">
+          <div class="financing-copy">
+            <span>Promo 6 cuotas sin interés</span>
+            <small>Precio de lista en hasta 6 cuotas sin interés</small>
+          </div>
+          <strong>${priceWithArsHtml(value) || escapeHtml(formatted)}</strong>
+          ${paymentLogosTemplate()}
+        </div>
+      `;
+    }
+
+    function paymentLogosTemplate() {
+      return `
+        <div class="payment-logos" aria-label="Medios de pago">
+          <span class="payment-logo visa" aria-label="Visa">
+            <svg viewBox="0 0 42 14" role="img" aria-hidden="true">
+              <text x="1" y="11" fill="currentColor" font-size="11" font-weight="900" font-family="Arial, sans-serif">VISA</text>
+            </svg>
+          </span>
+          <span class="payment-logo mastercard" aria-label="Mastercard">
+            <svg viewBox="0 0 42 14" role="img" aria-hidden="true">
+              <circle cx="15" cy="7" r="5" fill="#eb001b"></circle>
+              <circle cx="21" cy="7" r="5" fill="#f79e1b" opacity=".9"></circle>
+              <text x="27" y="10" fill="#344054" font-size="5" font-weight="900" font-family="Arial, sans-serif">MC</text>
+            </svg>
+          </span>
+          <span class="payment-logo mp" aria-label="Mercado Pago">
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"></circle>
+              <path d="M6.4 12.2c1.7-1.6 3.4-1.6 5.1 0 1.7 1.4 3.4 1.4 5.1 0" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round"></path>
+              <path d="M8.1 14.2c1.1.8 2.2.8 3.3 0 .8-.6 1.6-.6 2.5 0 .8.6 1.6.6 2.4 0" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round"></path>
+            </svg>
+          </span>
         </div>
       `;
     }
@@ -2816,6 +3668,10 @@
       $("galleryModal").classList.remove("show");
       $("galleryModal").setAttribute("aria-hidden", "true");
       $("galleryImage").removeAttribute("src");
+      $("galleryImage").hidden = false;
+      $("galleryImageFallback").hidden = true;
+      $("galleryImageFallback").classList.remove("show");
+      $("galleryImageFallbackVisual").replaceChildren();
     }
 
     function openContactModal() {
@@ -2828,9 +3684,317 @@
       $("contactModal").setAttribute("aria-hidden", "true");
     }
 
+    function currentReserveProduct() {
+      return state.products.find((product) => product.id === state.reserve.productId) || null;
+    }
+
+    function reservePaymentOptions(product) {
+      const displayProduct = batteryDisplayProduct(product);
+      return [
+        {
+          id: "cash",
+          label: "Efectivo",
+          price: displayProduct.cash,
+          displayPrice: formatMoney(displayProduct.cash),
+          displayArs: arsEquivalent(displayProduct.cash),
+          displayPriceLine: priceWithArs(displayProduct.cash),
+        },
+        {
+          id: "transfer",
+          label: "Transferencia",
+          price: displayProduct.transfer,
+          displayPrice: formatMoney(displayProduct.transfer),
+          displayArs: arsEquivalent(displayProduct.transfer),
+          displayPriceLine: priceWithArs(displayProduct.transfer),
+        },
+        {
+          id: "card_6",
+          label: "Tarjeta de crédito",
+          listPrice: displayProduct.priceList,
+          displayListPrice: formatMoney(displayProduct.priceList),
+          displayListPriceLine: priceWithArs(displayProduct.priceList),
+          detail: "PROMO 6 CUOTAS SIN INTERÉS",
+          price: product.six,
+          displayPrice: formatMoney(product.six),
+          displayArs: arsEquivalent(product.six),
+          displayPriceLine: priceWithArs(product.six),
+        },
+      ];
+    }
+
+    function renderReservePaymentOptions(product) {
+      const options = reservePaymentOptions(product);
+      const firstAvailable = options.find((option) => option.displayPrice);
+      $("reservePaymentOptions").innerHTML = options.map((option) => {
+        const disabled = !option.displayPrice;
+        const checked = firstAvailable?.id === option.id;
+        return `
+          <label class="reserve-option ${disabled ? "disabled" : ""}">
+            <input type="radio" name="reservePayment" value="${escapeAttr(option.id)}" ${checked ? "checked" : ""} ${disabled ? "disabled" : ""}>
+            <span>
+              ${escapeHtml(option.label)}
+              ${option.displayListPriceLine ? `<small>Precio de lista: ${escapeHtml(option.displayListPriceLine)}</small>` : ""}
+              ${option.detail ? `<small>${escapeHtml(option.detail)}</small>` : ""}
+              <small>${escapeHtml(option.id === "card_6" ? (option.displayPriceLine || option.displayPrice || "No disponible para este equipo") : (option.displayPrice || "No disponible para este equipo"))}</small>
+              ${option.displayArs && option.id !== "card_6" ? `<small>${escapeHtml(option.displayArs)}</small>` : ""}
+              ${option.id === "card_6" && !disabled ? `<span class="reserve-payment-logos">Visa · Mastercard · Mercado Pago</span>` : ""}
+            </span>
+          </label>
+        `;
+      }).join("");
+      $("reserveSubmit").disabled = !firstAvailable;
+    }
+
+    function openReserveModal(productId) {
+      const product = state.products.find((item) => item.id === productId);
+      if (!product) return;
+      const displayProduct = batteryDisplayProduct(product);
+      state.reserve.productId = product.id;
+      $("reserveProductName").textContent = presentationModel(displayProduct);
+      $("reserveProductSpecs").textContent = presentationSpecs(displayProduct);
+      renderReservePaymentOptions(product);
+      const todayPickup = document.querySelector('input[name="reservePickup"][value="Hoy"]');
+      if (todayPickup) todayPickup.checked = true;
+      $("reserveModal").classList.add("show");
+      $("reserveModal").setAttribute("aria-hidden", "false");
+    }
+
+    function closeReserveModal() {
+      $("reserveModal").classList.remove("show");
+      $("reserveModal").setAttribute("aria-hidden", "true");
+      state.reserve.productId = "";
+    }
+
+    function selectedReservePayment(product) {
+      const selected = document.querySelector('input[name="reservePayment"]:checked')?.value || "";
+      return reservePaymentOptions(product).find((option) => option.id === selected && option.displayPrice) || null;
+    }
+
+    function selectedReservePickup() {
+      return document.querySelector('input[name="reservePickup"]:checked')?.value || "Quiero coordinar";
+    }
+
+    function reserveWhatsappMessage(product, payment, pickup) {
+      const displayProduct = batteryDisplayProduct(product);
+      const specs = [
+        displayProduct.capacity,
+        displayProduct.color ? displayCase(displayProduct.color) : "",
+        displayProduct.condition ? displayCase(displayProduct.condition) : "",
+      ].filter(Boolean).join(" · ");
+      const paymentLines = payment.id === "card_6"
+        ? [
+            "💳 Tarjeta de crédito",
+            "Precio de lista:",
+            payment.displayListPriceLine || payment.displayListPrice || "",
+            "",
+            "🔥 PROMO 6 CUOTAS SIN INTERÉS",
+            payment.displayPriceLine || payment.displayPrice,
+          ]
+        : [
+            payment.id === "cash" ? "💵 Efectivo" : "💳 Transferencia",
+            payment.displayPriceLine || payment.displayPrice,
+          ];
+      const lines = [
+        "Hola iClub 👋",
+        "",
+        "📱 Quiero reservar este equipo",
+        "",
+        presentationModel(displayProduct),
+        specs,
+        "",
+        ...paymentLines,
+        "",
+        "📍 Retiro",
+        pickup,
+        "",
+        "Quiero confirmar disponibilidad y coordinar la reserva. 🙌",
+      ].filter((line, index, list) => line || list[index - 1] !== "");
+      return lines.join("\n");
+    }
+
+    function continueReserveByWhatsapp() {
+      const product = currentReserveProduct();
+      if (!product) return;
+      const payment = selectedReservePayment(product);
+      if (!payment) return;
+      const pickup = selectedReservePickup();
+      const message = reserveWhatsappMessage(product, payment, pickup);
+      window.open(`https://wa.me/${ICLUB_CONTACT.whatsapp}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    }
+
+    const SERVICE_WHATSAPP = "5491125003054";
+    const SERVICE_CATEGORIES = ["iPhone", "iPad", "Mac", "Apple Watch", "AirPods", "Otro"];
+    const SERVICE_MODEL_PLACEHOLDERS = {
+      iPhone: "Ejemplo: iPhone 15 Pro Max",
+      iPad: 'Ejemplo: iPad Air 11"',
+      Mac: "Ejemplo: MacBook Air M3",
+      "Apple Watch": "Ejemplo: Apple Watch Series 9",
+      AirPods: "Ejemplo: AirPods Pro 2",
+      Otro: "Escribí marca y modelo",
+    };
+    const SERVICE_PROBLEMS = ["Pantalla", "Batería", "Carga", "No enciende", "Software", "Otro"];
+
+    function resetServiceState() {
+      state.service = {
+        step: 1,
+        category: "",
+        model: "",
+        problem: "",
+        powersOn: "",
+        screenDamaged: "",
+        batteryDegraded: "",
+        detail: "",
+      };
+    }
+
+    function openServiceModal() {
+      resetServiceState();
+      $("serviceModal").classList.add("show");
+      $("serviceModal").setAttribute("aria-hidden", "false");
+      renderService();
+    }
+
+    function closeServiceModal() {
+      $("serviceModal").classList.remove("show");
+      $("serviceModal").setAttribute("aria-hidden", "true");
+    }
+
+    function serviceModelPlaceholder() {
+      return SERVICE_MODEL_PLACEHOLDERS[state.service.category] || "Escribí marca y modelo";
+    }
+
+    function serviceCanContinue() {
+      if (state.service.step === 1) return Boolean(state.service.category && state.service.model.trim());
+      if (state.service.step === 2) {
+        return Boolean(state.service.problem && state.service.powersOn && state.service.screenDamaged && state.service.batteryDegraded);
+      }
+      return true;
+    }
+
+    function serviceOptionTemplate(type, value, selectedValue) {
+      return `
+        <button class="service-option ${selectedValue === value ? "selected" : ""}" type="button" data-service-select="${escapeAttr(type)}" data-value="${escapeAttr(value)}">
+          ${escapeHtml(value)}
+        </button>
+      `;
+    }
+
+    function serviceChoiceTemplate(type, values, selectedValue) {
+      return `
+        <div class="service-grid">
+          ${values.map((value) => serviceOptionTemplate(type, value, selectedValue)).join("")}
+        </div>
+      `;
+    }
+
+    function renderService() {
+      const body = $("serviceBody");
+      if (state.service.step === 1) {
+        body.innerHTML = `
+          <div class="service-step-title">
+            <h3>¿Con qué equipo necesitás ayuda?</h3>
+            <p>Elegí el tipo de equipo y escribí el modelo exacto.</p>
+          </div>
+          ${serviceChoiceTemplate("category", SERVICE_CATEGORIES, state.service.category)}
+          <div class="service-field">
+            <label for="serviceModel">¿Qué modelo es?</label>
+            <input id="serviceModel" type="text" value="${escapeAttr(state.service.model)}" placeholder="${escapeAttr(serviceModelPlaceholder())}" autocomplete="off">
+          </div>
+          ${serviceActionsTemplate({ showBack: false, nextLabel: "Continuar", nextDisabled: !serviceCanContinue() })}
+        `;
+        return;
+      }
+
+      if (state.service.step === 2) {
+        body.innerHTML = `
+          <div class="service-step-title">
+            <h3>¿Cuál es el problema principal?</h3>
+            <p>Estos datos ayudan a preparar el diagnóstico antes de recibir el equipo.</p>
+          </div>
+          ${serviceChoiceTemplate("problem", SERVICE_PROBLEMS, state.service.problem)}
+          <div class="service-field">
+            <label>¿Enciende?</label>
+            ${serviceChoiceTemplate("powersOn", ["Sí", "No"], state.service.powersOn)}
+          </div>
+          <div class="service-field">
+            <label>Pantalla dañada</label>
+            ${serviceChoiceTemplate("screenDamaged", ["Sí", "No"], state.service.screenDamaged)}
+          </div>
+          <div class="service-field">
+            <label>Batería degradada</label>
+            ${serviceChoiceTemplate("batteryDegraded", ["Sí", "No"], state.service.batteryDegraded)}
+          </div>
+          ${serviceActionsTemplate({ nextLabel: "Continuar", nextDisabled: !serviceCanContinue() })}
+        `;
+        return;
+      }
+
+      body.innerHTML = `
+        <div class="service-step-title">
+          <h3>Solicitud de Servicio Técnico</h3>
+          <p>Agregá un detalle para que el equipo técnico tenga mejor contexto.</p>
+        </div>
+        <div class="service-field">
+          <label for="serviceDetail">Detalle</label>
+          <textarea id="serviceDetail" placeholder="Ejemplo: El táctil dejó de responder después de una caída.">${escapeHtml(state.service.detail)}</textarea>
+        </div>
+        <div class="service-summary">
+          <div><strong>Equipo:</strong> ${escapeHtml(state.service.category)}</div>
+          <div><strong>Modelo:</strong> ${escapeHtml(state.service.model)}</div>
+          <div><strong>Problema:</strong> ${escapeHtml(state.service.problem)}</div>
+          <div><strong>Enciende:</strong> ${escapeHtml(state.service.powersOn)}</div>
+          <div><strong>Pantalla dañada:</strong> ${escapeHtml(state.service.screenDamaged)}</div>
+          <div><strong>Batería degradada:</strong> ${escapeHtml(state.service.batteryDegraded)}</div>
+          <div><strong>Detalle:</strong> <span id="serviceDetailSummary">${escapeHtml(state.service.detail || "Sin detalle adicional.")}</span></div>
+        </div>
+        ${serviceActionsTemplate({ nextLabel: "Enviar por WhatsApp", nextAction: "whatsapp" })}
+      `;
+    }
+
+    function serviceActionsTemplate(options = {}) {
+      const nextAction = options.nextAction || "next";
+      return `
+        <div class="service-actions">
+          ${options.showBack === false ? "<span></span>" : `<button class="service-action secondary" type="button" data-service-action="back">Atrás</button>`}
+          <button class="service-action" type="button" data-service-action="${escapeAttr(nextAction)}" ${options.nextDisabled ? "disabled" : ""}>
+            ${escapeHtml(options.nextLabel || "Continuar")}
+          </button>
+        </div>
+      `;
+    }
+
+    function serviceWhatsappMessage() {
+      const detail = state.service.detail.trim() || "Sin detalle adicional.";
+      return [
+        "Hola iClub 👋",
+        "",
+        "🔧 Solicitud de Servicio Técnico",
+        "",
+        `📱 Equipo: ${state.service.category}`,
+        `📋 Modelo: ${state.service.model}`,
+        "",
+        `⚠️ Problema principal: ${state.service.problem}`,
+        "",
+        `🔌 ¿Enciende? ${state.service.powersOn}`,
+        `📲 Pantalla dañada: ${state.service.screenDamaged}`,
+        `🔋 Batería degradada: ${state.service.batteryDegraded}`,
+        "",
+        "📝 Detalle:",
+        detail,
+        "",
+        "Quiero solicitar un diagnóstico y coordinar cómo llevar el equipo. 🙌",
+      ].join("\n");
+    }
+
+    function continueServiceWhatsapp() {
+      const message = serviceWhatsappMessage();
+      window.open(`https://wa.me/${SERVICE_WHATSAPP}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    }
+
     function initContactLinks() {
       const whatsappUrl = `https://wa.me/${ICLUB_CONTACT.whatsapp}`;
       $("whatsappContact").href = whatsappUrl;
+      $("floatingWhatsapp").href = `${whatsappUrl}?text=${encodeURIComponent("Hola iClub 👋 Quiero hacer una consulta sobre los equipos disponibles.")}`;
 
       const linktreeUrl = String(ICLUB_CONTACT.linktree || "").trim();
       const linktreeQr = String(ICLUB_LINKTREE_QR || "").trim();
@@ -2860,22 +4024,47 @@
 
     function renderGalleryImage() {
       const image = state.gallery.images[state.gallery.index];
-      $("galleryImage").src = image;
-      $("galleryImage").alt = state.gallery.title;
+      const imageElement = $("galleryImage");
+      const fallbackElement = $("galleryImageFallback");
+      imageElement.hidden = false;
+      fallbackElement.hidden = true;
+      fallbackElement.classList.remove("show");
+      $("galleryImageFallbackVisual").replaceChildren();
+      imageElement.src = image;
+      imageElement.alt = state.gallery.title;
       $("galleryCounter").textContent = `${state.gallery.index + 1} de ${state.gallery.images.length}`;
       $("galleryPrev").disabled = state.gallery.images.length <= 1;
       $("galleryNext").disabled = state.gallery.images.length <= 1;
     }
 
+    function showGalleryImageFallback() {
+      const imageElement = $("galleryImage");
+      const fallbackElement = $("galleryImageFallback");
+      imageElement.hidden = true;
+      fallbackElement.hidden = false;
+      fallbackElement.classList.add("show");
+      $("galleryImageFallbackVisual").replaceChildren(window.placeholderNode(state.gallery.title));
+      console.warn("No se pudo cargar la imagen de galeria.", {
+        title: state.gallery.title,
+        image: state.gallery.images[state.gallery.index] || "",
+      });
+    }
+
     async function init() {
       const runId = ++imageResolveRun;
       try {
+        state.exchangeRate = null;
+        renderExchangeRate();
         state.rows = await loadAllSources();
         const products = state.rows.map(rowToProduct).filter((p) => p.title.trim()).filter(isCatalogEligible);
         state.products = attachBatteryPriceOptions(products);
         refreshFilters();
         applyFilters();
         $("updated").textContent = `Actualizado ${new Date().toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" })}`;
+        loadExchangeRate().then(() => {
+          if (runId !== imageResolveRun) return;
+          applyFilters();
+        });
         resolveImagesForProducts(state.products, {
           onBatch: () => {
             if (runId !== imageResolveRun) return;
@@ -2891,7 +4080,9 @@
         state.rows = [];
         state.products = [];
         state.filtered = [];
+        state.exchangeRate = null;
         refreshFilters();
+        renderExchangeRate();
         render();
         $("updated").textContent = "Sheet pendiente de acceso";
         showStatus(`
@@ -2904,14 +4095,6 @@
     ["search", "sourceFilter", "categoryFilter", "modelFilter", "conditionFilter", "batteryFilter", "stockFilter"].forEach((id) => {
       $(id).addEventListener("input", applyFilters);
       $(id).addEventListener("change", applyFilters);
-    });
-
-    $("internalToggle").addEventListener("click", () => {
-      state.internalMode = !state.internalMode;
-      document.body.classList.toggle("internal-mode", state.internalMode);
-      $("internalToggle").classList.toggle("active", state.internalMode);
-      refreshFilters();
-      applyFilters();
     });
 
     $("layoutToggle").addEventListener("click", () => {
@@ -2937,8 +4120,48 @@
     initContactLinks();
     $("contactToggle").addEventListener("click", openContactModal);
     $("contactClose").addEventListener("click", closeContactModal);
+    $("serviceOpen").addEventListener("click", openServiceModal);
+    $("serviceClose").addEventListener("click", closeServiceModal);
     $("contactModal").addEventListener("click", (event) => {
       if (event.target === $("contactModal")) closeContactModal();
+    });
+    $("serviceModal").addEventListener("click", (event) => {
+      if (event.target === $("serviceModal")) closeServiceModal();
+    });
+    $("serviceModal").addEventListener("input", (event) => {
+      if (event.target.id === "serviceModel") {
+        state.service.model = event.target.value;
+        const nextButton = $("serviceModal").querySelector('[data-service-action="next"]');
+        if (nextButton) nextButton.disabled = !serviceCanContinue();
+      }
+      if (event.target.id === "serviceDetail") {
+        state.service.detail = event.target.value;
+        const summary = $("serviceDetailSummary");
+        if (summary) summary.textContent = state.service.detail.trim() || "Sin detalle adicional.";
+      }
+    });
+    $("serviceModal").addEventListener("click", (event) => {
+      const selectButton = event.target.closest("[data-service-select]");
+      if (selectButton) {
+        state.service[selectButton.dataset.serviceSelect] = selectButton.dataset.value;
+        renderService();
+        return;
+      }
+
+      const actionButton = event.target.closest("[data-service-action]");
+      if (!actionButton || actionButton.disabled) return;
+      if (actionButton.dataset.serviceAction === "back") {
+        state.service.step = Math.max(1, state.service.step - 1);
+        renderService();
+        return;
+      }
+      if (actionButton.dataset.serviceAction === "whatsapp") {
+        continueServiceWhatsapp();
+        return;
+      }
+      if (!serviceCanContinue()) return;
+      state.service.step = Math.min(3, state.service.step + 1);
+      renderService();
     });
     ["linktreeQrLink", "linktreeContact"].forEach((id) => {
       $(id).addEventListener("click", (event) => {
@@ -2963,10 +4186,24 @@
         event.preventDefault();
         event.stopPropagation();
         openGallery(trigger.dataset.galleryId);
+        return;
+      }
+
+      const reserveTrigger = event.target.closest("[data-reserve-id]");
+      if (reserveTrigger) {
+        event.preventDefault();
+        event.stopPropagation();
+        openReserveModal(reserveTrigger.dataset.reserveId);
       }
     });
 
+    $("reserveClose").addEventListener("click", closeReserveModal);
+    $("reserveSubmit").addEventListener("click", continueReserveByWhatsapp);
+    $("reserveModal").addEventListener("click", (event) => {
+      if (event.target === $("reserveModal")) closeReserveModal();
+    });
     $("galleryClose").addEventListener("click", closeGallery);
+    $("galleryImage").addEventListener("error", showGalleryImageFallback);
     $("galleryModal").addEventListener("click", (event) => {
       if (event.target === $("galleryModal")) closeGallery();
     });
@@ -2980,10 +4217,12 @@
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && $("contactModal").classList.contains("show")) closeContactModal();
+      if (event.key === "Escape" && $("reserveModal").classList.contains("show")) closeReserveModal();
+      if (event.key === "Escape" && $("serviceModal").classList.contains("show")) closeServiceModal();
     });
 
     init();
   </script>
-  <script type="module" src="plan-canje-ui.js"></script>
+  <script type="module" src="plan-canje-ui.js?v=plan-canje-rebind-5a"></script>
 </body>
 </html>

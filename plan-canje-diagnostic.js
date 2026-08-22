@@ -90,7 +90,10 @@ async function fetchPlanCanjeRows(range = PLAN_CANJE_RANGE) {
 }
 
 function rowHasPlanCanjeTitle(row) {
-  return row.values.some((value) => normalizeText(value).includes("cotizador de plan caje"));
+  return row.values.some((value) => {
+    const text = normalizeText(value);
+    return text.includes("cotizador de plan caje") || text === "iphone plan canje";
+  });
 }
 
 function rowMatchesHeaders(row, requireFullHeaders = true) {

@@ -1,4 +1,4 @@
-await import("./plan-canje-diagnostic.js");
+await import("./plan-canje-diagnostic.js?v=plan-canje-rebind-5a");
 
 const logic = window.iClubPlanCanje;
 const WHATSAPP_URL = "https://wa.me/5491125003057";
@@ -39,7 +39,7 @@ const BENEFIT_PRODUCTS = [
     referencePrice: 125,
     specialPrice: 25,
     discountLabel: "80% OFF",
-    image: "assets/airpods-pro-aaa.jpg",
+    image: "assets/airpods-pro-aaa-transparent.png",
   },
   {
     id: "apple-watch-series-10-aaa",
@@ -47,7 +47,7 @@ const BENEFIT_PRODUCTS = [
     referencePrice: 200,
     specialPrice: 40,
     discountLabel: "80% OFF",
-    image: "assets/apple-watch-series-10-aaa.jpg",
+    image: "assets/apple-watch-series-10-aaa-transparent.png",
   },
   {
     id: "apple-watch-ultra-2-aaa",
@@ -55,33 +55,45 @@ const BENEFIT_PRODUCTS = [
     referencePrice: 250,
     specialPrice: 50,
     discountLabel: "80% OFF",
-    image: "assets/apple-watch-ultra-2-aaa.jpg",
+    image: "assets/apple-watch-ultra-2-aaa-transparent.png",
+  },
+  {
+    id: "cargador-apple-usb-c-20w-original",
+    name: "Cargador Apple USB-C 20W Original",
+    referencePrice: 80,
+    specialPrice: 45,
+    discountLabel: "40% OFF",
+    image: "assets/cargador-apple-usb-c-20w-original-transparent.png",
+    whatsappIcon: "🔌",
   },
 ];
 const GENERAL_CONDITIONS = [
   {
-    value: "Excelente",
-    title: "Excelente",
-    description: "Está impecable o prácticamente sin marcas.",
-    marks: "",
+    value: "MAL",
+    title: "MAL",
+    description: "Daños estéticos importantes y/o problemas funcionales.",
+    tone: "bad",
+    marks: {
+      front: '<span class="phone-mark crack one"></span><span class="phone-mark crack two"></span><span class="phone-mark crack four"></span><span class="phone-mark line three"></span><span class="phone-mark small five"></span>',
+    },
   },
   {
-    value: "Bueno",
-    title: "Bueno",
-    description: "Tiene marcas leves normales de uso.",
-    marks: '<span class="phone-mark tiny one"></span>',
+    value: "REGULAR",
+    title: "REGULAR",
+    description: "Detalles estéticos o desgaste por uso normal.",
+    tone: "regular",
+    marks: {
+      front: '<span class="phone-mark tiny one"></span><span class="phone-mark line three"></span><span class="phone-mark hairline six"></span>',
+    },
   },
   {
-    value: "Regular",
-    title: "Regular",
-    description: "Tiene marcas o golpes visibles.",
-    marks: '<span class="phone-mark tiny one"></span><span class="phone-mark small two"></span><span class="phone-mark line three"></span>',
-  },
-  {
-    value: "Malo",
-    title: "Malo",
-    description: "Presenta daños importantes.",
-    marks: '<span class="phone-mark crack one"></span><span class="phone-mark crack two"></span><span class="phone-mark small three"></span>',
+    value: "EXCELENTE",
+    title: "EXCELENTE",
+    description: "Sin detalles estéticos relevantes y funcionando correctamente.",
+    tone: "excellent",
+    marks: {
+      front: "",
+    },
   },
 ];
 
@@ -205,11 +217,11 @@ function hasReportedDamage() {
 }
 
 function isGeneralConditionDisabled(condition) {
-  return condition.value === "Excelente" && hasReportedDamage();
+  return condition.value === "EXCELENTE" && hasReportedDamage();
 }
 
 function sanitizeGeneralCondition() {
-  if (state.generalCondition === "Excelente" && hasReportedDamage()) {
+  if (state.generalCondition === "EXCELENTE" && hasReportedDamage()) {
     state.generalCondition = "";
   }
 }
@@ -320,12 +332,24 @@ function selectedBenefits() {
   return BENEFIT_PRODUCTS.filter((benefit) => selected.has(benefit.id));
 }
 
+function benefitPriceLabel(benefit, field = "specialPrice") {
+  return money(benefit[field]);
+}
+
 function totalBenefits() {
   return selectedBenefits().reduce((sum, benefit) => sum + benefit.specialPrice, 0);
 }
 
+function benefitsTotalLabel() {
+  return money(totalBenefits());
+}
+
 function totalFinal(product) {
   return differenceValue(product) + totalBenefits();
+}
+
+function totalFinalLabel(product) {
+  return money(totalFinal(product));
 }
 
 function searchedNextProduct() {
@@ -448,7 +472,6 @@ function recommendationBadge(product, recommendations) {
 
 function whatsappUrlForOperation(product, difference) {
   const benefits = selectedBenefits();
-  const finalAmount = difference + totalBenefits();
   const lines = [
     "👋 Hola iClub! Quiero avanzar con mi Plan Canje.",
     "",
@@ -465,9 +488,9 @@ function whatsappUrlForOperation(product, difference) {
     `🔄 *Diferencia Plan Canje: ${money(difference)}*`,
     "",
     benefits.length ? "🎁 *Beneficios que agregué*" : null,
-    ...benefits.map((benefit) => `${benefit.name} — ${money(benefit.specialPrice)}`),
+    ...benefits.map((benefit) => `${benefit.whatsappIcon ? `${benefit.whatsappIcon} ` : ""}${benefit.name} — ${benefitPriceLabel(benefit)}`),
     benefits.length ? "" : null,
-    `*Total estimado: ${money(finalAmount)}*`,
+    `*Total estimado: ${totalFinalLabel(product)}*`,
     "",
     "Quiero avanzar con esta opción y confirmar disponibilidad.",
   ].filter((line) => line !== null && line !== undefined);
@@ -748,8 +771,8 @@ function stepDifference() {
   }
 
   const benefits = selectedBenefits();
-  const benefitsTotal = totalBenefits();
-  const finalTotal = totalFinal(product);
+  const benefitsTotal = benefitsTotalLabel();
+  const finalTotal = totalFinalLabel(product);
   return `
     <div class="trade-step trade-summary">
       <div class="trade-step-title">
@@ -770,15 +793,15 @@ function stepDifference() {
         ${benefits.length ? `
           <div class="trade-benefit-summary final">
             <span>Beneficios agregados</span>
-            ${benefits.map((benefit) => `<div><strong>${escapeHtml(benefit.name)}</strong><small>${money(benefit.specialPrice)}</small></div>`).join("")}
+            ${benefits.map((benefit) => `<div><strong>${escapeHtml(benefit.name)}</strong><small>${benefitPriceLabel(benefit)}</small></div>`).join("")}
           </div>
           <div class="trade-total-breakdown">
             <div><span>Diferencia Plan Canje</span><strong>${money(difference)}</strong></div>
-            <div><span>Beneficios</span><strong>${money(benefitsTotal)}</strong></div>
+            <div><span>Beneficios</span><strong>${benefitsTotal}</strong></div>
           </div>
           <div class="trade-final difference total">
             <span>TOTAL A ABONAR</span>
-            <strong>${money(finalTotal)}</strong>
+            <strong>${finalTotal}</strong>
             <small>${escapeHtml(nextProductModel(product))} + beneficios seleccionados</small>
           </div>
         ` : `
@@ -818,15 +841,15 @@ function stepBenefits() {
     <div class="trade-step">
       <div class="trade-step-title">
         <h3>Tu iPhone desbloqueó beneficios especiales</h3>
-        <p>Por elegir este equipo, podés sumar productos seleccionados con 80% OFF.</p>
+        <p>Por elegir este equipo, podés sumar productos seleccionados con precio especial.</p>
       </div>
       <div class="trade-benefits-grid">
         ${BENEFIT_PRODUCTS.map(benefitCard).join("")}
       </div>
       <div class="trade-benefit-summary">
-        <span>Beneficios seleccionados: ${money(totalBenefits())}</span>
+        <span>Beneficios seleccionados: ${benefitsTotalLabel()}</span>
         ${benefits.length
-          ? benefits.map((benefit) => `<div><strong>${escapeHtml(benefit.name)}</strong><small>${money(benefit.specialPrice)}</small></div>`).join("")
+          ? benefits.map((benefit) => `<div><strong>${escapeHtml(benefit.name)}</strong><small>${benefitPriceLabel(benefit)}</small></div>`).join("")
           : `<p>Podés continuar sin agregar beneficios.</p>`}
       </div>
       <div class="trade-actions">
@@ -847,10 +870,12 @@ function generalConditionButton(condition) {
   const selected = state.generalCondition === condition.value;
   const disabled = isGeneralConditionDisabled(condition);
   return `
-    <button class="trade-condition-option ${selected ? "selected" : ""} ${disabled ? "disabled" : ""}" type="button" data-trade-select="generalCondition" data-value="${escapeAttr(condition.value)}" ${disabled ? "disabled aria-disabled=\"true\"" : ""}>
-      <span class="trade-phone-illustration ${normalize(condition.value)}" aria-hidden="true">
-        <span class="phone-speaker"></span>
-        ${condition.marks}
+    <button class="trade-condition-option ${selected ? "selected" : ""} ${disabled ? "disabled" : ""} ${escapeAttr(condition.tone)}" type="button" data-trade-select="generalCondition" data-value="${escapeAttr(condition.value)}" ${disabled ? "disabled aria-disabled=\"true\"" : ""}>
+      <span class="trade-phone-pair" aria-hidden="true">
+        <span class="trade-phone-illustration front ${escapeAttr(condition.tone)}">
+          <span class="phone-speaker"></span>
+          ${condition.marks.front}
+        </span>
       </span>
       <span class="trade-condition-copy">
         <strong>${escapeHtml(condition.title)}</strong>
@@ -909,8 +934,9 @@ function benefitCard(benefit) {
       </span>
       <span class="trade-benefit-copy">
         <strong>${escapeHtml(benefit.name)}</strong>
-        <span><s>${money(benefit.referencePrice)}</s><b>${escapeHtml(benefit.discountLabel)}</b></span>
-        <em>${money(benefit.specialPrice)}</em>
+        <span><i>Precio habitual:</i><s>${benefitPriceLabel(benefit, "referencePrice")}</s>${benefit.discountLabel ? `<b>${escapeHtml(benefit.discountLabel)}</b>` : ""}</span>
+        <em>${benefitPriceLabel(benefit)}</em>
+        ${benefit.note ? `<u>${escapeHtml(benefit.note)}</u>` : ""}
         <small>${selected ? "Agregado ✓" : "Agregar"}</small>
       </span>
     </button>
