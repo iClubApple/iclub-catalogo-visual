@@ -1045,15 +1045,18 @@
   .trade-entry {
     display: grid;
     grid-template-columns: 1fr;
-    padding: 16px;
+    padding: 0;
+    gap: 12px;
   }
 
   .trade-entry-copy {
     min-height: 0;
+    width: 100%;
+    padding: 18px 14px;
   }
 
   .trade-entry-button {
-    width: 100%;
+    width: min(100%, 260px);
     justify-self: stretch;
   }
 
