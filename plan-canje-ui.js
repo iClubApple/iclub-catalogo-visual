@@ -1,4 +1,4 @@
-await import("./plan-canje-diagnostic.js?v=plan-canje-block-title");
+await import("./plan-canje-diagnostic.js?v=plan-canje-rebind-5a");
 
 const logic = window.iClubPlanCanje;
 const WHATSAPP_URL = "https://wa.me/5491125003057";
