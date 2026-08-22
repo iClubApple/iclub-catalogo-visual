@@ -6,7 +6,7 @@
   <title>iClub Catalogo Visual</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/logo-iclub-oficial.png">
-  <link rel="stylesheet" href="plan-canje.css?v=benefits-image-fit-4b">
+  <link rel="stylesheet" href="plan-canje.css?v=mobile-layout-hotfix">
   <style>
     :root {
       --bg: #f6f7f9;
@@ -1720,15 +1720,16 @@
         grid-template-areas:
           "brand"
           "actions";
+        gap: 12px;
       }
 
       .actions {
-        justify-content: stretch;
-        flex-wrap: wrap;
+        justify-content: center;
+        flex-wrap: nowrap;
       }
 
       .button {
-        flex: 1;
+        flex: 0 1 auto;
       }
 
       .brand-wordmark {
@@ -1742,7 +1743,7 @@
       }
 
       .promo-inner {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .trust-inner {
@@ -1788,16 +1789,35 @@
         padding-right: 12px;
       }
 
+      .topbar-inner {
+        padding-top: 14px;
+        padding-bottom: 12px;
+      }
+
+      .brand-wordmark {
+        width: 102px;
+        height: 41px;
+      }
+
+      .brand-tagline {
+        font-size: 10px;
+      }
+
       .promo-inner {
-        display: flex;
-        justify-content: flex-start;
-        overflow-x: auto;
-        flex-wrap: nowrap;
-        scrollbar-width: none;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        min-height: auto;
+        padding-top: 10px;
+        padding-bottom: 10px;
       }
 
       .promo-link {
-        flex: 0 0 auto;
+        width: 100%;
+        min-height: 36px;
+        justify-content: center;
+        padding: 0 12px;
+        font-size: 12px;
       }
 
       .promo-inner::-webkit-scrollbar {
