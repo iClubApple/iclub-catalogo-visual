@@ -2284,8 +2284,18 @@
       return `$${Math.round(number).toLocaleString("es-AR", { maximumFractionDigits: 0 })}`;
     }
 
+    function isUsdPriceValue(value) {
+      const text = String(value || "").trim();
+      if (!text) return false;
+      if (/usd/i.test(text)) return true;
+      if (/\$|ars/i.test(text)) return false;
+      const number = parseNumber(text);
+      return Number.isFinite(number) && number > 0 && number < 10000;
+    }
+
     function arsEquivalent(value) {
       if (!state.exchangeRate) return "";
+      if (!isUsdPriceValue(value)) return "";
       const usd = parseNumber(value);
       if (!Number.isFinite(usd) || usd <= 0) return "";
       return formatArsValue(usd * state.exchangeRate);
@@ -2703,7 +2713,9 @@
       const text = normalize(model);
       if (text.includes("iphone")) return "iPhone";
       if (text.includes("ipad")) return "iPad";
+      if (text.includes("apple pencil") || text.includes("pencil")) return "Apple Pencil";
       if (text.includes("watch")) return "Apple Watch";
+      if (/^serie\s+(?:\d+|ultra)\b/.test(text) && /\b\d{2}\s*mm\b/.test(text)) return "Apple Watch";
       if (text.includes("mac")) return "Mac";
       if (text.includes("airpod")) return "AirPods";
       if (text.includes("airtag")) return "AirTag";
@@ -2717,7 +2729,7 @@
       const text = normalize(`${product.title} ${product.model} ${product.category}`);
       const allowed = [
         "iphone", "ipad", "macbook", "imac", "mac mini", "mac studio", "apple watch",
-        "watch", "airpods", "airtag", "vision pro", "magic mouse", "magsafe",
+        "watch", "apple pencil", "pencil", "airpods", "airtag", "vision pro", "magic mouse", "magsafe",
       ];
       const excluded = [
         "funda", "fundas", "vidrio", "glass", "templado", "hidrogel", "protector",
@@ -3290,7 +3302,7 @@
         ["iPhone seminuevos", products.filter((item) => item.category === "iPhone" && isUsed(item))],
         ["Mac", products.filter((item) => item.category === "Mac")],
         ["iPad, Watch y AirPods", products.filter((item) => ["iPad", "Apple Watch", "AirPods"].includes(item.category))],
-        ["Otros Apple", products.filter((item) => ["AirTag", "Vision Pro", "Magic Mouse", "MagSafe"].includes(item.category))],
+        ["Otros Apple", products.filter((item) => ["Apple Pencil", "AirTag", "Vision Pro", "Magic Mouse", "MagSafe"].includes(item.category))],
       ].filter(([, items]) => items.length);
 
       return sections.map(([title, items]) => {
