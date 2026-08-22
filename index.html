@@ -2729,7 +2729,7 @@
     function isCatalogEligible(product) {
       const text = normalize(`${product.title} ${product.model} ${product.category}`);
       const allowed = [
-        "iphone", "ipad", "macbook", "imac", "mac mini", "mac studio", "apple watch",
+        "iphone", "ipad", "macbook", "mackbook", "imac", "mac mini", "mac studio", "apple watch",
         "watch", "apple pencil", "pencil", "airpods", "airtag", "vision pro", "magic mouse", "magsafe",
       ];
       const excluded = [
@@ -3470,6 +3470,7 @@
         .replace(/\bIphone\b/g, "iPhone")
         .replace(/\bIpad\b/g, "iPad")
         .replace(/\bMacbook\b/g, "MacBook")
+        .replace(/\bMackbook\b/g, "MacBook")
         .replace(/\bAirpods\b/g, "AirPods")
         .replace(/\bSe\b/g, "SE")
         .replace(/\bUsb\s*C\b/g, "USB-C");
@@ -3488,6 +3489,10 @@
       name = removeKnownDetail(name, product.capacity);
       name = removeKnownDetail(name, product.color);
       name = name.replace(/\b\d+\s*(gb|tb)\b/ig, " ");
+      if (product.category === "Mac") {
+        name = name.replace(/\b\d{2}(?:[,.]\d)?\s*["”]/g, " ");
+      }
+      name = name.replace(/\s*\.\s*/g, " ");
       name = name.replace(/\s+/g, " ").trim();
       if (product.category === "Apple Watch" && /^serie\b/i.test(name) && !/^apple watch\b/i.test(name)) {
         name = `Apple Watch ${name}`;
@@ -3504,6 +3509,7 @@
       const modelAlreadyShowsQuality = quality && normalize(product.model).includes(normalize(quality));
       const parts = [
         product.capacity,
+        embeddedModelSpecs(product),
         product.color,
         modelAlreadyShowsQuality ? "" : quality,
         product.condition,
@@ -3519,6 +3525,18 @@
           return true;
         })
         .join(" · ");
+    }
+
+    function embeddedModelSpecs(product) {
+      if (product.capacity || product.category !== "Mac") return "";
+      const source = String(product.model || "");
+      const memoryStorage = [...source.matchAll(/\b\d+\s*(?:GB|TB)\b/ig)].map((match) =>
+        match[0].replace(/\s+/g, "").toUpperCase()
+      );
+      const screen = source.match(/\b\d{2}(?:[,.]\d)?\s*["”]/);
+      const parts = [...memoryStorage];
+      if (screen) parts.push(screen[0].replace(/\s+/g, ""));
+      return parts.join(" · ");
     }
 
     function productQualityLabel(product) {
