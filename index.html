@@ -2371,6 +2371,7 @@
         batteryPriceTier: row.__batteryPriceTier || "",
         batteryPriceBlock: row.__batteryPriceBlock || "",
         batteryPriceModel: row.__batteryPriceModel || "",
+        catalogBlock: row.__catalogBlock || "",
       };
     }
 
@@ -3033,12 +3034,28 @@
 
     function tableToRows(table) {
       const columnMap = sheetColumnMap(table);
+      let currentCatalogBlock = "";
       let currentBatteryPriceBlock = "";
       let currentBatteryPriceTier = "";
       let currentBatteryPriceModel = "";
       return table.rows
         .map((row, rowIndex) => {
           const rowValues = Array.from({ length: Math.max(24, row?.c?.length || 0) }, (_, index) => cellText(row, index));
+          const modelCell = cellText(row, columnMap.model);
+          const promotionCell = cellText(row, columnMap.promotion);
+          const isSectionHeading = !cellText(row, columnMap.link_info)
+            && !cellText(row, columnMap.photo_video)
+            && !cellText(row, columnMap.capacity)
+            && !cellText(row, columnMap.color)
+            && !cellText(row, columnMap.condition)
+            && !cellText(row, columnMap.stock)
+            && !cellText(row, columnMap.stock_24hs)
+            && !cellText(row, columnMap.stock_provider)
+            && !cellText(row, columnMap.cash_price)
+            && (promotionCell || modelCell);
+          if (isSectionHeading) {
+            currentCatalogBlock = promotionCell || modelCell;
+          }
           const batteryHeading = rowValues.find((value) => batteryPriceTierFromTitle(value));
           if (batteryHeading) {
             currentBatteryPriceBlock = batteryHeading;
@@ -3053,6 +3070,7 @@
           item.__batteryPriceBlock = currentBatteryPriceBlock;
           item.__batteryPriceTier = currentBatteryPriceTier;
           item.__batteryPriceModel = currentBatteryPriceModel;
+          item.__catalogBlock = currentCatalogBlock;
           return item;
         })
         .filter(isRealProductRow);
@@ -3452,7 +3470,9 @@
         .replace(/\bIphone\b/g, "iPhone")
         .replace(/\bIpad\b/g, "iPad")
         .replace(/\bMacbook\b/g, "MacBook")
-        .replace(/\bAirpods\b/g, "AirPods");
+        .replace(/\bAirpods\b/g, "AirPods")
+        .replace(/\bSe\b/g, "SE")
+        .replace(/\bUsb\s*C\b/g, "USB-C");
     }
 
     function removeKnownDetail(text, detail) {
@@ -3469,13 +3489,23 @@
       name = removeKnownDetail(name, product.color);
       name = name.replace(/\b\d+\s*(gb|tb)\b/ig, " ");
       name = name.replace(/\s+/g, " ").trim();
+      if (product.category === "Apple Watch" && /^serie\b/i.test(name) && !/^apple watch\b/i.test(name)) {
+        name = `Apple Watch ${name}`;
+      }
+      const quality = productQualityLabel(product);
+      if (quality && !normalize(name).includes(normalize(quality))) {
+        name = `${name} ${quality}`;
+      }
       return displayCase(name || product.model || product.title || "Producto iClub");
     }
 
     function presentationSpecs(product) {
+      const quality = productQualityLabel(product);
+      const modelAlreadyShowsQuality = quality && normalize(product.model).includes(normalize(quality));
       const parts = [
         product.capacity,
         product.color,
+        modelAlreadyShowsQuality ? "" : quality,
         product.condition,
         product.battery ? `Bateria ${product.battery}` : "",
       ];
@@ -3489,6 +3519,12 @@
           return true;
         })
         .join(" · ");
+    }
+
+    function productQualityLabel(product) {
+      const text = normalize(`${product.model} ${product.catalogBlock} ${product.promotion} ${product.notes}`);
+      if (text.includes("aaa")) return "AAA";
+      return "";
     }
 
     function availabilityView(product) {
