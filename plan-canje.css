@@ -1057,7 +1057,7 @@
 
   .trade-entry-button {
     width: min(100%, 260px);
-    justify-self: stretch;
+    justify-self: center;
   }
 
   .trade-button {
