@@ -2166,6 +2166,7 @@
     const EXCHANGE_RATE_SHEET_NAME = "PRECIOS EQUIPOS APPLE";
     const EXCHANGE_RATE_RANGE = "B1";
     const SOURCE_LABEL = "Stock equipos y ofertas";
+    const CATALOG_MAX_SHEET_ROW = 568;
     const DRIVE_IMAGE_RESOLVER_URL = "https://script.google.com/macros/s/AKfycbyiHxpOvwkEOTl7UtfmIXZS5VbpEP9q2lBUDpBjqrJrQBd3hUtNzhvAgeRBZBAIFy6N/exec";
     const ICLUB_CONTACT = {
       whatsapp: "5491125003057",
@@ -3220,6 +3221,7 @@
           item.__catalogBlock = currentCatalogBlock;
           return item;
         })
+        .filter((row) => row.__rowNumber <= CATALOG_MAX_SHEET_ROW)
         .filter(isRealProductRow);
     }
 
