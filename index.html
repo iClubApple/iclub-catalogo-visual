@@ -2181,6 +2181,57 @@
     const IMAGE_RESOLVER_CONCURRENCY = 2;
     const IMAGE_CACHE_TTL = 30 * 60 * 1000;
     const IMAGE_CACHE_PREFIX = "iclub:image-row:";
+    const DRIVE_FOLDER_IMAGE_FALLBACKS = {
+      "1QO9DJLWwv_QUbSteUZBAat8zSP-OVfXr": [
+        "1sHAKqXVIRQtCaeueLcdntlcFDMYig5ko",
+        "170Z_hyZdXzMzJxCG34BBbPDimcPdqSX9",
+        "1u79t7KeIfMCXGhP9ha_ARymbiflvnMqR",
+        "12yRPmhuFUrEo3ZWdXGHKnSneR-vjqRcc",
+        "1-0g3YtWvPbwTfWM-RFVJi5BPaKJf6aXO",
+        "1Sk6xQuOouhwNNZryHSwDFDNSRijZFM0P",
+      ],
+      "1XqUtDi7Pb0LXjDY1snH56PKwPLUhHh69": [
+        "1rwp0hmz1bah7iCWtVE5gX_lVKgzSvaJD",
+        "1IV3qmUTn0V8S1AqBY35vuuxxPfumfOoT",
+        "1BbveGuu8gOx-RL54GHsI2fpWYykaKKlA",
+        "10LbYXk81bZAjdf5D0G0TpTSP7UwFQmpO",
+        "1Jo3HFZycnKxEHaCRtcopuGlAjiTqtWch",
+        "1xoD9duXX8kLM8AuZsSxAdjnAdVcmfHlG",
+      ],
+      "1bEDqwYJxmexuWg0NrEqDiLhavw73LKNT": [
+        "1NlII6u4YA4S__sWHfiGz3rJGku5LrQXS",
+        "1IX_j_kw5LzmLp0xFmfnFtZ6BC8mdacQl",
+        "1Jx0059rm9R651pdtb4OnaDtp-CwJvLNQ",
+        "1DL0OYLLBJAaRtBTqMZK6z-458rQkrFUc",
+        "1iikY3GCJDFSxsM0EBeFSSJbP8HoPgTsi",
+        "1Ld8Q8Z9OxUOxxmOdu26ueO0afR3cIV9n",
+        "1COr_iJP3fYipOdvLLNEAJW6H0n2DFD59",
+      ],
+      "1aJiWdFBTzMXCFnTWfsnr2ymT8h-L_whA": [
+        "1Qo9IjMP5BmY1pb4smWqAQEs8tv5_FcZF",
+        "1DsiyglS7NPgd8VLqisgG76hQ96TpSI9s",
+        "1MCvpUiciTX6xtenRRfePkYDJn1rNfQHA",
+      ],
+      "12yOu-nKJMWO0afK4cXDkyp2J-EK6G1MK": [
+        "1pWeLk87A9nZgTjkIKLogDd02E3-PGpiV",
+        "1Y2F02q1O82Pr-UozoCyNLGtLFUxn-QK6",
+        "1wKOX0KPxfeGb-rde5apk0HsFc53KtA-z",
+        "1ogLNhpAjSCrImIoVVp0MVa0KaG9IFaHx",
+        "14sUfK5gIo8avIsCW1-qsE398wifiXD5o",
+        "12yx3VEVfWRSoYNFUUX1jxLRrrR0RoTGq",
+        "1SozY_TPG1BSo725mOU0-Ke7V4el8XI1T",
+      ],
+      "1wUQnWhJvxwiQ4ZVXFHiBLC2jn7uK9MCu": [
+        "1vhzxsL7N3rcLyzR_DtalElFYNzgNy0cY",
+        "1JIjJ8Aa7EAjiLzNi9EjsG7QGybr1cukc",
+        "1CkUd0xUBhMKPouUYw8lcMo3DpP1z7RN6",
+        "1lYunhmNABN8Lyi27t8Wmnmoy1vYrCTSD",
+        "1Ouv_41GI8aV6nzkgKcnTxLxClqliAeN_",
+        "1zaPmrusqlulAI65oes-G4xjrbpDtH2pm",
+        "15OqEQCFQ_2OZ5czL-ELd8LUf_J_BvH0X",
+        "1iEcG8OVG7X9XjYpzjD_Ax1fvt6Zdfi5s",
+      ],
+    };
     const FIXED_COLUMNS = [
       "link_info",
       "photo_video",
@@ -2493,6 +2544,10 @@
       return `${IMAGE_CACHE_PREFIX}${SHEET_ID}:${SHEET_NAME}:${rowNumber}`;
     }
 
+    function folderImageCacheKey(folderId) {
+      return `${IMAGE_CACHE_PREFIX}${SHEET_ID}:${SHEET_NAME}:folder:${folderId}`;
+    }
+
     function readImageCache(rowNumber) {
       try {
         const raw = sessionStorage.getItem(imageCacheKey(rowNumber));
@@ -2519,6 +2574,39 @@
       }
     }
 
+    function readFolderImageCache(folderId) {
+      try {
+        const raw = sessionStorage.getItem(folderImageCacheKey(folderId));
+        if (!raw) return null;
+        const cached = JSON.parse(raw);
+        if (!cached || Date.now() - cached.savedAt > IMAGE_CACHE_TTL) {
+          sessionStorage.removeItem(folderImageCacheKey(folderId));
+          return null;
+        }
+        return cached.images?.length ? cached.images : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function writeFolderImageCache(folderId, images) {
+      try {
+        sessionStorage.setItem(folderImageCacheKey(folderId), JSON.stringify({
+          savedAt: Date.now(),
+          images,
+        }));
+      } catch {
+        // If storage is full or blocked, image loading still works without cache.
+      }
+    }
+
+    function fallbackImagesForFolder(folderId) {
+      const fileIds = DRIVE_FOLDER_IMAGE_FALLBACKS[folderId] || [];
+      return fileIds.map((fileId) =>
+        `https://drive.google.com/thumbnail?id=${encodeURIComponent(fileId)}&sz=w${DRIVE_THUMBNAIL_SIZE}`
+      );
+    }
+
     function applyResolvedImage(product, rowData) {
       const mainImage = normalizeResolvedImages([rowData.mainImage || ""])[0] || "";
       const images = unique([
@@ -2537,25 +2625,70 @@
       product.photo = mainImage || nextImages[0] || product.photo || "";
     }
 
+    function applyFolderImages(product, images, error = "") {
+      const nextImages = normalizeResolvedImages(images || []);
+      product.imageSource.images = nextImages;
+      product.imageSource.error = error || (nextImages.length ? "" : "No se encontraron JPG, JPEG, PNG o WEBP en la carpeta.");
+      product.imageSource.resolvedFromSheet = true;
+      product.images = nextImages;
+      product.photo = nextImages[0] || product.photo || "";
+    }
+
     async function resolveImagesFromSheetLinks(products, options = {}) {
       const productsWithDriveFolders = products
         .filter((product) => product.imageSource.folderId);
-      const pendingProducts = [];
+      const pendingFolderGroups = new Map();
 
       productsWithDriveFolders.forEach((product) => {
-        const rowNumber = product.raw.__rowNumber;
-        const cached = rowNumber ? readImageCache(rowNumber) : null;
-        if (cached) {
-          applyResolvedImage(product, cached);
+        const folderId = product.imageSource.folderId;
+        const fallbackImages = fallbackImagesForFolder(folderId);
+        if (fallbackImages.length) {
+          applyFolderImages(product, fallbackImages);
+          writeFolderImageCache(folderId, fallbackImages);
           return;
         }
-        pendingProducts.push(product);
+        const cached = folderId ? readFolderImageCache(folderId) : null;
+        if (cached) {
+          applyFolderImages(product, cached);
+          return;
+        }
+        if (!pendingFolderGroups.has(folderId)) pendingFolderGroups.set(folderId, []);
+        pendingFolderGroups.get(folderId).push(product);
       });
 
-      if (pendingProducts.length !== productsWithDriveFolders.length) {
+      if (pendingFolderGroups.size !== productsWithDriveFolders.length) {
         options.onBatch?.();
       }
 
+      const folderEntries = [...pendingFolderGroups.entries()];
+      for (let index = 0; index < folderEntries.length; index += IMAGE_RESOLVER_CONCURRENCY) {
+        const batch = folderEntries.slice(index, index + IMAGE_RESOLVER_CONCURRENCY);
+        await Promise.all(batch.map(async ([folderId, groupProducts]) => {
+          try {
+            const images = await fetchDriveFolderImages(folderId);
+            writeFolderImageCache(folderId, images);
+            groupProducts.forEach((product) => applyFolderImages(product, images));
+          } catch (error) {
+            groupProducts.forEach((product) => applyFolderImages(product, [], error.message));
+          }
+        }));
+        options.onBatch?.();
+      }
+
+      const pendingProducts = [];
+      products
+        .filter((product) => !product.imageSource.folderId)
+        .filter((product) => product.raw.__rowNumber)
+        .filter((product) => !product.images.length)
+        .forEach((product) => {
+          const rowNumber = product.raw.__rowNumber;
+          const cached = rowNumber ? readImageCache(rowNumber) : null;
+          if (cached) {
+            applyResolvedImage(product, cached);
+            return;
+          }
+          pendingProducts.push(product);
+        });
       const rowNumbers = pendingProducts.map((product) => product.raw.__rowNumber).filter(Boolean);
       if (!rowNumbers.length) return;
 
@@ -2618,6 +2751,9 @@
     }
 
     async function fetchDriveFolderImages(folderId) {
+      const fallbackImages = fallbackImagesForFolder(folderId);
+      if (fallbackImages.length) return fallbackImages;
+
       if (DRIVE_IMAGE_RESOLVER_URL) {
         const payload = await fetchDriveImageResolver(folderId);
         return normalizeResolvedImages(payload.images || payload.files || []);
@@ -2643,7 +2779,7 @@
         const timeout = setTimeout(() => {
           cleanup();
           reject(new Error("El resolvedor de imagenes no respondio."));
-        }, 15000);
+        }, 45000);
 
         function cleanup() {
           clearTimeout(timeout);
