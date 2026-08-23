@@ -2637,6 +2637,7 @@
     async function resolveImagesFromSheetLinks(products, options = {}) {
       const productsWithDriveFolders = products
         .filter((product) => product.imageSource.folderId);
+      const rowTargets = new Map();
       const pendingFolderGroups = new Map();
 
       productsWithDriveFolders.forEach((product) => {
@@ -2652,30 +2653,25 @@
           applyFolderImages(product, cached);
           return;
         }
+        if (!product.raw.__rowNumber) return;
         if (!pendingFolderGroups.has(folderId)) pendingFolderGroups.set(folderId, []);
         pendingFolderGroups.get(folderId).push(product);
       });
 
-      if (pendingFolderGroups.size !== productsWithDriveFolders.length) {
+      pendingFolderGroups.forEach((groupProducts, folderId) => {
+        const representative = groupProducts[0];
+        const rowNumber = representative?.raw.__rowNumber;
+        if (!rowNumber) return;
+        rowTargets.set(String(rowNumber), {
+          products: groupProducts,
+          folderId,
+        });
+      });
+
+      if (rowTargets.size !== productsWithDriveFolders.length) {
         options.onBatch?.();
       }
 
-      const folderEntries = [...pendingFolderGroups.entries()];
-      for (let index = 0; index < folderEntries.length; index += IMAGE_RESOLVER_CONCURRENCY) {
-        const batch = folderEntries.slice(index, index + IMAGE_RESOLVER_CONCURRENCY);
-        await Promise.all(batch.map(async ([folderId, groupProducts]) => {
-          try {
-            const images = await fetchDriveFolderImages(folderId);
-            writeFolderImageCache(folderId, images);
-            groupProducts.forEach((product) => applyFolderImages(product, images));
-          } catch (error) {
-            groupProducts.forEach((product) => applyFolderImages(product, [], error.message));
-          }
-        }));
-        options.onBatch?.();
-      }
-
-      const pendingProducts = [];
       products
         .filter((product) => !product.imageSource.folderId)
         .filter((product) => product.raw.__rowNumber)
@@ -2687,9 +2683,12 @@
             applyResolvedImage(product, cached);
             return;
           }
-          pendingProducts.push(product);
+          rowTargets.set(String(rowNumber), {
+            products: [product],
+            folderId: "",
+          });
         });
-      const rowNumbers = pendingProducts.map((product) => product.raw.__rowNumber).filter(Boolean);
+      const rowNumbers = [...rowTargets.keys()];
       if (!rowNumbers.length) return;
 
       const batches = [];
@@ -2711,30 +2710,40 @@
           });
           const productsByRow = payload.products || payload.byRow || {};
 
-          pendingProducts.forEach((product) => {
-            const sheetRow = String(product.raw.__rowNumber);
+          batchRows.forEach((sheetRow) => {
             const rowData = productsByRow[sheetRow];
             if (!rowData) return;
+            const target = rowTargets.get(String(sheetRow));
+            if (!target) return;
 
             writeImageCache(sheetRow, rowData);
-            applyResolvedImage(product, rowData);
+            const resolvedImages = unique([
+              ...normalizeResolvedImages([rowData.mainImage || ""]),
+              ...normalizeResolvedImages(rowData.images || rowData.files || []),
+            ]);
+            if (target.folderId && resolvedImages.length) {
+              writeFolderImageCache(target.folderId, resolvedImages);
+            }
+            target.products.forEach((product) => applyResolvedImage(product, rowData));
 
             console.log("iClub image resolver", {
               sheetRow,
-              model: product.model,
+              model: target.products[0]?.model,
               resolvedMainImage: rowData.mainImage || "",
               resolvedImages: rowData.images || [],
-              productPhoto: product.photo,
-              productImages: product.images,
+              productPhoto: target.products[0]?.photo,
+              productImages: target.products[0]?.images,
             });
           });
           options.onBatch?.();
         } catch (error) {
-          pendingProducts
-            .filter((product) => batchRows.includes(product.raw.__rowNumber))
-            .forEach((product) => {
+          batchRows.forEach((sheetRow) => {
+            const target = rowTargets.get(String(sheetRow));
+            if (!target) return;
+            target.products.forEach((product) => {
               product.imageSource.error = error.message;
             });
+          });
           options.onBatch?.();
         }
       }
