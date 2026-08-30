@@ -1485,23 +1485,24 @@
     }
 
     .promo-callout {
-      border: 1px solid rgba(0, 113, 227, .14);
+      border: 1px solid rgba(20, 168, 99, .36);
       border-radius: 8px;
       padding: 8px 10px;
-      background: #f8fbff;
+      background: linear-gradient(180deg, #f0fbf5 0%, #fbfffd 100%);
+      box-shadow: inset 3px 0 0 #14a863;
       display: grid;
       gap: 2px;
     }
 
     .promo-callout span {
-      color: var(--blue);
+      color: #08764b;
       font-size: 11px;
       font-weight: 900;
       text-transform: uppercase;
     }
 
     .promo-callout strong {
-      color: #1f2937;
+      color: #064f34;
       font-size: 14px;
       line-height: 1.25;
       overflow-wrap: anywhere;
@@ -3011,6 +3012,11 @@
       };
     }
 
+    function promotionForDisplay(product) {
+      if (selectedBatteryOption(product) !== "actual") return null;
+      return promotionView(product.promotion);
+    }
+
     function batteryChoiceTemplate(product) {
       if (!product.batteryPricing?.new100) return "";
       const selected = selectedBatteryOption(product);
@@ -3781,7 +3787,7 @@
       const modelName = presentationModel(displayProduct);
       const specs = presentationSpecs(displayProduct);
       const availability = availabilityView(product);
-      const promotion = promotionView(product.promotion);
+      const promotion = promotionForDisplay(product);
       const photo = product.photo && /^https?:\/\//i.test(product.photo)
         ? `<img src="${escapeAttr(product.photo)}" alt="${escapeAttr(product.title)}" loading="lazy" onerror="this.replaceWith(window.placeholderNode('${escapeAttr(modelName)}'))">`
         : `<div class="placeholder">${escapeHtml(shortModel(modelName))}</div>`;
