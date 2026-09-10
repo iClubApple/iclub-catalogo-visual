@@ -3253,6 +3253,8 @@
       if (["iphone", "iphones", "equipo", "equipos", "macbook", "macbooks", "fundas"].includes(model)) return false;
       if (model.includes("cotizador") || model.includes("plan caje") || model.includes("plan canje")) return false;
       if (/^macbook\s+(air|pro)\s+m4\b/.test(model)) return false;
+      if (/^apple\s+watch\s+(serie|series)\s+10\b/.test(model)) return false;
+      if (/^apple\s+watch\s+ultra\s+2\b/.test(model)) return false;
 
       const hasCommercialValue = Boolean(
         row.capacity || row.color || row.condition || row.battery || row.serial ||
