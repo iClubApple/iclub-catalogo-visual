@@ -1,4 +1,4 @@
-const planCanjeDiagnosticReady = import("./plan-canje-diagnostic.js?v=plan-canje-click-fix");
+const planCanjeDiagnosticReady = import("./plan-canje-diagnostic.js?v=plan-canje-direct-open");
 
 const WHATSAPP_URL = "https://wa.me/5491125003057";
 
@@ -1068,5 +1068,6 @@ function bindTradeInEntry() {
   byId("planCanjeOpen")?.addEventListener("click", openTradeIn);
 }
 
+window.iClubOpenPlanCanje = openTradeIn;
 bindTradeInEntry();
 ensureModal();
