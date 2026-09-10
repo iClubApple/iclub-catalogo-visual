@@ -1,6 +1,5 @@
-await import("./plan-canje-diagnostic.js?v=plan-canje-rebind-5a");
+const planCanjeDiagnosticReady = import("./plan-canje-diagnostic.js?v=plan-canje-click-fix");
 
-const logic = window.iClubPlanCanje;
 const WHATSAPP_URL = "https://wa.me/5491125003057";
 
 const state = {
@@ -27,6 +26,7 @@ const state = {
 const money = (value) => `USD ${Number(value || 0).toLocaleString("es-AR", { maximumFractionDigits: 0 })}`;
 const normalize = (value) => String(value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 const byId = (id) => document.getElementById(id);
+const planCanjeLogic = () => window.iClubPlanCanje;
 const TOTAL_STEPS = 6;
 const STEP_QUOTE_RESULT = 6;
 const STEP_NEXT_IPHONE = 7;
@@ -136,6 +136,9 @@ async function openTradeIn() {
     state.loading = true;
     renderTradeIn();
     try {
+      await planCanjeDiagnosticReady;
+      const logic = planCanjeLogic();
+      if (!logic?.loadPlanCanjeData) throw new Error("Plan Canje todavia no esta disponible.");
       state.data = await logic.loadPlanCanjeData();
       state.error = "";
       console.info("[ICLUB PLAN CANJE]", {
@@ -209,7 +212,7 @@ function capacitiesForModel(model) {
 
 function selectedProduct() {
   if (!state.data || !state.model || !state.capacity) return null;
-  return logic.findPlanCanjeProduct(state.data.byKey, state.model, state.capacity);
+  return planCanjeLogic().findPlanCanjeProduct(state.data.byKey, state.model, state.capacity);
 }
 
 function hasReportedDamage() {
@@ -239,7 +242,7 @@ function discounts(product) {
   const battery = Number(state.batteryPercent) <= 86 ? product.batteryReplacement : 0;
   const screen = state.needsScreenReplacement ? product.screenReplacement : 0;
   const back = state.needsBackReplacement ? product.backReplacement : 0;
-  const final = logic.calculatePlanCanjeValue(product, {
+  const final = planCanjeLogic().calculatePlanCanjeValue(product, {
     batteryPercent: state.batteryPercent,
     needsScreenReplacement: state.needsScreenReplacement,
     needsBackReplacement: state.needsBackReplacement,

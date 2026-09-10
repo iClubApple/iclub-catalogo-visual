@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>iClub Catalogo Visual</title>
+  <link rel="icon" href="assets/logo-iclub-negro.png" type="image/png">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/logo-iclub-oficial.png">
   <link rel="stylesheet" href="plan-canje.css?v=google-review-button">
@@ -2003,7 +2004,14 @@
           <span class="trade-entry-kicker">Plan Canje</span>
           <h2>Cambi&aacute; tu iPhone</h2>
           <p>Entreg&aacute; el tuyo y pag&aacute; solamente la diferencia.</p>
-          <button id="planCanjeOpen" class="trade-entry-button" type="button">Cotizar mi iPhone</button>
+          <button id="planCanjeOpen" class="trade-entry-button" type="button">
+            <span class="trade-entry-whatsapp" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M19.1 4.9A9.84 9.84 0 0 0 12.06 2C6.56 2 2.1 6.45 2.1 11.93c0 1.75.46 3.45 1.33 4.96L2 22l5.24-1.38a9.93 9.93 0 0 0 4.82 1.23h.01c5.49 0 9.96-4.45 9.96-9.93 0-2.65-1.04-5.14-2.93-7.02Zm-7.04 15.27h-.01a8.25 8.25 0 0 1-4.2-1.15l-.3-.18-3.11.82.83-3.03-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.55 3.7-8.25 8.26-8.25a8.2 8.2 0 0 1 5.83 2.42 8.16 8.16 0 0 1 2.42 5.82c0 4.55-3.71 8.24-8.26 8.24Z"></path>
+              </svg>
+            </span>
+            Cotizar mi iPhone
+          </button>
         </div>
 
         <div class="trade-entry-copy">
@@ -4528,6 +4536,6 @@
 
     init();
   </script>
-  <script type="module" src="plan-canje-ui.js?v=plan-canje-rebind-5a"></script>
+  <script type="module" src="plan-canje-ui.js?v=plan-canje-click-fix"></script>
 </body>
 </html>
