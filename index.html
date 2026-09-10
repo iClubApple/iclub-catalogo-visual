@@ -2700,6 +2700,34 @@
       }
 
       let nextBatchIndex = 0;
+      function applyResolverRows(batchRows, productsByRow) {
+        batchRows.forEach((sheetRow) => {
+          const rowData = productsByRow[sheetRow];
+          if (!rowData) return;
+          const target = rowTargets.get(String(sheetRow));
+          if (!target) return;
+
+          writeImageCache(sheetRow, rowData);
+          const resolvedImages = unique([
+            ...normalizeResolvedImages([rowData.mainImage || ""]),
+            ...normalizeResolvedImages(rowData.images || rowData.files || []),
+          ]);
+          if (target.folderId && resolvedImages.length) {
+            writeFolderImageCache(target.folderId, resolvedImages);
+          }
+          target.products.forEach((product) => applyResolvedImage(product, rowData));
+
+          console.log("iClub image resolver", {
+            sheetRow,
+            model: target.products[0]?.model,
+            resolvedMainImage: rowData.mainImage || "",
+            resolvedImages: rowData.images || [],
+            productPhoto: target.products[0]?.photo,
+            productImages: target.products[0]?.images,
+          });
+        });
+      }
+
       async function resolveNextBatch() {
         const batchRows = batches[nextBatchIndex];
         nextBatchIndex += 1;
@@ -2712,34 +2740,30 @@
             rows: batchRows.join(","),
           });
           const productsByRow = payload.products || payload.byRow || {};
-
-          batchRows.forEach((sheetRow) => {
-            const rowData = productsByRow[sheetRow];
-            if (!rowData) return;
-            const target = rowTargets.get(String(sheetRow));
-            if (!target) return;
-
-            writeImageCache(sheetRow, rowData);
-            const resolvedImages = unique([
-              ...normalizeResolvedImages([rowData.mainImage || ""]),
-              ...normalizeResolvedImages(rowData.images || rowData.files || []),
-            ]);
-            if (target.folderId && resolvedImages.length) {
-              writeFolderImageCache(target.folderId, resolvedImages);
-            }
-            target.products.forEach((product) => applyResolvedImage(product, rowData));
-
-            console.log("iClub image resolver", {
-              sheetRow,
-              model: target.products[0]?.model,
-              resolvedMainImage: rowData.mainImage || "",
-              resolvedImages: rowData.images || [],
-              productPhoto: target.products[0]?.photo,
-              productImages: target.products[0]?.images,
-            });
-          });
+          applyResolverRows(batchRows, productsByRow);
           options.onBatch?.();
         } catch (error) {
+          if (batchRows.length > 1) {
+            for (const sheetRow of batchRows) {
+              try {
+                const payload = await fetchDriveImageResolver("", {
+                  spreadsheetId: SHEET_ID,
+                  sheetName: SHEET_NAME,
+                  rows: sheetRow,
+                });
+                applyResolverRows([sheetRow], payload.products || payload.byRow || {});
+                options.onBatch?.();
+              } catch (rowError) {
+                const target = rowTargets.get(String(sheetRow));
+                if (!target) continue;
+                target.products.forEach((product) => {
+                  product.imageSource.error = rowError.message;
+                });
+              }
+            }
+            options.onBatch?.();
+            return;
+          }
           batchRows.forEach((sheetRow) => {
             const target = rowTargets.get(String(sheetRow));
             if (!target) return;
