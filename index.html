@@ -2179,8 +2179,8 @@
     const VALID_IMAGE_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
     const VALID_IMAGE_EXTENSIONS = /\.(jpe?g|png|webp)(\?.*)?$/i;
     const DRIVE_THUMBNAIL_SIZE = 1200;
-    const IMAGE_RESOLVER_BATCH_SIZE = 8;
-    const IMAGE_RESOLVER_CONCURRENCY = 2;
+    const IMAGE_RESOLVER_BATCH_SIZE = 6;
+    const IMAGE_RESOLVER_CONCURRENCY = 1;
     const IMAGE_RESOLVER_RETRIES = 2;
     const IMAGE_CACHE_TTL = 30 * 60 * 1000;
     const IMAGE_CACHE_PREFIX = "iclub:image-row:";
@@ -3252,7 +3252,7 @@
       if (model.startsWith("stock iphone")) return false;
       if (["iphone", "iphones", "equipo", "equipos", "macbook", "macbooks", "fundas"].includes(model)) return false;
       if (model.includes("cotizador") || model.includes("plan caje") || model.includes("plan canje")) return false;
-      if (/^macbook\s+(air|pro)\s+m4\b/.test(model)) return false;
+      if (/^mack?book\s+(air|pro)\s+m4\b/.test(model)) return false;
       if (/^apple\s+watch\s+(serie|series)\s+10\b/.test(model)) return false;
       if (/^apple\s+watch\s+ultra\s+2\b/.test(model)) return false;
 
