@@ -2179,8 +2179,8 @@
     const VALID_IMAGE_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
     const VALID_IMAGE_EXTENSIONS = /\.(jpe?g|png|webp)(\?.*)?$/i;
     const DRIVE_THUMBNAIL_SIZE = 1200;
-    const IMAGE_RESOLVER_BATCH_SIZE = 6;
-    const IMAGE_RESOLVER_CONCURRENCY = 1;
+    const IMAGE_RESOLVER_BATCH_SIZE = 8;
+    const IMAGE_RESOLVER_CONCURRENCY = 2;
     const IMAGE_RESOLVER_RETRIES = 2;
     const IMAGE_CACHE_TTL = 30 * 60 * 1000;
     const IMAGE_CACHE_PREFIX = "iclub:image-row:";
