@@ -197,7 +197,8 @@ async function loadPlanCanjeData() {
   const locations = locatePlanCanjeBlockCandidates(broadRows, { requireFullHeaders: false });
   let block = null;
   for (const location of locations) {
-    const exactRows = await fetchPlanCanjeRows(`A${location.titleRow}:F${location.dataEndRow}`);
+    const exactRangeEndRow = location.dataEndRow + 20;
+    const exactRows = await fetchPlanCanjeRows(`A${location.titleRow}:F${exactRangeEndRow}`);
     const exactCandidates = locatePlanCanjeBlockCandidates(exactRows);
     if (exactCandidates.length) {
       block = exactCandidates[0];
