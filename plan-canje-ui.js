@@ -656,7 +656,7 @@ function stepResult() {
           <p>Por el estado informado del equipo necesitamos revisarlo antes de confirmar un valor de toma.</p>
           <a class="trade-button" href="${WHATSAPP_URL}" target="_blank" rel="noreferrer">Consultar por WhatsApp</a>
         </div>
-        ${actionsTemplate({ nextLabel: "Continuar", nextDisabled: false, nextAction: "chooseNext" })}
+        ${actionsTemplate({ nextLabel: "Ver diferencia con mi próximo iPhone", nextDisabled: false, nextAction: "chooseNext" })}
       </div>
     `;
   }
@@ -679,7 +679,7 @@ function stepResult() {
         </div>
         <p class="trade-summary-note">Valor estimado sujeto a revisión física del equipo por parte de iClub.</p>
       </div>
-      ${actionsTemplate({ nextLabel: "Continuar", nextDisabled: false, nextAction: "chooseNext" })}
+      ${actionsTemplate({ nextLabel: "Ver diferencia con mi próximo iPhone", nextDisabled: false, nextAction: "chooseNext" })}
     </div>
   `;
 }
