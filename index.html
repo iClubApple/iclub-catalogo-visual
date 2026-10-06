@@ -2390,12 +2390,12 @@
 
     function rowToProduct(row, index) {
       const model = row.model || firstUseful(row);
-      const capacity = row.capacity;
+      const category = inferCategory(model);
+      const capacity = normalizedCapacityForProduct(row.capacity, model, category);
       const color = row.color;
       const condition = row.condition;
       const battery = row.battery;
       const serial = row.serial;
-      const category = inferCategory(model);
       const stock = parseAvailability(row.stock);
       const stock24 = parseAvailability(row.stock_24hs);
       const stockProvider = parseAvailability(row.stock_provider);
@@ -2435,6 +2435,15 @@
         batteryPriceModel: row.__batteryPriceModel || "",
         catalogBlock: row.__catalogBlock || "",
       };
+    }
+
+    function normalizedCapacityForProduct(capacity, model, category) {
+      const explicitCapacity = String(capacity || "").trim();
+      if (explicitCapacity) return explicitCapacity;
+      if (category !== "iPad") return "";
+      const text = String(model || "");
+      const match = text.match(/\b(\d+(?:[.,]\d+)?\s*(?:GB|TB))\b/i);
+      return match ? match[1].replace(/\s+/g, "").toUpperCase() : "";
     }
 
     function normalizePhotoUrl(value) {
@@ -3351,8 +3360,51 @@
       select.value = options.some(([value]) => value === previous) ? previous : "";
     }
 
+    function setFixedCommercialOption(selectId, value, label) {
+      const select = $(selectId);
+      select.innerHTML = "";
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = label;
+      select.appendChild(option);
+      select.value = value;
+    }
+
+    function clientCategoryForcesNew(category) {
+      return Boolean(category) && category !== "iPhone";
+    }
+
+    function updateClientFilterControls() {
+      if (state.internalMode) return;
+      const forceNewOnly = clientCategoryForcesNew($("categoryFilter").value);
+
+      if (forceNewOnly) {
+        setFixedCommercialOption("conditionFilter", "new", "Nuevos");
+        setFixedCommercialOption("batteryFilter", "new", "Nuevo");
+        $("conditionFilter").disabled = true;
+        $("batteryFilter").disabled = true;
+        return;
+      }
+
+      $("conditionFilter").disabled = false;
+      $("batteryFilter").disabled = false;
+      setCommercialOptions("conditionFilter", [
+        ["new", "Nuevos"],
+        ["used", "Seminuevos"],
+      ], "Todos los estados");
+      setCommercialOptions("batteryFilter", [
+        ["new", "Nuevo"],
+        ["100", "100%"],
+        ["95_99", "95% a 99%"],
+        ["90_94", "90% a 94%"],
+        ["85_89", "85% a 89%"],
+        ["under_85", "Menos de 85%"],
+      ], "Todas las baterías");
+    }
+
     function matchesClientCondition(product, selected) {
       if (!selected) return true;
+      if (selected === "new" && product.category !== "iPhone") return true;
       const condition = normalize(product.condition);
       if (selected === "new") return condition === "new" || condition.includes("nuevo");
       if (selected === "used") return condition.includes("semi") || condition.includes("usado") || condition.includes("reacondicionado");
@@ -3380,6 +3432,7 @@
 
     function matchesClientBattery(product, selected) {
       if (!selected) return true;
+      if (selected === "new" && product.category !== "iPhone") return true;
       return batteryBucket(product) === selected;
     }
 
@@ -3462,6 +3515,7 @@
       const source = state.internalMode ? $("sourceFilter").value : "";
       const category = $("categoryFilter").value;
       const model = state.internalMode ? $("modelFilter").value : "";
+      updateClientFilterControls();
       const condition = $("conditionFilter").value;
       const battery = $("batteryFilter").value;
       const stockMode = state.internalMode ? $("stockFilter").value : "";

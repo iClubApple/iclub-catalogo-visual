@@ -28,6 +28,7 @@ const normalize = (value) => String(value || "").toLowerCase().normalize("NFD").
 const byId = (id) => document.getElementById(id);
 const planCanjeLogic = () => window.iClubPlanCanje;
 const TOTAL_STEPS = 6;
+const STEP_BATTERY = 3;
 const STEP_QUOTE_RESULT = 6;
 const STEP_NEXT_IPHONE = 7;
 const STEP_BENEFITS = 8;
@@ -593,15 +594,30 @@ function stepBattery() {
         <h3>¿Qué porcentaje de batería tiene?</h3>
       </div>
       <div class="trade-field">
-        <label for="tradeBattery">Batería ${state.batteryPercent}%</label>
+        <label for="tradeBattery">Batería <span id="tradeBatteryValue">${state.batteryPercent}%</span></label>
         <div class="trade-battery-row">
-          <input id="tradeBatteryRange" type="range" min="1" max="100" value="${state.batteryPercent}">
-          <input id="tradeBattery" type="number" min="1" max="100" value="${state.batteryPercent}" inputmode="numeric">
+          <input id="tradeBattery" type="number" min="1" max="100" value="${state.batteryPercent}" inputmode="numeric" pattern="[0-9]*" aria-label="Porcentaje de batería">
         </div>
       </div>
       ${actionsTemplate({ nextDisabled: false })}
     </div>
   `;
+}
+
+function normalizeBatteryInputValue(rawValue) {
+  const numericValue = Number(String(rawValue || "").replace(",", "."));
+  if (!Number.isFinite(numericValue)) return state.batteryPercent;
+  return Math.min(100, Math.max(1, Math.round(numericValue)));
+}
+
+function commitBatteryInput() {
+  const input = byId("tradeBattery");
+  if (!input) return;
+  const value = normalizeBatteryInputValue(input.value);
+  state.batteryPercent = value;
+  input.value = value;
+  const label = byId("tradeBatteryValue");
+  if (label) label.textContent = `${value}%`;
 }
 
 function stepCondition() {
@@ -1011,7 +1027,10 @@ function bindActions() {
   document.querySelectorAll("[data-trade-action]").forEach((button) => {
     button.addEventListener("click", () => {
       const action = button.dataset.tradeAction;
-      if (action === "next") state.step = Math.min(TOTAL_STEPS, state.step + 1);
+      if (action === "next") {
+        if (state.step === STEP_BATTERY) commitBatteryInput();
+        state.step = Math.min(TOTAL_STEPS, state.step + 1);
+      }
       if (action === "back") state.step = Math.max(1, state.step - 1);
       if (action === "reset") resetQuote();
       if (action === "chooseNext") state.step = STEP_NEXT_IPHONE;
@@ -1036,18 +1055,14 @@ function bindActions() {
     });
   });
 
-  ["tradeBattery", "tradeBatteryRange"].forEach((id) => {
-    const input = byId(id);
-    if (!input) return;
-    input.addEventListener("input", () => {
-      const value = Math.min(100, Math.max(1, Number(input.value) || 1));
-      state.batteryPercent = value;
-      const otherId = id === "tradeBattery" ? "tradeBatteryRange" : "tradeBattery";
-      const other = byId(otherId);
-      if (other) other.value = value;
-      renderTradeIn();
+  const batteryInput = byId("tradeBattery");
+  if (batteryInput) {
+    batteryInput.addEventListener("input", () => {
+      const label = byId("tradeBatteryValue");
+      if (label) label.textContent = batteryInput.value ? `${batteryInput.value}%` : "";
     });
-  });
+    batteryInput.addEventListener("blur", commitBatteryInput);
+  }
 }
 
 function escapeHtml(value) {
