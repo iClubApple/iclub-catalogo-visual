@@ -1,4 +1,4 @@
-const planCanjeDiagnosticReady = import("./plan-canje-diagnostic.js?v=plan-canje-direct-open");
+(() => {
 
 const WHATSAPP_URL = "https://wa.me/5491125003057";
 
@@ -137,7 +137,6 @@ async function openTradeIn() {
     state.loading = true;
     renderTradeIn();
     try {
-      await planCanjeDiagnosticReady;
       const logic = planCanjeLogic();
       if (!logic?.loadPlanCanjeData) throw new Error("Plan Canje todavia no esta disponible.");
       state.data = await logic.loadPlanCanjeData();
@@ -707,7 +706,6 @@ function stepNextIphone() {
           <h3>¿Qué iPhone estás buscando?</h3>
           <p>El catálogo todavía no está disponible en esta sesión.</p>
         </div>
-        ${actionsTemplate({ nextLabel: "Continuar con este iPhone", nextDisabled: true })}
       </div>
     `;
   }
@@ -719,7 +717,6 @@ function stepNextIphone() {
           <h3>¿Qué iPhone estás buscando?</h3>
           <p>Estamos esperando que termine de cargar el catálogo actual de iClub.</p>
         </div>
-        ${actionsTemplate({ nextLabel: "Continuar con este iPhone", nextDisabled: true })}
       </div>
     `;
   }
@@ -728,7 +725,6 @@ function stepNextIphone() {
   const recommendations = state.nextFilters.model && state.nextFilters.condition && state.nextFilters.capacity
     ? recommendedNextProducts(mainProduct)
     : [];
-  const selected = selectedNextProduct();
   return `
     <div class="trade-step">
       <div class="trade-step-title">
@@ -755,7 +751,6 @@ function stepNextIphone() {
           </div>
         ` : ""}
       ` : ""}
-      ${actionsTemplate({ nextLabel: "Continuar con este iPhone", nextDisabled: !selected, nextAction: "showBenefits" })}
     </div>
   `;
 }
@@ -871,6 +866,7 @@ function stepBenefits() {
           : `<p>Podés continuar sin agregar beneficios.</p>`}
       </div>
       <div class="trade-actions stack-mobile">
+        <button class="trade-button secondary" type="button" data-trade-action="chooseNext">Elegir otro iPhone</button>
         <button class="trade-button secondary" type="button" data-trade-action="skipBenefits">Seguir sin agregar beneficios</button>
         <div class="trade-actions-right">
           <button class="trade-button" type="button" data-trade-action="showDifference">Continuar con mi Plan Canje</button>
@@ -1000,7 +996,10 @@ function bindActions() {
       if (type === "screen") state.needsScreenReplacement = value === "true";
       if (type === "back") state.needsBackReplacement = value === "true";
       if (type === "generalCondition") state.generalCondition = value;
-      if (type === "nextProduct") state.selectedNextProductId = value;
+      if (type === "nextProduct") {
+        state.selectedNextProductId = value;
+        if (isProductStillAvailable(selectedNextProduct())) state.step = STEP_BENEFITS;
+      }
       sanitizeGeneralCondition();
       renderTradeIn();
     });
@@ -1018,6 +1017,13 @@ function bindActions() {
         state.nextFilters.capacity = "";
       }
       state.selectedNextProductId = "";
+      if (field === "capacity" && state.nextFilters.capacity) {
+        const product = searchedNextProduct();
+        if (isProductStillAvailable(product)) {
+          state.selectedNextProductId = product.id;
+          state.step = STEP_BENEFITS;
+        }
+      }
       renderTradeIn();
     });
   });
@@ -1096,3 +1102,4 @@ function bindTradeInEntry() {
 window.iClubOpenPlanCanje = openTradeIn;
 bindTradeInEntry();
 ensureModal();
+})();

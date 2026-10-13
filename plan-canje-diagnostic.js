@@ -1,3 +1,4 @@
+(() => {
 const SHEET_ID = "1yIchT-R7KSY5NuIcfjMuYRjPjbQaZ3j5LdcfXee2USY";
 const PLAN_CANJE_SHEET_NAME = "PRECIOS EQUIPOS APPLE";
 const PLAN_CANJE_RANGE = "A:F";
@@ -73,12 +74,48 @@ function planCanjeGvizUrl(range = PLAN_CANJE_RANGE) {
   return `${base}&${params.toString()}`;
 }
 
+let localRequestId = 0;
+
+function fetchLocalPlanCanjePayload(range) {
+  // Local files have a null origin; GViz callbacks can still read the public sheet.
+  return new Promise((resolve, reject) => {
+    const callback = `iclubPlanCanjeResponse${++localRequestId}`;
+    const script = document.createElement("script");
+    const cleanup = () => {
+      clearTimeout(timer);
+      script.remove();
+      delete window[callback];
+    };
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error("La lectura de Plan Canje tardó demasiado. Volvé a intentar."));
+    }, 20000);
+    window[callback] = (payload) => {
+      cleanup();
+      resolve(payload);
+    };
+    script.onerror = () => {
+      cleanup();
+      reject(new Error("No se pudieron leer los precios de Plan Canje."));
+    };
+    const url = new URL(planCanjeGvizUrl(range));
+    url.searchParams.set("tqx", `out:json;responseHandler:${callback}`);
+    script.src = url.toString();
+    document.head.appendChild(script);
+  });
+}
+
 async function fetchPlanCanjeRows(range = PLAN_CANJE_RANGE) {
-  const response = await fetch(planCanjeGvizUrl(range));
-  const text = await response.text();
-  const match = text.match(/google\.visualization\.Query\.setResponse\((.*)\);?$/s);
-  if (!match) throw new Error("No se pudo interpretar la respuesta GViz de Plan Canje.");
-  const payload = JSON.parse(match[1]);
+  let payload;
+  if (typeof window !== "undefined" && window.location.protocol === "file:") {
+    payload = await fetchLocalPlanCanjePayload(range);
+  } else {
+    const response = await fetch(planCanjeGvizUrl(range));
+    const text = await response.text();
+    const match = text.match(/google\.visualization\.Query\.setResponse\((.*)\);?$/s);
+    if (!match) throw new Error("No se pudo interpretar la respuesta GViz de Plan Canje.");
+    payload = JSON.parse(match[1]);
+  }
   if (payload.status === "error") {
     throw new Error(payload.errors?.[0]?.detailed_message || "Google Sheets rechazo la lectura de Plan Canje.");
   }
@@ -305,3 +342,4 @@ if (typeof window !== "undefined") {
     runPlanCanjeDiagnostic,
   };
 }
+})();
