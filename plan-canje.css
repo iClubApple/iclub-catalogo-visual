@@ -1034,6 +1034,10 @@
   flex-wrap: wrap;
 }
 
+.trade-actions.back-only {
+  justify-content: flex-start;
+}
+
 .trade-actions-right {
   display: flex;
   gap: 10px;
@@ -1079,8 +1083,25 @@
     padding: 18px 14px;
   }
 
+  .trade-step-title,
+  .trade-summary,
+  .trade-summary-card,
+  .trade-change-card,
+  .trade-review,
+  .trade-field {
+    text-align: center;
+  }
+
+  .trade-field label {
+    justify-self: center;
+  }
+
   .trade-options {
     grid-template-columns: 1fr;
+  }
+
+  .trade-option {
+    text-align: center;
   }
 
   .trade-battery-row,
@@ -1109,10 +1130,55 @@
     max-height: 180px;
   }
 
-  .trade-actions,
-  .trade-actions-right {
+  .trade-actions {
     display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    width: 100%;
+  }
+
+  .trade-actions.back-only {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .trade-actions-right {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
     width: 100%;
     margin-left: 0;
+  }
+
+  .trade-actions-right .trade-button {
+    width: auto;
+  }
+
+  .trade-actions:has(.trade-actions-right .trade-button + .trade-button) {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .trade-actions:has(.trade-actions-right .trade-button + .trade-button) .trade-actions-right {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .trade-actions:has(.trade-actions-right .trade-button + .trade-button) .trade-button {
+    width: min(100%, 280px);
+  }
+
+  .trade-actions.stack-mobile {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .trade-actions.stack-mobile > .trade-button,
+  .trade-actions.stack-mobile .trade-actions-right .trade-button {
+    width: min(100%, 320px);
+  }
+
+  .trade-actions.stack-mobile .trade-actions-right {
+    justify-content: center;
   }
 }

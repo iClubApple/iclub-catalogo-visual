@@ -7,7 +7,7 @@
   <link rel="icon" href="assets/logo-iclub-negro.png" type="image/png">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/logo-iclub-oficial.png">
-  <link rel="stylesheet" href="plan-canje.css?v=google-review-button">
+  <link rel="stylesheet" href="plan-canje.css?v=mobile-gallery-flow-20261012">
   <style>
     :root {
       --bg: #f6f7f9;
@@ -760,6 +760,35 @@
       background: linear-gradient(145deg, #fbfcfd, #f1f4f8);
     }
 
+    .photo.gallery-openable {
+      cursor: zoom-in;
+    }
+
+    .photo.gallery-openable::after {
+      content: "Ver fotos";
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      border: 1px solid rgba(216, 222, 232, .82);
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: rgba(255,255,255,.9);
+      color: #273142;
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1;
+      opacity: 0;
+      transform: translateY(4px);
+      pointer-events: none;
+      box-shadow: 0 8px 22px rgba(17, 24, 39, .12);
+      transition: opacity .16s ease, transform .16s ease;
+    }
+
+    .photo.gallery-openable:hover::after {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     .list .photo {
       border-bottom: 0;
     }
@@ -773,22 +802,6 @@
       height: 100%;
       object-fit: contain;
       padding: 18px;
-    }
-
-    .gallery-trigger {
-      position: absolute;
-      right: 12px;
-      bottom: 12px;
-      border: 1px solid rgba(216, 222, 232, .82);
-      border-radius: 999px;
-      padding: 7px 10px;
-      background: rgba(255,255,255,.9);
-      color: #273142;
-      font-size: 12px;
-      font-weight: 850;
-      line-height: 1;
-      cursor: pointer;
-      box-shadow: 0 8px 22px rgba(17, 24, 39, .12);
     }
 
     .placeholder {
@@ -2190,8 +2203,8 @@
     const IMAGE_RESOLVER_BATCH_SIZE = 8;
     const IMAGE_RESOLVER_CONCURRENCY = 2;
     const IMAGE_RESOLVER_RETRIES = 2;
-    const IMAGE_CACHE_TTL = 30 * 60 * 1000;
-    const IMAGE_CACHE_PREFIX = "iclub:image-row:";
+    const IMAGE_CACHE_TTL = 5 * 60 * 1000;
+    const IMAGE_CACHE_PREFIX = "iclub:image-row:v2:";
     const DRIVE_FOLDER_IMAGE_FALLBACKS = {
       "1QO9DJLWwv_QUbSteUZBAat8zSP-OVfXr": [
         "1sHAKqXVIRQtCaeueLcdntlcFDMYig5ko",
@@ -2662,12 +2675,6 @@
 
       productsWithDriveFolders.forEach((product) => {
         const folderId = product.imageSource.folderId;
-        const fallbackImages = fallbackImagesForFolder(folderId);
-        if (fallbackImages.length) {
-          applyFolderImages(product, fallbackImages);
-          writeFolderImageCache(folderId, fallbackImages);
-          return;
-        }
         const cached = folderId ? readFolderImageCache(folderId) : null;
         if (cached) {
           applyFolderImages(product, cached);
@@ -2804,12 +2811,10 @@
     }
 
     async function fetchDriveFolderImages(folderId) {
-      const fallbackImages = fallbackImagesForFolder(folderId);
-      if (fallbackImages.length) return fallbackImages;
-
       if (DRIVE_IMAGE_RESOLVER_URL) {
         const payload = await fetchDriveImageResolver(folderId);
-        return normalizeResolvedImages(payload.images || payload.files || []);
+        const resolvedImages = normalizeResolvedImages(payload.images || payload.files || []);
+        if (resolvedImages.length) return resolvedImages;
       }
 
       if (DRIVE_API_KEY) {
@@ -2819,8 +2824,12 @@
         const response = await fetch(url);
         if (!response.ok) throw new Error(`Google Drive API rechazo la carpeta (${response.status})`);
         const payload = await response.json();
-        return normalizeResolvedImages(payload.files || []);
+        const resolvedImages = normalizeResolvedImages(payload.files || []);
+        if (resolvedImages.length) return resolvedImages;
       }
+
+      const fallbackImages = fallbackImagesForFolder(folderId);
+      if (fallbackImages.length) return fallbackImages;
 
       throw new Error("Falta configurar DRIVE_IMAGE_RESOLVER_URL o DRIVE_API_KEY para enumerar carpetas de Drive desde el catalogo.");
     }
@@ -3891,16 +3900,14 @@
       const photo = product.photo && /^https?:\/\//i.test(product.photo)
         ? `<img src="${escapeAttr(product.photo)}" alt="${escapeAttr(product.title)}" loading="lazy" onerror="this.replaceWith(window.placeholderNode('${escapeAttr(modelName)}'))">`
         : `<div class="placeholder">${escapeHtml(shortModel(modelName))}</div>`;
-      const galleryButton = product.images.length > 1
-        ? `<button class="gallery-trigger" type="button" data-gallery-id="${escapeAttr(product.id)}">${product.images.length} fotos</button>`
-        : "";
+      const galleryAttr = product.images.length ? ` data-gallery-id="${escapeAttr(product.id)}" role="button" tabindex="0" aria-label="Ver fotos de ${escapeAttr(modelName)}"` : "";
+      const galleryClass = product.images.length ? " gallery-openable" : "";
 
       return `
         <article class="card">
-          <div class="photo">
+          <div class="photo${galleryClass}"${galleryAttr}>
             <span class="source-pill">${escapeHtml(product.sourceLabel)}</span>
             ${photo}
-            ${galleryButton}
           </div>
           <div class="content">
             <div class="headline">
@@ -4564,6 +4571,14 @@
       }
     });
 
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const trigger = event.target.closest("[data-gallery-id]");
+      if (!trigger) return;
+      event.preventDefault();
+      openGallery(trigger.dataset.galleryId);
+    });
+
     $("reserveClose").addEventListener("click", closeReserveModal);
     $("reserveSubmit").addEventListener("click", continueReserveByWhatsapp);
     $("reserveModal").addEventListener("click", (event) => {
@@ -4590,6 +4605,6 @@
 
     init();
   </script>
-  <script type="module" src="plan-canje-ui.js?v=plan-canje-direct-open"></script>
+  <script type="module" src="plan-canje-ui.js?v=mobile-gallery-flow-20261012"></script>
 </body>
 </html>

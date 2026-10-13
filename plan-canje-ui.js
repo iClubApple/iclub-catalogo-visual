@@ -64,7 +64,7 @@ const BENEFIT_PRODUCTS = [
     referencePrice: 80,
     specialPrice: 45,
     discountLabel: "40% OFF",
-    image: "assets/cargador-apple-usb-c-20w-original-transparent.png",
+    image: "assets/cargador-apple-usb-c-20w-original.jpeg",
     whatsappIcon: "🔌",
   },
 ];
@@ -567,7 +567,6 @@ function stepModel() {
       <div class="trade-options">
         ${models().map((model) => optionButton(displayModelName(model), state.model === model, "model", model)).join("")}
       </div>
-      ${actionsTemplate({ nextDisabled: !state.model, showBack: false })}
     </div>
   `;
 }
@@ -582,7 +581,7 @@ function stepCapacity() {
       <div class="trade-options">
         ${capacitiesForModel(state.model).map((capacity) => optionButton(capacity, state.capacity === capacity, "capacity")).join("")}
       </div>
-      ${actionsTemplate({ nextDisabled: !state.capacity })}
+      ${actionsTemplate({ backOnly: true })}
     </div>
   `;
 }
@@ -831,7 +830,7 @@ function stepDifference() {
         `}
         <p class="trade-summary-note">Valores sujetos a disponibilidad y revisión física del equipo entregado.</p>
       </div>
-      <div class="trade-actions">
+      <div class="trade-actions stack-mobile">
         <button class="trade-button secondary" type="button" data-trade-action="chooseNext">Elegir otro iPhone</button>
         <div class="trade-actions-right">
           <a class="trade-button" href="${escapeAttr(whatsappUrlForOperation(product, difference))}" target="_blank" rel="noreferrer">Quiero avanzar por WhatsApp</a>
@@ -871,7 +870,7 @@ function stepBenefits() {
           ? benefits.map((benefit) => `<div><strong>${escapeHtml(benefit.name)}</strong><small>${benefitPriceLabel(benefit)}</small></div>`).join("")
           : `<p>Podés continuar sin agregar beneficios.</p>`}
       </div>
-      <div class="trade-actions">
+      <div class="trade-actions stack-mobile">
         <button class="trade-button secondary" type="button" data-trade-action="skipBenefits">Seguir sin agregar beneficios</button>
         <div class="trade-actions-right">
           <button class="trade-button" type="button" data-trade-action="showDifference">Continuar con mi Plan Canje</button>
@@ -963,6 +962,13 @@ function benefitCard(benefit) {
 }
 
 function actionsTemplate(options = {}) {
+  if (options.backOnly) {
+    return `
+      <div class="trade-actions back-only">
+        <button class="trade-button secondary" type="button" data-trade-action="back">Atrás</button>
+      </div>
+    `;
+  }
   const nextAction = options.nextAction || "next";
   return `
     <div class="trade-actions">
@@ -985,8 +991,12 @@ function bindActions() {
       if (type === "model") {
         state.model = value;
         state.capacity = "";
+        state.step = 2;
       }
-      if (type === "capacity") state.capacity = value;
+      if (type === "capacity") {
+        state.capacity = value;
+        state.step = STEP_BATTERY;
+      }
       if (type === "screen") state.needsScreenReplacement = value === "true";
       if (type === "back") state.needsBackReplacement = value === "true";
       if (type === "generalCondition") state.generalCondition = value;
