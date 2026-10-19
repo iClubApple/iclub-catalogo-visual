@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>iClub Catalogo Visual</title>
+  <link rel="stylesheet" href="share-card.css?v=share-card-20261019">
   <link rel="icon" href="assets/logo-iclub-negro.png" type="image/png">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/logo-iclub-oficial.png">
@@ -3889,6 +3890,23 @@
       primaryPrice: primaryCatalogPrice,
       primaryPriceValue: primaryCatalogPriceValue,
       shortModel,
+      getShareCard(productId) {
+        const product = state.products.find((item) => item.id === productId);
+        if (!product) return null;
+        const display = batteryDisplayProduct(product);
+        return {
+          model: presentationModel(display),
+          specs: presentationSpecs(display),
+          photo: product.photo,
+          cash: formatMoney(display.cash) || formatMoney(display.priceList) || "-",
+          equivalent: arsEquivalent(display.cash || display.priceList),
+          promotion: promotionForDisplay(product),
+          availability: availabilityView(product),
+          transfer: formatMoney(display.transfer) || "-",
+          list: formatMoney(display.priceList) || "-",
+          installment: formatMoney(display.six),
+        };
+      },
     };
 
     function cardTemplate(product) {
@@ -3929,7 +3947,12 @@
               ${priceTemplate("Precio de lista", displayProduct.priceList)}
               ${financingTemplate(product.six)}
             </div>
-            <button class="reserve-button" type="button" data-reserve-id="${escapeAttr(product.id)}">Reservar equipo</button>
+            <div class="card-actions">
+              <button class="reserve-button" type="button" data-reserve-id="${escapeAttr(product.id)}">Reservar equipo</button>
+              <button class="share-card-trigger" type="button" data-share-card-id="${escapeAttr(product.id)}" aria-label="Compartir tarjeta de ${escapeAttr(modelName)}" data-tooltip="Compartir tarjeta">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4M8.6 13.5l6.8 4"/></svg>
+              </button>
+            </div>
             <div class="internal">
               ${product.notes ? `<div><strong>Notas:</strong> ${escapeHtml(product.notes)}</div>` : ""}
             </div>
@@ -4606,6 +4629,8 @@
     init();
   </script>
   <script defer src="plan-canje-diagnostic.js?v=local-file-open-20261013"></script>
+  <script defer src="share-card-brand.js?v=share-card-20261019"></script>
+  <script defer src="share-card.js?v=share-card-20261019"></script>
   <script defer src="plan-canje-ui.js?v=auto-next-iphone-20261013"></script>
 </body>
 </html>

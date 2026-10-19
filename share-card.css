@@ -1,0 +1,85 @@
+.card-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  gap: 8px;
+  align-items: center;
+}
+.card-actions .reserve-button { margin: 0; min-width: 0; }
+.share-card-trigger {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #d6dae1;
+  border-radius: 50%;
+  background: #fff;
+  color: #252a33;
+  cursor: pointer;
+}
+.share-card-trigger:hover { background: #f0f2f4; }
+.share-card-trigger:focus-visible { outline: 2px solid #0071e3; outline-offset: 3px; }
+.share-card-trigger:hover::after,
+.share-card-trigger:focus-visible::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 52px;
+  right: 0;
+  padding: 7px 10px;
+  border-radius: 4px;
+  background: #252a33;
+  color: white;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 2;
+}
+.share-card-dialog {
+  width: min(480px, calc(100% - 24px));
+  max-height: calc(100dvh - 32px);
+  box-sizing: border-box;
+  padding: 16px;
+  border: 1px solid #d6dae1;
+  border-radius: 8px;
+  color: #111318;
+  background: white;
+  overflow: auto;
+  font-family: inherit;
+}
+.share-card-dialog::backdrop { background: rgb(17 19 24 / 55%); }
+.share-card-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.share-card-header h2 { font-size: 18px; margin: 0; }
+.share-card-close {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #252a33;
+  background: #f0f2f4;
+  cursor: pointer;
+}
+.share-card-preview { display: block; width: 100%; height: auto; max-height: 60dvh; object-fit: contain; margin: 12px auto; }
+.share-card-preview[hidden] { display: none; }
+.share-card-status { font-size: 14px; line-height: 1.4; margin: 12px 0; }
+.share-card-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.share-card-controls button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid #d6dae1;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 14px;
+  background: white;
+  color: #252a33;
+  cursor: pointer;
+}
+.share-card-controls [data-share-action="share"] { background: #252a33; color: white; border-color: #252a33; }
+.share-card-controls button:disabled { opacity: .5; cursor: wait; }
+.share-card-controls button[hidden] { display: none; }
