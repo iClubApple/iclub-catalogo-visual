@@ -159,15 +159,91 @@
     return new File([blob], `iClub-${slug}.png`, { type: "image/png" });
   }
 
-  async function open(productId) {
+  async function createQuoteCard(data) {
+    const logo = await loadImage(window.iClubShareLogo || new URL("assets/logo-iclub-oficial.png", document.baseURI).href);
+    const measure = document.createElement("canvas").getContext("2d");
+    const draw = [];
+    let y = 176;
+    const width = 900;
+    function text(value, size, color = "#111318", weight = 700, centered = false) {
+      measure.font = `${weight} ${size}px Arial, sans-serif`;
+      const lines = [];
+      let line = "";
+      for (const word of String(value || "").split(/\s+/)) {
+        const next = line ? `${line} ${word}` : word;
+        if (line && measure.measureText(next).width > 756) {
+          lines.push(line);
+          line = word;
+        } else line = next;
+      }
+      if (line) lines.push(line);
+      for (const value of lines) {
+        const fontSize = Math.min(size, Math.floor(size * 756 / Math.max(1, measure.measureText(value).width)));
+        const top = y;
+        draw.push(ctx => {
+          ctx.font = `${weight} ${fontSize}px Arial, sans-serif`;
+          ctx.fillStyle = color;
+          ctx.textAlign = centered ? "center" : "left";
+          ctx.fillText(value, centered ? width / 2 : 72, top);
+        });
+        y += size * 1.35;
+      }
+    }
+    text(data.title, 40, "#111318", 700, true);
+    y += 30;
+    for (const section of data.sections) {
+      text(section.label, 24, "#5f6673");
+      y += 6;
+      if (section.title) text(section.title, 34);
+      for (const detail of section.details) text(detail, 26, "#444c58", 400);
+      y += 30;
+    }
+    const resultTop = y;
+    const resultIndex = draw.length;
+    y += 30;
+    text(data.result.label, 26, "#444c58", 700, true);
+    y += 12;
+    text(data.result.amount, 82, "#111318", 700, true);
+    y += 20;
+    text(data.note, 24, "#5f6673", 400, true);
+    y += 30;
+    const resultHeight = y - resultTop;
+    draw.splice(resultIndex, 0, ctx => {
+      ctx.fillStyle = "#edf0f2";
+      ctx.fillRect(40, resultTop, 820, resultHeight);
+    });
+    y += 32;
+    const date = new Date(data.timestamp).toLocaleString("es-AR", {
+      timeZone: "America/Argentina/Buenos_Aires",
+      day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit",
+    });
+    text(`Cotización del ${date}`, 22, "#5f6673", 400, true);
+    y += 28;
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = Math.ceil(y);
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, width, canvas.height);
+    ctx.textBaseline = "top";
+    contain(ctx, logo, 330, 32, 240, 100);
+    draw.forEach(paint => paint(ctx));
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+    if (!blob) throw new Error("No se pudo generar la cotización.");
+    const slug = data.filename.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/gi, "-").slice(0, 110);
+    return new File([blob], `iClub-${slug}.png`, { type: "image/png" });
+  }
+
+  async function openData(data, quote = false) {
+    if (!data) return;
     ensureDialog();
     const id = ++requestId;
-    const data = window.iClubCatalog?.getShareCard(productId);
-    if (!data) return;
+    dialog.querySelector("h2").textContent = quote ? "Compartir cotización" : "Compartir tarjeta";
     file = null;
     if (objectUrl) URL.revokeObjectURL(objectUrl);
     objectUrl = null;
     const preview = dialog.querySelector("img");
+    preview.alt = quote ? "Vista previa de la cotización iClub" : "Vista previa de la tarjeta iClub";
     preview.hidden = true;
     preview.removeAttribute("src");
     const status = dialog.querySelector(".share-card-status");
@@ -175,7 +251,7 @@
     dialog.querySelectorAll("[data-share-action]").forEach((button) => { button.disabled = true; });
     if (!dialog.open) dialog.showModal();
     try {
-      const generated = await createCard(data);
+      const generated = await (quote ? createQuoteCard(data) : createCard(data));
       if (id !== requestId || !dialog.open) return;
       file = generated;
       objectUrl = URL.createObjectURL(file);
@@ -190,10 +266,14 @@
     }
   }
 
+  window.iClubShare = {
+    openQuote(data) { return openData(data, true); },
+  };
+
   document.addEventListener("click", (event) => {
     const trigger = event.target.closest("[data-share-card-id]");
     if (!trigger) return;
     event.preventDefault();
-    open(trigger.dataset.shareCardId);
+    openData(window.iClubCatalog?.getShareCard(trigger.dataset.shareCardId));
   });
 })();

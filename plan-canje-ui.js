@@ -123,7 +123,7 @@ function ensureModal() {
     if (event.target === modal) closeTradeIn();
   });
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && state.open) closeTradeIn();
+    if (event.key === "Escape" && state.open && !document.querySelector(".share-card-dialog[open]")) closeTradeIn();
   });
 }
 
@@ -693,7 +693,7 @@ function stepResult() {
         </div>
         <p class="trade-summary-note">Valor estimado sujeto a revisión física del equipo por parte de iClub.</p>
       </div>
-      ${actionsTemplate({ nextLabel: "Ver diferencia con mi próximo iPhone", nextDisabled: false, nextAction: "chooseNext" })}
+      ${actionsTemplate({ nextLabel: "Ver diferencia con mi próximo iPhone", nextDisabled: false, nextAction: "chooseNext", shareQuote: true })}
     </div>
   `;
 }
@@ -825,10 +825,13 @@ function stepDifference() {
         `}
         <p class="trade-summary-note">Valores sujetos a disponibilidad y revisión física del equipo entregado.</p>
       </div>
-      <div class="trade-actions stack-mobile">
+      <div class="trade-actions stack-mobile difference-actions">
         <button class="trade-button secondary" type="button" data-trade-action="chooseNext">Elegir otro iPhone</button>
         <div class="trade-actions-right">
-          <a class="trade-button" href="${escapeAttr(whatsappUrlForOperation(product, difference))}" target="_blank" rel="noreferrer">Quiero avanzar por WhatsApp</a>
+          <div class="trade-primary-share">
+            <a class="trade-button" href="${escapeAttr(whatsappUrlForOperation(product, difference))}" target="_blank" rel="noreferrer">Quiero avanzar por WhatsApp</a>
+            ${quoteShareButton("difference")}
+          </div>
         </div>
       </div>
     </div>
@@ -957,6 +960,56 @@ function benefitCard(benefit) {
   `;
 }
 
+function quoteShareButton(kind) {
+  return `<button class="share-card-trigger" type="button" data-trade-share="${kind}" aria-label="Compartir ${kind === "difference" ? "Plan Canje" : "cotización"}" data-tooltip="Compartir cotización">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4M8.6 13.5l6.8 4"/></svg>
+  </button>`;
+}
+
+function quoteShareData(kind) {
+  const quote = selectedProduct();
+  if (!quote || quoteValue() <= 0) return null;
+  const operation = kind === "difference";
+  const product = operation ? selectedNextProduct() : null;
+  if (operation && (!isProductStillAvailable(product) || quoteValue() >= nextProductPrice(product))) return null;
+  const model = `${displayModelName(state.model)} · ${state.capacity}`;
+  const sections = [{
+    label: operation ? "Entregás" : "Tu iPhone",
+    title: model,
+    details: [
+      `Batería informada: ${state.batteryPercent}%`,
+      `Estado general: ${state.generalCondition}`,
+      `Cambio de pantalla: ${state.needsScreenReplacement ? "Sí" : "No"}`,
+      `Cambio de tapa: ${state.needsBackReplacement ? "Sí" : "No"}`,
+      ...(operation ? [`Valor estimado: ${money(quoteValue())}`] : []),
+    ],
+  }];
+  const benefits = selectedBenefits();
+  if (operation) {
+    sections.push({
+      label: "Te llevás",
+      title: `${nextProductModel(product)} · ${product.capacity || "Capacidad a confirmar"} · ${productConditionGroup(product)}`,
+      details: [[product.color, product.battery].filter(Boolean).join(" · "), `Precio efectivo: ${nextProductPriceLabel(product)}`].filter(Boolean),
+    });
+    if (benefits.length) {
+      sections.push({ label: "Beneficios agregados", details: benefits.map(benefit => `${benefit.name}: ${benefitPriceLabel(benefit)}`) });
+      sections.push({ label: "Detalle del total", details: [`Diferencia Plan Canje: ${money(differenceValue(product))}`, `Beneficios: ${benefitsTotalLabel()}`] });
+    }
+  }
+  const timestamp = new Date().toISOString();
+  return {
+    title: operation ? "Tu Plan Canje iClub" : "Tu cotización iClub",
+    filename: `${operation ? "Plan-Canje" : "Cotizacion"}-${model}-${timestamp.slice(0, 10)}`,
+    timestamp,
+    sections,
+    result: {
+      label: operation ? (benefits.length ? "TOTAL A ABONAR" : "DIFERENCIA A ABONAR") : "Valor estimado de tu iPhone",
+      amount: operation ? totalFinalLabel(product) : money(quoteValue()),
+    },
+    note: operation ? "Valores sujetos a disponibilidad y revisión física del equipo entregado." : "Valor estimado sujeto a revisión física del equipo por parte de iClub.",
+  };
+}
+
 function actionsTemplate(options = {}) {
   if (options.backOnly) {
     return `
@@ -967,19 +1020,27 @@ function actionsTemplate(options = {}) {
   }
   const nextAction = options.nextAction || "next";
   return `
-    <div class="trade-actions">
+    <div class="trade-actions${options.shareQuote ? " quote-actions" : ""}">
       ${options.showBack === false ? "" : `<button class="trade-button secondary" type="button" data-trade-action="back">Atrás</button>`}
       <div class="trade-actions-right">
         ${state.step === STEP_QUOTE_RESULT ? `<button class="trade-button secondary" type="button" data-trade-action="reset">Volver a cotizar</button>` : ""}
+        ${options.shareQuote ? '<div class="trade-primary-share">' : ""}
         <button class="trade-button" type="button" data-trade-action="${nextAction}" ${options.nextDisabled ? "disabled" : ""}>
           ${options.nextLabel || "Siguiente"}
         </button>
+        ${options.shareQuote ? `${quoteShareButton("quote")}</div>` : ""}
       </div>
     </div>
   `;
 }
 
 function bindActions() {
+  document.querySelectorAll("[data-trade-share]").forEach(button => {
+    button.addEventListener("click", () => {
+      const data = quoteShareData(button.dataset.tradeShare);
+      if (data) window.iClubShare?.openQuote(data);
+    });
+  });
   document.querySelectorAll("[data-trade-select]").forEach((button) => {
     button.addEventListener("click", () => {
       const type = button.dataset.tradeSelect;
