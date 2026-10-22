@@ -2996,14 +2996,22 @@
 
     function batteryPriceKey(product) {
       return [
-        normalize(product.batteryPriceModel || product.model),
+        // A copied section heading can name another model; the product row is authoritative.
+        normalize(product.model),
         normalize(product.capacity),
         normalize(product.condition),
       ].join("|");
     }
 
+    function isBatteryPriceReference(product) {
+      return product.category === "iPhone"
+        && isUsed(product)
+        && product.batteryPriceTier === "battery_100"
+        && /^100\s*%?$/.test(String(product.battery || "").trim());
+    }
+
     function isBatteryReferenceOnly(product) {
-      return product.batteryPriceTier === "battery_100"
+      return isBatteryPriceReference(product)
         && !product.stock
         && !physicalSerial(product)
         && !String(product.color || "").trim();
@@ -3022,7 +3030,7 @@
     function attachBatteryPriceOptions(products) {
       const references = new Map();
       products
-        .filter((product) => product.batteryPriceTier === "battery_100")
+        .filter(isBatteryPriceReference)
         .forEach((product) => {
           const key = batteryPriceKey(product);
           if (!references.has(key)) references.set(key, []);
@@ -3031,7 +3039,7 @@
 
       products.forEach((product) => {
         product.batteryPricing = null;
-        if (product.batteryPriceTier !== "battery_under_99") return;
+        if (product.category !== "iPhone" || !isUsed(product) || product.batteryPriceTier !== "battery_under_99") return;
         const reference = chooseBatteryReference(references.get(batteryPriceKey(product)) || []);
         if (!reference) return;
         product.batteryPricing = {
